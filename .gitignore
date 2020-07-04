@@ -1,0 +1,10 @@
+venv
+*.egg-info
+build
+dist
+__pycache__
+tmp
+.idea
+QUESTIONS.txt
+config
+backup
