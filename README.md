@@ -12,7 +12,7 @@ pip install projector-VERSION-py3-none-any.whl
 ```
 ### from source 
 ```bash 
-git clone git@github.com:JetBrains/с.git
+git@github.com:JetBrains/projector-installer.git
 cd projector-installer
 pip install .
 ```
@@ -97,7 +97,7 @@ To simplify usage most useful commands have shortcuts. In simple cases
 it is enough to use a couple of shortcut commands, such as install and run.
 
 
-### IDE Commands
+### IDE commands
 projector ide find - display all Projector-compatible IDEs
 
 projector ide find _pattern_ - display Projector-compatible IDEs whose names match the given pattern
