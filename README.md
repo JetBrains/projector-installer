@@ -1,16 +1,12 @@
 # projector 
 
-Install, configure and run JetBrains's IDEs with projector-server.
+Install, configure and run JetBrains IDEs with projector-server.
 
 ## Install
 
 You need Python 3.6 or higher.
 
-### From PyPi 
-```bash 
-pip install projector 
-```
-### from file 
+### wheel from file 
 ```bash
 pip install projector-VERSION-py3-none-any.whl
 ```
@@ -101,7 +97,7 @@ To simplify usage most useful commands have shortcuts. In simple cases
 it is enough to use a couple of shortcut commands, such as install and run.
 
 
-### Application Commands
+### IDE Commands
 projector ide find - display all Projector-compatible IDEs
 
 projector ide find _pattern_ - display Projector-compatible IDEs whose names match the given pattern
