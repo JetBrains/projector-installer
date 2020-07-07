@@ -71,7 +71,8 @@ def download_app(url):
         total = int(req.headers['Content-Length'])
 
         if not isfile(file_path) or getsize(file_path) != total:
-            with open(file_path, 'wb') as f, click.progressbar(length=total, label=f'Downloading {file_name}') as bar:
+            with open(file_path, 'wb') as f, click.progressbar(length=total, label=f'Downloading {file_name}',
+                                                               width=30) as bar:
                 for chunk in req.iter_content(CHUNK_SIZE):
                     if chunk:
                         f.write(chunk)
@@ -81,7 +82,7 @@ def download_app(url):
 
 
 def unpack_app(file_path):
-    print(f"Unpacking {basename(file_path)}", flush=True)
+    print(f"Unpacking {basename(file_path)}")
     tf = tarfile.open(file_path)
     members = tf.getmembers()
     app_name = members[0].name.split('/')[0]
@@ -90,7 +91,7 @@ def unpack_app(file_path):
         return app_name
 
     with click.progressbar(length=len(members), label="Extracting") as bar:
-        for i, m in enumerate(members):
+        for m in members:
             tf.extract(m, get_apps_dir())
             bar.update(1)
 
