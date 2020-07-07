@@ -5,7 +5,6 @@ from os.path import join, isfile, getsize, basename, expanduser
 from os import listdir, chmod, stat
 import tarfile
 import json
-
 from .global_config import get_download_cache_dir, get_apps_dir, PROJECTOR_SERVER_DIR
 
 IDEA_RUN_CLASS = 'com.intellij.idea.Main'
@@ -30,7 +29,8 @@ COMPATIBLE_APPS = [
     KnownApp('DataGrip 2019.3', 'https://download.jetbrains.com/datagrip/datagrip-2019.3.4.tar.gz'),
     KnownApp('PhpStorm 2019.3', 'https://download.jetbrains.com/webide/PhpStorm-2019.3.4.tar.gz'),
     KnownApp('PyCharm Community 2019.3.4', 'https://download.jetbrains.com/python/pycharm-community-2019.3.4.tar.gz'),
-    KnownApp('PyCharm Professional 2019.3.4', 'https://download.jetbrains.com/python/pycharm-professional-2019.3.4.tar.gz'),
+    KnownApp('PyCharm Professional 2019.3.4',
+             'https://download.jetbrains.com/python/pycharm-professional-2019.3.4.tar.gz'),
 ]
 
 
@@ -58,34 +58,30 @@ def get_compatible_app_names(pattern=None):
     return res
 
 
-CHUNK_SIZE = 1024 * 1024
+CHUNK_SIZE = 4 * 1024 * 1024
 
 
 def download_app(url):
     parts = url.split("/")
     file_name = parts[-1]
     file_path = join(get_download_cache_dir(), file_name)
-    req = requests.get(url, stream=True)
 
-    if req.status_code != 200:
-        raise Exception(f"Unable to download {file_path}")
+    with requests.get(url, stream=True) as req:
+        req.raise_for_status()
+        total = int(req.headers['Content-Length'])
 
-    total = int(req.headers['Content-Length'])
-    so_far = 0
-
-    if not isfile(file_path) or getsize(file_path) != total:
-        with open(file_path, 'wb') as f, click.progressbar(length=total, label=f'Downloading {file_name}') as bar:
-            for chunk in req.iter_content(CHUNK_SIZE):
-                so_far += len(chunk)
-                bar.update(so_far)
-                f.write(chunk)
-                f.flush()
+        if not isfile(file_path) or getsize(file_path) != total:
+            with open(file_path, 'wb') as f, click.progressbar(length=total, label=f'Downloading {file_name}') as bar:
+                for chunk in req.iter_content(CHUNK_SIZE):
+                    if chunk:
+                        f.write(chunk)
+                        bar.update(len(chunk))
 
     return file_path
 
 
 def unpack_app(file_path):
-    print(f"Unpacking {basename(file_path)}")
+    print(f"Unpacking {basename(file_path)}", flush=True)
     tf = tarfile.open(file_path)
     members = tf.getmembers()
     app_name = members[0].name.split('/')[0]
