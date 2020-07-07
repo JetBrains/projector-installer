@@ -7,6 +7,9 @@ INSTALL_DIR = dirname(abspath(__file__))
 HTTP_DIR = join(INSTALL_DIR, "bundled", "client")
 PROJECTOR_SERVER_DIR = join(INSTALL_DIR, "bundled", "server")
 PROJECTOR_MARKDOWN_PLUGIN_DIR = join(INSTALL_DIR, "bundled", "projector-markdown-plugin")
+DEF_HTTP_PORT = 8889
+DEF_PROJECTOR_PORT = 9999
+
 
 
 def get_server_file_name():

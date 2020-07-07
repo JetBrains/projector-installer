@@ -1,6 +1,7 @@
 import click
-from .apps import get_compatible_apps, get_installed_apps, get_app_path, get_compatible_app_names
+from .apps import get_installed_apps, get_app_path, get_compatible_app_names
 from .run_config import get_run_configs, RunConfig, get_used_http_ports, get_used_projector_ports, get_run_config_names
+from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
 
 
 def list_configs(pattern=None):
@@ -154,10 +155,6 @@ def select_app_path():
             return None
 
     return None
-
-
-DEF_HTTP_PORT = 8887
-DEF_PROJECTOR_PORT = 9999
 
 
 def get_def_port(ports, default):
