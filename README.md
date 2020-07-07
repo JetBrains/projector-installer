@@ -21,13 +21,17 @@ pip3 install .
 
 ```commandline
 
-python -m venv venv
-cd venv 
-source ./bin/activate 
+python3 -m venv venv
+source ./venv/bin/activate 
 pip3 install  projector 
 ``` 
 
 After that the command _projector_ is available. 
+
+_NOTE:_ In fresh Linux installations the directory ```~/.local/bin```
+can be missed in the ```PATH``` variable. If the ```projector``` command
+is not available after installation, try to restart the terminal.
+
 
 ## Quick start 
 First time you run projector, it automatically starts the installation.
