@@ -1,4 +1,4 @@
-import os
+from os import chdir
 from http.server import SimpleHTTPRequestHandler
 import socketserver
 from multiprocessing import Process
@@ -41,7 +41,7 @@ class HttpServerProcess(Process):
         self.httpd = None
 
     def run(self):
-        os.chdir(self.directory)
+        chdir(self.directory)
         NoLogServer.address = self.address
         NoLogServer.http_port = self.port
         NoLogServer.projector_port = self.projector_port

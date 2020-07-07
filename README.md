@@ -8,13 +8,13 @@ You need Python 3.6 or higher.
 
 ### wheel from file 
 ```bash
-pip install projector-VERSION-py3-none-any.whl
+pip3 install projector-VERSION-py3-none-any.whl
 ```
 ### from source 
 ```bash 
-git@github.com:JetBrains/projector-installer.git
+git clone https://github.com/JetBrains/projector-installer.git
 cd projector-installer
-pip install .
+pip3 install .
 ```
 
 ### in virtual environment
@@ -24,7 +24,7 @@ pip install .
 python -m venv venv
 cd venv 
 source ./bin/activate 
-pip install  projector 
+pip3 install  projector 
 ``` 
 
 After that the command _projector_ is available. 
