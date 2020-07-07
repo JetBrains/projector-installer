@@ -92,7 +92,7 @@ def unpack_app(file_path):
     with click.progressbar(length=len(members), label="Extracting") as bar:
         for i, m in enumerate(members):
             tf.extract(m, get_apps_dir())
-            bar.update(i + 1)
+            bar.update(1)
 
     return app_name
 
