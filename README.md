@@ -8,7 +8,7 @@ You need Python 3.6 or higher.
 
 ### wheel from file 
 ```bash
-pip3 install projector-VERSION-py3-none-any.whl
+pip3 install projector_installer-VERSION-py3-none-any.whl
 ```
 ### from source 
 ```bash 
