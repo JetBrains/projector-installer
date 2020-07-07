@@ -6,6 +6,11 @@ Install, configure and run JetBrains IDEs with projector-server.
 
 You need Python 3.6 or higher.
 
+### from PiPi
+```bash
+pip3 install projector-installer 
+```
+
 ### wheel from file 
 ```bash
 pip3 install projector_installer-VERSION-py3-none-any.whl
@@ -23,7 +28,7 @@ pip3 install .
 
 python3 -m venv venv
 source ./venv/bin/activate 
-pip3 install  projector 
+pip3 install  projector-installer 
 ``` 
 
 After that the command _projector_ is available. 
