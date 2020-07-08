@@ -19,7 +19,7 @@ import shutil
 import signal
 import subprocess
 import sys
-from os import path, uname, system
+from os import path
 
 from .apps import get_compatible_apps, download_app, unpack_app, get_app_path, get_installed_apps, get_product_info
 
@@ -163,7 +163,7 @@ def do_rename_config(from_name, to_name):
     rename_config(from_name, to_name)
 
 
-########################## Apps actions
+########################## IDE actions
 
 def do_find_app(pattern=None):
     find_apps(pattern)
