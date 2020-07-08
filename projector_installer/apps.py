@@ -76,6 +76,7 @@ def get_compatible_app_names(pattern=None):
 
 
 CHUNK_SIZE = 4 * 1024 * 1024
+PROGRESS_WIDTH = 30
 
 
 def download_app(url):
@@ -88,8 +89,8 @@ def download_app(url):
         total = int(req.headers['Content-Length'])
 
         if not isfile(file_path) or getsize(file_path) != total:
-            with open(file_path, 'wb') as f, click.progressbar(length=total, label=f'Downloading {file_name}',
-                                                               width=30) as bar:
+            click.echo(f'Downloading {file_name}')
+            with open(file_path, 'wb') as f, click.progressbar(length=total, width=PROGRESS_WIDTH) as bar:
                 for chunk in req.iter_content(CHUNK_SIZE):
                     if chunk:
                         f.write(chunk)
@@ -107,7 +108,7 @@ def unpack_app(file_path):
     if app_name in get_installed_apps():
         return app_name
 
-    with click.progressbar(length=len(members), label="Extracting") as bar:
+    with click.progressbar(length=len(members), width=PROGRESS_WIDTH) as bar:
         for m in members:
             tf.extract(m, get_apps_dir())
             bar.update(1)
