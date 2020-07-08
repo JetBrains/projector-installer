@@ -17,6 +17,7 @@
 
 import sys
 import click
+import netifaces
 from .apps import get_installed_apps, get_app_path, get_compatible_app_names
 from .run_config import get_run_configs, RunConfig, get_used_http_ports, get_used_projector_ports, get_run_config_names
 from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
@@ -213,6 +214,39 @@ def get_def_projector_port():
     return get_def_port(ports, DEF_PROJECTOR_PORT)
 
 
+def get_local_addresses():
+    interfaces = netifaces.interfaces()
+    res = []
+
+    for ifs in interfaces:
+        addresses = netifaces.ifaddresses(ifs)
+
+        if netifaces.AF_INET in addresses:
+            ipv4 = addresses[netifaces.AF_INET]
+
+            for ips in ipv4:
+                res.append(ips['addr'])
+
+    return res
+
+
+def check_listening_address(address):
+    if address == 'localhost':
+        return True
+
+    return address in get_local_addresses()
+
+
+def select_http_address(default):
+    while True:
+        res = click.prompt("Enter HTTP listening address (press ENTER for default)", default=default)
+
+        if check_listening_address(res):
+            return res
+
+        click.echo("You entered incorrect address, please try again.")
+
+
 def select_http_port():
     port = get_def_http_port()
     return click.prompt("Enter a desired HTTP port (press ENTER for default)", default=port)
@@ -226,6 +260,9 @@ def select_projector_port():
 def edit_config(config: RunConfig):
     prompt = "Enter the path to IDE (press ENTER for default)"
     config.path_to_app = click.prompt(prompt, default=config.path_to_app)
+
+    prompt = "Enter a HTTP listening address (press ENTER for default)"
+    config.http_address = click.prompt(prompt, default=config.http_address)
 
     prompt = "Enter a HTTP port (press ENTER for default)"
     config.http_port = click.prompt(prompt, default=config.http_port)

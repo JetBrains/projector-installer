@@ -25,7 +25,8 @@ from os import path
 from .apps import get_compatible_apps, download_app, unpack_app, get_app_path, get_installed_apps, get_product_info
 
 from .dialogs import select_known_app, select_app_path, select_new_config_name, list_configs, \
-    find_apps, select_http_port, select_projector_port, edit_config, list_apps, select_installed_app, select_run_config
+    find_apps, select_http_port, select_projector_port, edit_config, list_apps, select_installed_app, select_run_config, \
+    select_http_address
 from .global_config import HTTP_DIR
 from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
@@ -95,10 +96,11 @@ def make_run_config(app_path=None):
         print("IDE was not selected, exiting...")
         sys.exit(1)
 
+    http_address = select_http_address('localhost')
     http_port = select_http_port()
     projector_port = select_projector_port()
 
-    return RunConfig(app_path, "", projector_port, "localhost", http_port)
+    return RunConfig(app_path, "", projector_port, http_address, http_port)
 
 
 def do_add_config(config_name, app_path=None, auto_run=False):

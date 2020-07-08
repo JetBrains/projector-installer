@@ -28,7 +28,6 @@ DEF_HTTP_PORT = 8889
 DEF_PROJECTOR_PORT = 9999
 
 
-
 def get_server_file_name():
     file_list = [file_name for file_name in listdir(PROJECTOR_SERVER_DIR)
                  if file_name.startswith('projector-server') and file_name.endswith('.jar')]
