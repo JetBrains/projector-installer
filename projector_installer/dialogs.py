@@ -15,17 +15,27 @@
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import sys
 import click
 from .apps import get_installed_apps, get_app_path, get_compatible_app_names
 from .run_config import get_run_configs, RunConfig, get_used_http_ports, get_used_projector_ports, get_run_config_names
 from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
 
 
-def list_configs(pattern=None):
-    config_names = get_run_config_names(pattern)
-
+def display_run_configs_names(config_names):
     for i, config_name in enumerate(config_names):
         print(f'\t{i + 1:4}. {config_name}')
+
+
+def list_configs(pattern=None):
+    config_names = get_run_config_names(pattern)
+    display_run_configs_names(config_names)
+
+
+def display_run_configs(run_configs):
+    config_names = list(run_configs.keys())
+    config_names.sort()
+    display_run_configs_names(config_names)
 
 
 def find_apps(pattern=None):
@@ -111,22 +121,32 @@ def select_new_config_name(hint):
         return name
 
 
-def select_config_name(pattern=None):
-    run_configs = get_run_config_names(pattern)
+def select_run_config(config_name):
+    run_configs = get_run_configs(config_name)
 
-    while True:
-        list_configs(pattern)
-        prompt = f"Choose a configuration number or 0 to exit: [0-{len(run_configs)}]"
-        config_number = click.prompt(prompt, type=int)
+    if len(run_configs) == 0:
+        print(f'Configuration with name {config_name} is unknown, exiting...')
+        sys.exit(1)
 
-        if config_number < 0 or config_number > len(run_configs):
-            print("Invalid number selected.")
-            continue
+    if len(run_configs) > 1:
+        while True:
+            display_run_configs(run_configs)
+            prompt = f"Choose a configuration number or 0 to exit: [0-{len(run_configs)}]"
+            config_number = click.prompt(prompt, type=int)
 
-        if config_number == 0:
-            return None
-        else:
-            return run_configs[config_number - 1]
+            if config_number < 0 or config_number > len(run_configs):
+                print("Invalid number selected.")
+                continue
+
+            if config_number == 0:
+                print('Configuration was not selected, exiting...')
+                sys.exit(1)
+            else:
+                config_names = get_run_config_names(config_name)
+                name = config_names[config_number - 1]
+                return name, run_configs[name]
+
+    return list(run_configs.items())[0]
 
 
 def select_installed_app_path():

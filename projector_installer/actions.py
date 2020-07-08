@@ -23,8 +23,8 @@ from os import path, uname, system
 
 from .apps import get_compatible_apps, download_app, unpack_app, get_app_path, get_installed_apps, get_product_info
 
-from .dialogs import select_known_app, select_config_name, select_app_path, select_new_config_name, list_configs, \
-    find_apps, select_http_port, select_projector_port, edit_config, list_apps, select_installed_app
+from .dialogs import select_known_app, select_app_path, select_new_config_name, list_configs, \
+    find_apps, select_http_port, select_projector_port, edit_config, list_apps, select_installed_app, select_run_config
 from .global_config import HTTP_DIR
 from .http_server_process import HttpServerProcess
 from .markdown import install_projector_markdown
@@ -37,22 +37,7 @@ def do_list_config(pattern=None):
 
 
 def do_show_config(config_name=None):
-    run_configs = get_run_configs(config_name)
-
-    if len(run_configs) == 0:
-        print(f'Configuration name {config_name} is unknown, exiting...')
-        sys.exit(1)
-
-    if len(run_configs) > 1:
-        config_name = select_config_name(config_name)
-
-        if config_name is None:
-            print('Configuration was not selected, exiting...')
-            sys.exit(1)
-    else:
-        config_name = list(run_configs.keys())[0]
-
-    run_config = run_configs[config_name]
+    config_name, run_config = select_run_config(config_name)
     print(f"Configuration: {config_name}")
     print(f"IDE path: {run_config.path_to_app}")
     print(f"HTTP address: {run_config.http_address}")
@@ -65,28 +50,9 @@ def do_show_config(config_name=None):
 
 # noinspection PyShadowingNames
 def do_run_config(config_name=None):
-    run_configs = get_run_configs(config_name)
-
-    if len(run_configs) == 0:
-        print(f'Configuration matched to {config_name} was not found, exiting...')
-        sys.exit(1)
-
-    if len(run_configs) == 1:
-        config_name = list(run_configs.keys())[0]
-    else:
-        config_name = select_config_name(config_name)
-
-        if config_name is None:
-            print('A configuration is not selected, exiting...')
-            sys.exit(1)
-
-    if config_name not in run_configs:
-        print(f'Configuration name {config_name} is unknown, exiting...')
-        return
+    config_name, run_config = select_run_config(config_name)
 
     print(f"Configuration name: {config_name}")
-    run_config = run_configs[config_name]
-
     run_script_name = get_run_script(config_name)
 
     if not path.isfile(run_script_name):
@@ -157,55 +123,15 @@ def do_add_config(config_name, app_path=None):
 
 
 def do_remove_config(config_name=None):
-    run_configs = get_run_configs(config_name)
-
-    if len(run_configs) == 0:
-        if config_name:
-            print(f"There are no configurations with a name matched to {config_name}")
-        else:
-            print(f"There are no configurations.")
-
-        print("exiting...")
-        sys.exit(1)
-
-    if len(run_configs) > 1 or config_name is None:
-        config_name = select_config_name(config_name)
-
-        if config_name is None:
-            print('Configuration is not selected, existing...')
-            return
-    else:
-        config_name = list(run_configs.keys())[0]
-
-    if config_name not in run_configs:
-        print(f'Configuration name {config_name} is unknown, existing...')
-        return
-
+    config_name, run_configs = select_run_config(config_name)
     print(f"Removing configuration {config_name}")
     delete_config(config_name)
     print("done.")
 
 
 def do_edit_config(config_name=None):
-    run_configs = get_run_configs(config_name)
-
-    if len(run_configs) == 0:
-        print(f'Configuration name {config_name} is unknown, existing...')
-        sys.exit(1)
-
-    if len(run_configs) > 1:
-        config_name = select_config_name(config_name)
-    else:
-        config_name = list(run_configs.keys())[0]
-
-    if config_name is None:
-        print('Configuration is not selected, existing...')
-        sys.exit(1)
-
-    run_config = run_configs[config_name]
-
+    config_name, run_config = select_run_config(config_name)
     print(f"Edit configuration {config_name}")
-
     run_config = edit_config(run_config)
 
     try:
