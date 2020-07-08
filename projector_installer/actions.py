@@ -211,11 +211,8 @@ def do_install_app(app_name):
 
     config_name = make_config_name(app_name)
     app_path = get_app_path(app_name)
-
-    do_add_config(config_name, app_path)
-
     install_projector_markdown(app_path)
-
+    do_add_config(config_name, app_path)
     print("done.")
 
 
