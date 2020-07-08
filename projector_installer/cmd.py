@@ -41,7 +41,7 @@ def projector(ctx, config_directory):
     if not path.isdir(global_config.config_dir):  # first time run with this config
         init_config_dir()
         print("Please select IDE to install:")
-        do_install_app(None, auto_run=True)
+        do_install_app(None, auto_run=True, allow_updates=False)
     elif not ctx.invoked_subcommand:
         click.echo(ctx.get_help())
 
@@ -67,14 +67,15 @@ def find(pattern):
 
 @click.command(short_help='Install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
-@click.option('--auto-run',  default=False, is_flag=True, help='Run installed ide without confirmation.')
-def install_app(ide_name, auto_run):
+@click.option('--auto-run', default=False, is_flag=True, help='Run installed IDE without confirmation.')
+@click.option('--allow-updates', default=False, is_flag=True, help='Allow updates of installed IDE.')
+def install_app(ide_name, auto_run, allow_updates):
     """projector ide install [ide_name]
 
     Parameter ide_name is the name of IDE to install.
     If no IDE name is given or the pattern is ambiguous, guides the user through the install process.
     """
-    do_install_app(ide_name, auto_run)
+    do_install_app(ide_name, auto_run, allow_updates)
 
 
 ide.add_command(install_app, name='install')
@@ -155,7 +156,7 @@ def show(config_name):
 @config.command(short_help='Add new configuration')
 @click.argument('config_name', type=click.STRING, required=False)
 @click.argument('ide_path', type=click.STRING, required=False)
-@click.option('--auto-run',  default=False, is_flag=True, help='Run new config without confirmation.')
+@click.option('--auto-run', default=False, is_flag=True, help='Run new config without confirmation.')
 def add(config_name, ide_path, auto_run):
     """projector config add [config_name]
 
@@ -209,13 +210,14 @@ def run(config_name):
 
 @projector.command(short_help='Install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
-@click.option('--auto-run',  default=False, is_flag=True, help='Run installed ide without confirmation.')
-def install(ide_name, auto_run):
+@click.option('--auto-run', default=False, is_flag=True, help='Run installed ide without confirmation.')
+@click.option('--allow-updates', default=False, is_flag=True, help='Allow updates of installed IDE.')
+def install(ide_name, auto_run, allow_updates):
     """projector install [ide_name]
 
     Shortcut for projector ide install [ide_name]
     """
-    do_install_app(ide_name, auto_run)
+    do_install_app(ide_name, auto_run, allow_updates)
 
 
 @projector.command(short_help='Find available IDEs')

@@ -28,7 +28,7 @@ from .dialogs import select_known_app, select_app_path, select_new_config_name, 
     find_apps, select_http_port, select_projector_port, edit_config, list_apps, select_installed_app, select_run_config
 from .global_config import HTTP_DIR
 from .http_server_process import HttpServerProcess
-from .markdown import install_projector_markdown
+from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, RunConfig, get_run_script, validate_run_config, save_config, \
     delete_config, rename_config, make_config_name, get_configs_with_app
 
@@ -179,7 +179,7 @@ def do_list_app(pattern=None):
     list_apps(pattern)
 
 
-def do_install_app(app_name, auto_run=False):
+def do_install_app(app_name, auto_run=False, allow_updates=False):
     apps = get_compatible_apps(app_name)
 
     if len(apps) == 0:
@@ -217,7 +217,11 @@ def do_install_app(app_name, auto_run=False):
 
     config_name = make_config_name(app_name)
     app_path = get_app_path(app_name)
-    install_projector_markdown(app_path)
+    install_projector_markdown_for(app_path)
+
+    if not allow_updates:
+        forbid_updates_for(app_path)
+
     print("done.")
     do_add_config(config_name, app_path, auto_run)
 

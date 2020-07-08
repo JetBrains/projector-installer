@@ -18,7 +18,7 @@
 from dataclasses import dataclass
 import requests
 import click
-from os.path import join, isfile, getsize, basename, expanduser
+from os.path import join, isfile, getsize, basename, expanduser, dirname
 from os import listdir, chmod, stat
 import tarfile
 import json
@@ -219,6 +219,11 @@ def get_product_info(app_path):
 def get_launch_script(app_path):
     prod_info = get_product_info(app_path)
     return join(app_path, prod_info.launcher_path)
+
+
+def get_bin_dir(app_path):
+    run_script = get_launch_script(app_path)
+    return dirname(run_script)
 
 
 CONFIG_PREFIX = expanduser('~/')
