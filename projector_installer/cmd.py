@@ -67,13 +67,14 @@ def find(pattern):
 
 @click.command(short_help='Install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
-def install_app(ide_name):
+@click.option('--auto-run',  default=False, is_flag=True, help='Run installed ide without confirmation.')
+def install_app(ide_name, auto_run):
     """projector ide install [ide_name]
 
     Parameter ide_name is the name of IDE to install.
     If no IDE name is given or the pattern is ambiguous, guides the user through the install process.
     """
-    do_install_app(ide_name)
+    do_install_app(ide_name, auto_run)
 
 
 ide.add_command(install_app, name='install')
@@ -208,12 +209,13 @@ def run(config_name):
 
 @projector.command(short_help='Install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
-def install(ide_name):
+@click.option('--auto-run',  default=False, is_flag=True, help='Run installed ide without confirmation.')
+def install(ide_name, auto_run):
     """projector install [ide_name]
 
     Shortcut for projector ide install [ide_name]
     """
-    do_install_app(ide_name)
+    do_install_app(ide_name, auto_run)
 
 
 @projector.command(short_help='Find available IDEs')
