@@ -14,31 +14,38 @@
 #  You should have received a copy of the GNU General Public License along
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+"""Real actions performed by projector script."""
 
+from .apps import get_compatible_apps, download_app, unpack_app, get_app_path, \
+    get_installed_apps, get_product_info
+
+from .dialogs import select_known_app, select_app_path, select_new_config_name, list_configs, \
+    find_apps, select_http_port, select_projector_port, edit_config, list_apps, \
+    select_installed_app, select_run_config, select_http_address
+from .global_config import HTTP_DIR
+from .http_server_process import HttpServerProcess
+from .ide_configuration import install_projector_markdown_for, forbid_updates_for
+from .run_config import get_run_configs, RunConfig, get_run_script, validate_run_config, \
+    save_config, delete_config, rename_config, make_config_name, get_configs_with_app
+
+from os import path
 import shutil
 import signal
 import subprocess
 import sys
 import click
-from os import path
-
-from .apps import get_compatible_apps, download_app, unpack_app, get_app_path, get_installed_apps, get_product_info
-
-from .dialogs import select_known_app, select_app_path, select_new_config_name, list_configs, \
-    find_apps, select_http_port, select_projector_port, edit_config, list_apps, select_installed_app, select_run_config, \
-    select_http_address
-from .global_config import HTTP_DIR
-from .http_server_process import HttpServerProcess
-from .ide_configuration import install_projector_markdown_for, forbid_updates_for
-from .run_config import get_run_configs, RunConfig, get_run_script, validate_run_config, save_config, \
-    delete_config, rename_config, make_config_name, get_configs_with_app
 
 
 def do_list_config(pattern=None):
+    """Displays existing run configs names."""
     list_configs(pattern)
 
 
 def do_show_config(config_name=None):
+    """Shows details on run config.
+    If given config name does not match unique config, runs interactive
+     procedure to select it.
+    """
     config_name, run_config = select_run_config(config_name)
     print(f"Configuration: {config_name}")
     print(f"IDE path: {run_config.path_to_app}")
@@ -47,11 +54,15 @@ def do_show_config(config_name=None):
     print(f"Projector port: {run_config.projector_port}")
 
     product_info = get_product_info(run_config.path_to_app)
-    print(f"Product info: {product_info.name}, version={product_info.version}, build={product_info.build_number}")
+    print(f"Product info: {product_info.name}, "
+          f"version={product_info.version}, "
+          f"build={product_info.build_number}")
 
 
 # noinspection PyShadowingNames
 def do_run_config(config_name=None):
+    """Executes specified config. If given name does not specify
+    config, runs interactive selection procedure."""
     config_name, run_config = select_run_config(config_name)
 
     print(f"Configuration name: {config_name}")
@@ -62,7 +73,8 @@ def do_run_config(config_name=None):
         print(f"To fix, try: projector config edit {config_name}")
         return
 
-    http_process = HttpServerProcess(run_config.http_address, run_config.http_port, HTTP_DIR, run_config.projector_port)
+    http_process = HttpServerProcess(run_config.http_address, run_config.http_port, HTTP_DIR,
+                                     run_config.projector_port)
 
     def signal_handler(*args):
         if http_process and http_process.is_alive():
@@ -89,6 +101,7 @@ def do_run_config(config_name=None):
 
 
 def make_run_config(app_path=None):
+    """Creates run config with specified app_path."""
     if app_path is None:
         app_path = select_app_path()
 
@@ -104,6 +117,9 @@ def make_run_config(app_path=None):
 
 
 def do_add_config(config_name, app_path=None, auto_run=False):
+    """Adds new run config. If auto_run = True, runs it without questions.
+    Asks user otherwise.
+    """
     config_name = select_new_config_name(config_name)
 
     if config_name is None:
@@ -124,14 +140,15 @@ def do_add_config(config_name, app_path=None, auto_run=False):
 
     save_config(config_name, run_config)
 
-    do_run = True if auto_run else click.prompt("Would you like to run new config? [y/n]", type=bool)
+    do_run = True if auto_run else click.prompt("Would you like to run new config? [y/n]",
+                                                type=bool)
 
     if do_run:
         do_run_config(config_name)
 
 
 def do_remove_config(config_name=None):
-    config_name, run_configs = select_run_config(config_name)
+    config_name, _ = select_run_config(config_name)
     print(f"Removing configuration {config_name}")
     delete_config(config_name)
     print("done.")
@@ -170,8 +187,6 @@ def do_rename_config(from_name, to_name):
 
     rename_config(from_name, to_name)
 
-
-########################## IDE actions
 
 def do_find_app(pattern=None):
     find_apps(pattern)

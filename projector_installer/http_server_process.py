@@ -62,7 +62,7 @@ class NoLogServer(SimpleHTTPRequestHandler):
 
 class HttpServerProcess(Process):
 
-    def __init__(self, address, port, directory, projector_port):
+    def __init__(self, address, port, directory, projector_port) -> object:
         super(HttpServerProcess, self).__init__(daemon=True)
         self.address = address
         self.port = port
