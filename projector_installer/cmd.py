@@ -41,9 +41,7 @@ def projector(ctx, config_directory):
     if not path.isdir(global_config.config_dir):  # first time run with this config
         init_config_dir()
         print("Please select IDE to install:")
-        do_install_app(None)
-        do_run_config(None)
-
+        do_install_app(None, auto_run=True)
     elif not ctx.invoked_subcommand:
         click.echo(ctx.get_help())
 
@@ -156,12 +154,13 @@ def show(config_name):
 @config.command(short_help='Add new configuration')
 @click.argument('config_name', type=click.STRING, required=False)
 @click.argument('ide_path', type=click.STRING, required=False)
-def add(config_name, ide_path):
+@click.option('--auto-run',  default=False, is_flag=True, help='Run new config without confirmation.')
+def add(config_name, ide_path, auto_run):
     """projector config add [config_name]
 
     Add a new configuration.
     """
-    do_add_config(config_name, ide_path)
+    do_add_config(config_name, ide_path, auto_run)
 
 
 @config.command(short_help='Remove configuration')

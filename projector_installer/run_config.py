@@ -26,6 +26,7 @@ from .global_config import get_run_configs_dir
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
 
+
 @dataclass
 class RunConfig:
     path_to_app: str
@@ -92,6 +93,10 @@ def get_run_configs(pattern=None):
             continue
 
         config = load_config(config_name)
+
+        if pattern == config_name:
+            return {config_name: config}
+
         res[config_name] = config
 
     return res

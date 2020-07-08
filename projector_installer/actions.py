@@ -19,6 +19,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import click
 from os import path
 
 from .apps import get_compatible_apps, download_app, unpack_app, get_app_path, get_installed_apps, get_product_info
@@ -100,7 +101,7 @@ def make_run_config(app_path=None):
     return RunConfig(app_path, "", projector_port, "localhost", http_port)
 
 
-def do_add_config(config_name, app_path=None):
+def do_add_config(config_name, app_path=None, auto_run=False):
     config_name = select_new_config_name(config_name)
 
     if config_name is None:
@@ -120,6 +121,11 @@ def do_add_config(config_name, app_path=None):
         sys.exit(1)
 
     save_config(config_name, run_config)
+
+    do_run = True if auto_run else click.prompt("Would you like to run new config? [y/n]", type=bool)
+
+    if do_run:
+        do_run_config(config_name)
 
 
 def do_remove_config(config_name=None):
@@ -173,7 +179,7 @@ def do_list_app(pattern=None):
     list_apps(pattern)
 
 
-def do_install_app(app_name):
+def do_install_app(app_name, auto_run=False):
     apps = get_compatible_apps(app_name)
 
     if len(apps) == 0:
@@ -212,8 +218,8 @@ def do_install_app(app_name):
     config_name = make_config_name(app_name)
     app_path = get_app_path(app_name)
     install_projector_markdown(app_path)
-    do_add_config(config_name, app_path)
     print("done.")
+    do_add_config(config_name, app_path, auto_run)
 
 
 def do_uninstall_app(app_name=None):
