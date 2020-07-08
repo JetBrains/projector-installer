@@ -5,23 +5,23 @@ Install, configure and run JetBrains IDEs with projector-server in Linux or [WSL
 ## Install
 To use projector-installer you need machine with Linux (or WSL) and with Python 3.6 or higher.
 
-### from PiPi
+### install from PiPi
 ```bash
 pip3 install projector-installer 
 ```
 
-### wheel from file 
+### install from wheel file 
 ```bash
 pip3 install projector_installer-VERSION-py3-none-any.whl
 ```
-### from source 
+### install from source 
 ```bash 
 git clone https://github.com/JetBrains/projector-installer.git
 cd projector-installer
 pip3 install .
 ```
 
-### in virtual environment
+### install in virtual environment
 
 ```commandline
 

@@ -62,6 +62,7 @@ class HttpServerProcess(Process):
         NoLogServer.address = self.address
         NoLogServer.http_port = self.port
         NoLogServer.projector_port = self.projector_port
+        socketserver.TCPServer.allow_reuse_address = True
 
         with socketserver.TCPServer((self.address, self.port), NoLogServer) as httpd:
             self.httpd = httpd
@@ -70,9 +71,12 @@ class HttpServerProcess(Process):
                 httpd.serve_forever()
             except:
                 httpd.shutdown()
+                httpd.server_close()
+                self.httpd = None
 
     def terminate(self) -> None:
         if self.httpd:
             self.httpd.shutdown()
+            self.httpd.server_close()
 
         super(HttpServerProcess, self).terminate()
