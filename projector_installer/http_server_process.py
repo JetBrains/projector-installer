@@ -41,10 +41,23 @@ class NoLogServer(SimpleHTTPRequestHandler):
     def redirect_url(cls):
         return f'http://{cls.address}:{cls.http_port}/index.html?port={cls.projector_port}'
 
+    def is_empty_path(self):
+        return not self.path or self.path == "/"
+
+    def path_contains_index_html(self):
+        return self.path.find("index.html") != -1
+
+    def path_contains_projector_port(self):
+        return self.path.find(f"port={NoLogServer.projector_port}") != -1
+
     def need_redirect(self):
-        ret = not self.path or self.path == "/" or self.path.find("index.html") != -1
-        ret = ret and self.path.find(f"port={NoLogServer.projector_port}") == -1
-        return ret
+        if self.is_empty_path():
+            return True
+
+        if not self.path_contains_index_html():
+            return False
+
+        return not self.path_contains_projector_port()
 
 
 class HttpServerProcess(Process):
