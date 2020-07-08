@@ -1,6 +1,5 @@
-.idea/shelf
-.idea/usage.statistics.xml
-.idea/workspace.xml
+.idea
+!.idea/copyright
 venv
 *.egg-info
 build
