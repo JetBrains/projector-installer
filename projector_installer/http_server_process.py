@@ -15,15 +15,19 @@
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""HTTP server process module."""
+
 from os import chdir
 from http.server import SimpleHTTPRequestHandler
 import socketserver
 from multiprocessing import Process
+import socket
 
 
 class NoLogServer(SimpleHTTPRequestHandler):
+    """Custom http server class to serve static projector client files."""
 
-    def log_message(self, format, *args):
+    def log_message(self, *args):
         pass
 
     def do_GET(self):
@@ -34,23 +38,28 @@ class NoLogServer(SimpleHTTPRequestHandler):
                 self.end_headers()
             else:
                 super(NoLogServer, self).do_GET()
-        except:
+        except socket.error:
             pass
 
     @classmethod
     def redirect_url(cls):
+        """Constructs redirect url."""
         return f'http://{cls.address}:{cls.http_port}/index.html?port={cls.projector_port}'
 
     def is_empty_path(self):
+        """Checks if current path is empty."""
         return not self.path or self.path == "/"
 
     def path_contains_index_html(self):
+        """Checks if path contains index.html"""
         return self.path.find("index.html") != -1
 
     def path_contains_projector_port(self):
+        """Checks if path contains projector port."""
         return self.path.find(f"port={NoLogServer.projector_port}") != -1
 
     def need_redirect(self):
+        """Checks if we need redirect request."""
         if self.is_empty_path():
             return True
 
@@ -61,6 +70,7 @@ class NoLogServer(SimpleHTTPRequestHandler):
 
 
 class HttpServerProcess(Process):
+    """Http server process class."""
 
     def __init__(self, address, port, directory, projector_port) -> object:
         super(HttpServerProcess, self).__init__(daemon=True)
@@ -82,7 +92,7 @@ class HttpServerProcess(Process):
 
             try:
                 httpd.serve_forever()
-            except:
+            except socket.error:
                 httpd.shutdown()
                 httpd.server_close()
                 self.httpd = None
