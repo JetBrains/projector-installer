@@ -16,13 +16,11 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from dataclasses import dataclass
-import requests
-import click
-from os.path import join, isfile, getsize, basename, expanduser, dirname
+from os.path import join, expanduser, dirname
 from os import listdir, chmod, stat
-import tarfile
 import json
-from .global_config import get_download_cache_dir, get_apps_dir, PROJECTOR_SERVER_DIR
+from .global_config import get_apps_dir, PROJECTOR_SERVER_DIR, COMPATIBLE_APPS
+from .utils import unpack_tar_file
 
 IDEA_RUN_CLASS = 'com.intellij.idea.Main'
 PROJECTOR_RUN_CLASS = 'org.jetbrains.projector.server.ProjectorLauncher'
@@ -30,25 +28,8 @@ IDEA_PLATFORM_PREFIX = 'idea.platform.prefix'
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
 
 
-@dataclass(frozen=True)
-class KnownApp:
-    name: str
-    url: str
-
-
-COMPATIBLE_APPS = [
-    KnownApp('IntelliJ IDEA Community 2019.3.4', 'https://download.jetbrains.com/idea/ideaIC-2019.3.4.tar.gz'),
-    KnownApp('IntelliJ IDEA Community 2020.1.1', 'https://download.jetbrains.com/idea/ideaIC-2020.1.1.tar.gz'),
-    KnownApp('IntelliJ IDEA Ultimate 2019.3.4', 'https://download.jetbrains.com/idea/ideaIU-2019.3.4.tar.gz'),
-    KnownApp('IntelliJ IDEA Community 2020.2 EAP', 'https://download.jetbrains.com/idea/ideaIC-202.5103.13.tar.gz'),
-    KnownApp('CLion 2019.3.5', 'https://download.jetbrains.com/cpp/CLion-2019.3.5.tar.gz'),
-    KnownApp('GoLand 2019.3.4', 'https://download.jetbrains.com/go/goland-2019.3.4.tar.gz'),
-    KnownApp('DataGrip 2019.3.4', 'https://download.jetbrains.com/datagrip/datagrip-2019.3.4.tar.gz'),
-    KnownApp('PhpStorm 2019.3.4', 'https://download.jetbrains.com/webide/PhpStorm-2019.3.4.tar.gz'),
-    KnownApp('PyCharm Community 2019.3.4', 'https://download.jetbrains.com/python/pycharm-community-2019.3.4.tar.gz'),
-    KnownApp('PyCharm Professional 2019.3.4',
-             'https://download.jetbrains.com/python/pycharm-professional-2019.3.4.tar.gz'),
-]
+def unpack_app(file_path):
+    unpack_tar_file(file_path, get_apps_dir())
 
 
 def get_installed_apps(pattern=None):
@@ -59,7 +40,8 @@ def get_installed_apps(pattern=None):
 
 
 def get_compatible_apps(pattern=None):
-    apps = [app for app in COMPATIBLE_APPS if pattern is None or app.name.lower().find(pattern.lower()) != -1]
+    apps = [app for app in COMPATIBLE_APPS if
+            pattern is None or app.name.lower().find(pattern.lower()) != -1]
 
     if pattern:
         for app in apps:  # handle exact match
@@ -73,49 +55,6 @@ def get_compatible_app_names(pattern=None):
     res = [app.name for app in get_compatible_apps(pattern)]
     res.sort()
     return res
-
-
-CHUNK_SIZE = 4 * 1024 * 1024
-PROGRESS_BAR_WIDTH = 50
-PROGRESS_BAR_TEMPLATE = "[%(bar)s]  %(info)s"
-
-
-def download_app(url):
-    parts = url.split("/")
-    file_name = parts[-1]
-    file_path = join(get_download_cache_dir(), file_name)
-
-    with requests.get(url, stream=True) as req:
-        req.raise_for_status()
-        total = int(req.headers['Content-Length'])
-
-        if not isfile(file_path) or getsize(file_path) != total:
-            click.echo(f'Downloading {file_name}')
-            with open(file_path, 'wb') as f, click.progressbar(length=total, width=PROGRESS_BAR_WIDTH,
-                                                               bar_template=PROGRESS_BAR_TEMPLATE) as bar:
-                for chunk in req.iter_content(CHUNK_SIZE):
-                    if chunk:
-                        f.write(chunk)
-                        bar.update(len(chunk))
-
-    return file_path
-
-
-def unpack_app(file_path):
-    print(f"Unpacking {basename(file_path)}")
-    tf = tarfile.open(file_path)
-    members = tf.getmembers()
-    app_name = members[0].name.split('/')[0]
-
-    if app_name in get_installed_apps():
-        return app_name
-
-    with click.progressbar(length=len(members), width=PROGRESS_BAR_WIDTH, bar_template=PROGRESS_BAR_TEMPLATE) as bar:
-        for m in members:
-            tf.extract(m, get_apps_dir())
-            bar.update(1)
-
-    return app_name
 
 
 def get_app_path(app_name):

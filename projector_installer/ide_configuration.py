@@ -15,17 +15,14 @@
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""
+Ide configuration routines.
+"""
+
 from .global_config import PROJECTOR_MARKDOWN_PLUGIN_DIR
 from .apps import get_config_dir, get_plugin_dir, get_bin_dir
 from os.path import join, isfile, isdir, basename, dirname
 from distutils.dir_util import copy_tree
-from pathlib import Path
-
-
-def create_dir_if_not_exist(dir_name):
-    if not isdir(dir_name):
-        p = Path(dir_name)
-        p.mkdir(parents=True, exist_ok=True)
 
 
 def is_disabled(file_name, plugin_name):
@@ -38,8 +35,8 @@ def is_disabled(file_name, plugin_name):
 
 
 def disable_plugin(file_name, plugin_name):
-    dir = dirname(file_name)
-    create_dir_if_not_exist(dir)
+    directory = dirname(file_name)
+    create_dir_if_not_exist(directory)
 
     with open(file_name, 'a') as f:
         f.write(f'{plugin_name}')
@@ -70,7 +67,7 @@ def install_projector_markdown_for(app_path):
 
 
 IDEA_PROPERTIES_FILE = 'idea.properties'
-FORBID_UPDATE_STRING = 'ide.no.platform.update=true'
+FORBID_UPDATE_STRING = 'ide.no.platform.update=Projector'
 
 
 def forbid_updates_for(app_path):

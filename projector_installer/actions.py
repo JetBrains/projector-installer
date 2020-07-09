@@ -16,13 +16,16 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """Real actions performed by projector script."""
 
-from .apps import get_compatible_apps, download_app, unpack_app, get_app_path, \
-    get_installed_apps, get_product_info
+from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
+    unpack_app
+
+from .utils import download_file
 
 from .dialogs import select_known_app, select_app_path, select_new_config_name, list_configs, \
     find_apps, select_http_port, select_projector_port, edit_config, list_apps, \
     select_installed_app, select_run_config, select_http_address
-from .global_config import HTTP_DIR
+
+from .global_config import HTTP_DIR, get_download_cache_dir
 from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, RunConfig, get_run_script, validate_run_config, \
@@ -238,7 +241,7 @@ def do_install_app(app_name, auto_run=False, allow_updates=False, run_browser=Tr
     print(f"Installing {app.name}")
 
     try:
-        path_to_dist = download_app(app.url)
+        path_to_dist = download_file(app.url, get_download_cache_dir())
     except Exception as e:
         print(f"Unable to download a file, try again later: {str(e)}. Exiting ...")
         sys.exit(1)
