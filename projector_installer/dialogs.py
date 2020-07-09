@@ -245,6 +245,10 @@ def select_http_address(default):
             return res
 
         click.echo("You entered incorrect address, please try again.")
+        click.echo("You can try to use one of these addresses:")
+        local_addreses = ['localhost'] + get_local_addresses()
+        for addr in local_addreses:
+            click.echo(addr)
 
 
 def select_http_port():
