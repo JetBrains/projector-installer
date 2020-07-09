@@ -37,7 +37,7 @@ def is_disabled(file_name, plugin_name):
 
 
 def disable_plugin(file_name, plugin_name):
-    """Disables specified pligin"""
+    """Disables specified plugin"""
     directory = dirname(file_name)
     create_dir_if_not_exist(directory)
 
