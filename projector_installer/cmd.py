@@ -21,7 +21,8 @@ import click
 from . import global_config
 from .global_config import init_config_dir
 
-from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, do_list_config, \
+from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
+    do_list_config, \
     do_show_config, do_add_config, do_remove_config, do_edit_config, do_rename_config
 
 
@@ -41,7 +42,7 @@ def projector(ctx, config_directory):
     if not path.isdir(global_config.config_dir):  # first time run with this config
         init_config_dir()
         print("Please select IDE to install:")
-        do_install_app(None, auto_run=True, allow_updates=False)
+        do_install_app(None, auto_run=True, allow_updates=False, run_browser=True)
     elif not ctx.invoked_subcommand:
         click.echo(ctx.get_help())
 
@@ -67,15 +68,19 @@ def find(pattern):
 
 @click.command(short_help='Install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
-@click.option('--auto-run', default=False, is_flag=True, help='Run installed IDE without confirmation.')
-@click.option('--allow-updates', default=False, is_flag=True, help='Allow updates of installed IDE.')
-def install_app(ide_name, auto_run, allow_updates):
+@click.option('--auto-run', default=False, is_flag=True,
+              help='Run installed IDE without confirmation.')
+@click.option('--allow-updates', default=False, is_flag=True,
+              help='Allow updates of installed IDE.')
+@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
+                                                               'environment.')
+def install_app(ide_name, auto_run, allow_updates, run_browser):
     """projector ide install [ide_name]
 
     Parameter ide_name is the name of IDE to install.
     If no IDE name is given or the pattern is ambiguous, guides the user through the install process.
     """
-    do_install_app(ide_name, auto_run, allow_updates)
+    do_install_app(ide_name, auto_run, allow_updates, run_browser)
 
 
 ide.add_command(install_app, name='install')
@@ -116,13 +121,15 @@ def config():
 
 @click.command(short_help='Run selected config')
 @click.argument('config_name', type=click.STRING, required=False)
-def run_config(config_name):
+@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
+                                                               'environment.')
+def run_config(config_name, run_browser):
     """projector config run config_name_pattern
 
     Parameter config_name_pattern specifies the configuration to run.
     If no configuration specified or the pattern is ambiguous, selects a configuration interactively.
     """
-    do_run_config(config_name)
+    do_run_config(config_name, run_browser)
 
 
 config.add_command(run_config, name='run')
@@ -156,13 +163,16 @@ def show(config_name):
 @config.command(short_help='Add new configuration')
 @click.argument('config_name', type=click.STRING, required=False)
 @click.argument('ide_path', type=click.STRING, required=False)
-@click.option('--auto-run', default=False, is_flag=True, help='Run new config without confirmation.')
-def add(config_name, ide_path, auto_run):
+@click.option('--auto-run', default=False, is_flag=True,
+              help='Run new config without confirmation.')
+@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
+                                                               'environment.')
+def add(config_name, ide_path, auto_run, run_browser):
     """projector config add [config_name]
 
     Add a new configuration.
     """
-    do_add_config(config_name, ide_path, auto_run)
+    do_add_config(config_name, ide_path, auto_run, run_browser)
 
 
 @config.command(short_help='Remove configuration')
@@ -200,24 +210,30 @@ def rename(from_name, to_name):
 
 @projector.command(short_help='Run selected configuration')
 @click.argument('config_name', type=click.STRING, required=False)
-def run(config_name):
+@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
+                                                               'environment.')
+def run(config_name, run_browser):
     """projector run config_name
 
     Shortcut for projector config run config_name
     """
-    do_run_config(config_name)
+    do_run_config(config_name, run_browser)
 
 
 @projector.command(short_help='Install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
-@click.option('--auto-run', default=False, is_flag=True, help='Run installed ide without confirmation.')
-@click.option('--allow-updates', default=False, is_flag=True, help='Allow updates of installed IDE.')
-def install(ide_name, auto_run, allow_updates):
+@click.option('--auto-run', default=False, is_flag=True,
+              help='Run installed ide without confirmation.')
+@click.option('--allow-updates', default=False, is_flag=True,
+              help='Allow updates of installed IDE.')
+@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
+                                                               'environment.')
+def install(ide_name, auto_run, allow_updates, run_browser):
     """projector install [ide_name]
 
     Shortcut for projector ide install [ide_name]
     """
-    do_install_app(ide_name, auto_run, allow_updates)
+    do_install_app(ide_name, auto_run, allow_updates, run_browser)
 
 
 @projector.command(short_help='Find available IDEs')

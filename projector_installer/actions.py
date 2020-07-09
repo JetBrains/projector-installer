@@ -28,7 +28,7 @@ from .ide_configuration import install_projector_markdown_for, forbid_updates_fo
 from .run_config import get_run_configs, RunConfig, get_run_script, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app
 
-from os import path
+from os import path, system, uname
 import shutil
 import signal
 import subprocess
@@ -59,8 +59,18 @@ def do_show_config(config_name=None):
           f"build={product_info.build_number}")
 
 
+def is_wsl():
+    """Returns True if script is run in WSL environment."""
+    return uname().release.find('microsoft') != -1
+
+
+def do_run_browser(url):
+    """Starts default browser and opens provided url in WSL."""
+    system(f'cmd.exe /c start {url} 2> nul')
+
+
 # noinspection PyShadowingNames
-def do_run_config(config_name=None):
+def do_run_config(config_name=None, run_browser=True):
     """Executes specified config. If given name does not specify
     config, runs interactive selection procedure."""
     config_name, run_config = select_run_config(config_name)
@@ -77,6 +87,7 @@ def do_run_config(config_name=None):
                                      run_config.projector_port)
 
     def signal_handler(*args):
+        # pylint: disable=unused-argument
         if http_process and http_process.is_alive():
             http_process.terminate()
 
@@ -91,10 +102,16 @@ def do_run_config(config_name=None):
     print(f"To access your IDE, open {access_url} in your browser")
     print('Exit IDE or press Ctrl+C to stop Projector.')
 
-    # if uname().release.find('microsoft') != -1:  # wsl
-    #     system(f'cmd.exe /c start {access_url}')
+    projector_process = subprocess.Popen([f"{run_script_name}"], stdout=subprocess.DEVNULL,
+                                         stderr=subprocess.DEVNULL)
 
-    subprocess.call([f"{run_script_name}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if run_browser:
+        if is_wsl() and run_config.http_address == 'localhost':
+            do_run_browser(access_url)
+
+    projector_process.wait()
+
+    print('Exiting...')
 
     if http_process and http_process.is_alive():
         http_process.terminate()
@@ -116,7 +133,7 @@ def make_run_config(app_path=None):
     return RunConfig(app_path, "", projector_port, http_address, http_port)
 
 
-def do_add_config(config_name, app_path=None, auto_run=False):
+def do_add_config(config_name, app_path=None, auto_run=False, run_browser=True):
     """Adds new run config. If auto_run = True, runs it without questions.
     Asks user otherwise.
     """
@@ -144,7 +161,7 @@ def do_add_config(config_name, app_path=None, auto_run=False):
                                                 type=bool)
 
     if do_run:
-        do_run_config(config_name)
+        do_run_config(config_name, run_browser)
 
 
 def do_remove_config(config_name=None):
@@ -196,7 +213,7 @@ def do_list_app(pattern=None):
     list_apps(pattern)
 
 
-def do_install_app(app_name, auto_run=False, allow_updates=False):
+def do_install_app(app_name, auto_run=False, allow_updates=False, run_browser=True):
     apps = get_compatible_apps(app_name)
 
     if len(apps) == 0:
@@ -240,7 +257,7 @@ def do_install_app(app_name, auto_run=False, allow_updates=False):
         forbid_updates_for(app_path)
 
     print("done.")
-    do_add_config(config_name, app_path, auto_run)
+    do_add_config(config_name, app_path, auto_run, run_browser)
 
 
 def do_uninstall_app(app_name=None):
