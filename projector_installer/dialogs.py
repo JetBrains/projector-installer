@@ -19,7 +19,8 @@ import sys
 import click
 import netifaces
 from .apps import get_installed_apps, get_app_path, get_compatible_app_names
-from .run_config import get_run_configs, RunConfig, get_used_http_ports, get_used_projector_ports, get_run_config_names
+from .run_config import get_run_configs, RunConfig, get_used_http_ports, get_used_projector_ports, \
+    get_run_config_names
 from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
 
 
@@ -195,13 +196,43 @@ def select_app_path():
     return None
 
 
+def get_all_listening_ports():
+    """
+    Returns all tcp port numbers in LISTEN state (on any address).
+    Reads port state from /proc/net/tcp.
+    """
+    res = []
+
+    with open('/proc/net/tcp', 'r') as f:
+        next(f)
+        for line in f:
+            split_line = line.strip().split(' ')
+            hex_port = split_line[1].split(':')[1]
+            hex_state = split_line[3]
+
+            if hex_state == '0A':
+                res.append(int(hex_port, 16))
+
+    return res
+
+
+def is_open_port(port):
+    """ Checks if tcp port is LISTEN state in system."""
+    return port in get_all_listening_ports()
+
+
 def get_def_port(ports, default):
-    if len(ports) == 0:
-        return default
+    """Returns default or first unused in system and in run configs port."""
+    port = default
 
-    ports.sort()
+    if len(ports) > 0:
+        ports.sort()
+        port = ports[-1] + 1
 
-    return ports[-1] + 1
+    while is_open_port(port):
+        port += 1
+
+    return port
 
 
 def get_def_http_port():
@@ -239,15 +270,16 @@ def check_listening_address(address):
 
 def select_http_address(default):
     while True:
-        res = click.prompt("Enter HTTP listening address (press ENTER for default)", default=default)
+        res = click.prompt("Enter HTTP listening address (press ENTER for default)",
+                           default=default)
 
         if check_listening_address(res):
             return res
 
         click.echo("You entered incorrect address, please try again.")
         click.echo("You can try to use one of these addresses:")
-        local_addreses = ['localhost'] + get_local_addresses()
-        for addr in local_addreses:
+        local_addresses = ['localhost'] + get_local_addresses()
+        for addr in local_addresses:
             click.echo(addr)
 
 
