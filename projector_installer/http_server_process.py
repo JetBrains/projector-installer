@@ -48,15 +48,15 @@ class NoLogServer(SimpleHTTPRequestHandler):
 
     def is_empty_path(self):
         """Checks if current path is empty."""
-        return not self.path or self.path == "/"
+        return not self.path or self.path == '/'
 
     def path_contains_index_html(self):
         """Checks if path contains index.html"""
-        return self.path.find("index.html") != -1
+        return self.path.find('index.html') != -1
 
     def path_contains_projector_port(self):
         """Checks if path contains projector port."""
-        return self.path.find(f"port={NoLogServer.projector_port}") != -1
+        return self.path.find(f'port={NoLogServer.projector_port}') != -1
 
     def need_redirect(self):
         """Checks if we need redirect request."""
