@@ -15,6 +15,8 @@
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+"""Command line interface to projector-installer"""
+
 from os import path
 import click
 
@@ -24,6 +26,11 @@ from .global_config import init_config_dir, init_compatible_apps
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
     do_rename_config
+
+
+def is_first_start():
+    """Detects first app start."""
+    return not path.isdir(global_config.config_dir)
 
 
 @click.group(invoke_without_command=True)
@@ -39,9 +46,9 @@ def projector(ctx, config_directory):
 
     global_config.config_dir = config_directory
 
-    if not path.isdir(global_config.config_dir):  # first time run with this config
+    if is_first_start():
         init_config_dir()
-        print("Please select IDE to install:")
+        print('Please select IDE to install:')
         do_install_app(None, auto_run=True, allow_updates=False, run_browser=True)
     elif not ctx.invoked_subcommand:
         click.echo(ctx.get_help())
@@ -54,18 +61,20 @@ def ide():
     """
     JetBrains IDEs management commands
     """
-    pass
 
 
 @ide.command(short_help='Find Projector-compatible IDE')
 @click.argument('pattern', type=click.STRING, required=False)
-def find(pattern):
+def find_app(pattern):
     """projector ide find [pattern]
 
     Find projector-compatible IDE with the name matching to the given pattern.
     If no pattern is specified, finds all the compatible IDEs.
     """
     do_find_app(pattern)
+
+
+ide.add_command(find_app, name='find')
 
 
 @click.command(short_help='Install and configure selected IDE')
@@ -80,7 +89,8 @@ def install_app(ide_name, auto_run, allow_updates, run_browser):
     """projector ide install [ide_name]
 
     Parameter ide_name is the name of IDE to install.
-    If no IDE name is given or the pattern is ambiguous, guides the user through the install process.
+    If no IDE name is given or the pattern is ambiguous, guides the user through the \
+    install process.
     """
     do_install_app(ide_name, auto_run, allow_updates, run_browser)
 
@@ -94,7 +104,8 @@ def uninstall(name_pattern):
     """projector ide install [ide_name_pattern]
 
     Parameter ide_name_pattern is matched to the name of IDE to uninstall.
-    If no name pattern is given or the pattern is ambiguous, guides the user through the uninstall process.
+    If no name pattern is given or the pattern is ambiguous, guides the user through the \
+    uninstall process.
     """
     do_uninstall_app(name_pattern)
 
@@ -118,7 +129,6 @@ def config():
     """
     Configuration management commands
     """
-    pass
 
 
 @click.command(short_help='Run selected config')
@@ -129,7 +139,8 @@ def run_config(config_name, run_browser):
     """projector config run config_name_pattern
 
     Parameter config_name_pattern specifies the configuration to run.
-    If no configuration specified or the pattern is ambiguous, selects a configuration interactively.
+    If no configuration specified or the pattern is ambiguous, selects a configuration \
+    interactively.
     """
     do_run_config(config_name, run_browser)
 
