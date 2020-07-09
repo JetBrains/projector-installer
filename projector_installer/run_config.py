@@ -134,7 +134,7 @@ def is_known_config(config_name):
 
 def validate_run_config(run_config):
     if not isdir(run_config.path_to_app):
-        raise Exception(f"IDE path does not exist: {run_config.path_to_app}")
+        raise IsADirectoryError(f"IDE path does not exist: {run_config.path_to_app}")
 
 
 def get_used_http_ports():

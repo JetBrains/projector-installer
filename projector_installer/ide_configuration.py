@@ -19,27 +19,30 @@
 Ide configuration routines.
 """
 
+from os.path import join, isfile, basename, dirname
+from distutils.dir_util import copy_tree
 from .global_config import PROJECTOR_MARKDOWN_PLUGIN_DIR
 from .apps import get_config_dir, get_plugin_dir, get_bin_dir
-from os.path import join, isfile, isdir, basename, dirname
-from distutils.dir_util import copy_tree
+from .utils import create_dir_if_not_exist
 
 
 def is_disabled(file_name, plugin_name):
+    """Checks if given plugin is already disabled"""
     if not isfile(file_name):
         return False
 
-    with open(file_name, 'r') as f:
-        lines = [line.strip() for line in f]
+    with open(file_name, 'r') as file:
+        lines = [line.strip() for line in file]
         return plugin_name in lines
 
 
 def disable_plugin(file_name, plugin_name):
+    """Disables specified pligin"""
     directory = dirname(file_name)
     create_dir_if_not_exist(directory)
 
-    with open(file_name, 'a') as f:
-        f.write(f'{plugin_name}')
+    with open(file_name, 'a') as file:
+        file.write(f'{plugin_name}')
 
 
 DISABLED_PLUGINS_FILE = 'disabled_plugins.txt'
@@ -47,6 +50,7 @@ MARKDOWN_PLUGIN_NAME = 'org.intellij.plugins.markdown'
 
 
 def disable_markdown_plugin(app_path):
+    """Disables markdown plugin"""
     config_dir = get_config_dir(app_path)
     file_name = join(config_dir, DISABLED_PLUGINS_FILE)
 
@@ -55,6 +59,7 @@ def disable_markdown_plugin(app_path):
 
 
 def install_own_markdown_plugin(app_path):
+    """Install projector markdown plugin"""
     destination_dir = get_plugin_dir(app_path)
     destination_dir = join(destination_dir, basename(PROJECTOR_MARKDOWN_PLUGIN_DIR))
 
@@ -62,6 +67,7 @@ def install_own_markdown_plugin(app_path):
 
 
 def install_projector_markdown_for(app_path):
+    """Install projector markdown plugin for specified application."""
     disable_markdown_plugin(app_path)
     install_own_markdown_plugin(app_path)
 
@@ -71,8 +77,9 @@ FORBID_UPDATE_STRING = 'ide.no.platform.update=Projector'
 
 
 def forbid_updates_for(app_path):
+    """Forbids IDEA platform update for specified app."""
     bin_dir = get_bin_dir(app_path)
     prop_file = join(bin_dir, IDEA_PROPERTIES_FILE)
 
-    with open(prop_file, 'a') as f:
-        f.write(f'{FORBID_UPDATE_STRING}')
+    with open(prop_file, 'a') as file:
+        file.write(f'{FORBID_UPDATE_STRING}')

@@ -154,8 +154,8 @@ def do_add_config(config_name, app_path=None, auto_run=False, run_browser=True):
 
     try:
         validate_run_config(run_config)
-    except Exception as e:
-        print(f"Wrong configuration parameters: {str(e)}, exiting ...")
+    except IsADirectoryError as exception:
+        print(f"Wrong configuration parameters: {str(exception)}, exiting ...")
         sys.exit(1)
 
     save_config(config_name, run_config)
@@ -168,6 +168,7 @@ def do_add_config(config_name, app_path=None, auto_run=False, run_browser=True):
 
 
 def do_remove_config(config_name=None):
+    """Selects (if necessary) and removes selected run config."""
     config_name, _ = select_run_config(config_name)
     print(f"Removing configuration {config_name}")
     delete_config(config_name)
@@ -175,14 +176,15 @@ def do_remove_config(config_name=None):
 
 
 def do_edit_config(config_name=None):
+    """Selects (if necessary) and edits selected run config."""
     config_name, run_config = select_run_config(config_name)
     print(f"Edit configuration {config_name}")
     run_config = edit_config(run_config)
 
     try:
         validate_run_config(run_config)
-    except Exception as e:
-        print(f"Wrong configuration parameters: {str(e)}, exiting ...")
+    except IsADirectoryError as exception:
+        print(f"Wrong configuration parameters: {str(exception)}, exiting ...")
         sys.exit(1)
 
     save_config(config_name, run_config)
@@ -191,18 +193,19 @@ def do_edit_config(config_name=None):
 
 
 def do_rename_config(from_name, to_name):
+    """Renames run config."""
     run_configs = get_run_configs()
 
     if from_name not in run_configs:
-        print(f"Configuration name {from_name} does not exist, exiting...")
+        print(f'Configuration name {from_name} does not exist, exiting...')
         sys.exit(1)
 
     if from_name == to_name:
-        print(f"Cannot rename configuration to the same name, exiting...")
+        print('Cannot rename configuration to the same name, exiting...')
         sys.exit(1)
 
     if to_name in run_configs:
-        print(f"Cannot rename to {to_name} - the configuration already exists, exiting...")
+        print(f'Cannot rename to {to_name} - the configuration already exists, exiting...')
         sys.exit(1)
 
     rename_config(from_name, to_name)

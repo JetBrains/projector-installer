@@ -29,7 +29,7 @@ IDEA_PATH_SELECTOR = 'idea.paths.selector'
 
 
 def unpack_app(file_path):
-    unpack_tar_file(file_path, get_apps_dir())
+    return unpack_tar_file(file_path, get_apps_dir())
 
 
 def get_installed_apps(pattern=None):
