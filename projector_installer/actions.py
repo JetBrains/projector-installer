@@ -16,6 +16,16 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """Real actions performed by projector script."""
 
+from os import path, system, uname
+
+import shutil
+import signal
+import subprocess
+import sys
+
+from requests import HTTPError
+import click
+
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app
 
@@ -31,13 +41,6 @@ from .ide_configuration import install_projector_markdown_for, forbid_updates_fo
 from .run_config import get_run_configs, RunConfig, get_run_script, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app
 
-from os import path, system, uname
-import shutil
-import signal
-import subprocess
-import sys
-import click
-
 
 def do_list_config(pattern=None):
     """Displays existing run configs names."""
@@ -50,16 +53,16 @@ def do_show_config(config_name=None):
      procedure to select it.
     """
     config_name, run_config = select_run_config(config_name)
-    print(f"Configuration: {config_name}")
-    print(f"IDE path: {run_config.path_to_app}")
-    print(f"HTTP address: {run_config.http_address}")
-    print(f"HTTP port: {run_config.http_port}")
-    print(f"Projector port: {run_config.projector_port}")
+    print(f'Configuration: {config_name}')
+    print(f'IDE path: {run_config.path_to_app}')
+    print(f'HTTP address: {run_config.http_address}')
+    print(f'HTTP port: {run_config.http_port}')
+    print(f'Projector port: {run_config.projector_port}')
 
     product_info = get_product_info(run_config.path_to_app)
-    print(f"Product info: {product_info.name}, "
-          f"version={product_info.version}, "
-          f"build={product_info.build_number}")
+    print(f'Product info: {product_info.name}, '
+          f'version={product_info.version}, '
+          f'build={product_info.build_number}')
 
 
 def is_wsl():
@@ -78,12 +81,12 @@ def do_run_config(config_name=None, run_browser=True):
     config, runs interactive selection procedure."""
     config_name, run_config = select_run_config(config_name)
 
-    print(f"Configuration name: {config_name}")
+    print(f'Configuration name: {config_name}')
     run_script_name = get_run_script(config_name)
 
     if not path.isfile(run_script_name):
-        print(f"Cannot find file {run_script_name}")
-        print(f"To fix, try: projector config edit {config_name}")
+        print(f'Cannot find file {run_script_name}')
+        print(f'To fix, try: projector config edit {config_name}')
         return
 
     http_process = HttpServerProcess(run_config.http_address, run_config.http_port, HTTP_DIR,
@@ -101,11 +104,11 @@ def do_run_config(config_name=None, run_browser=True):
 
     http_process.start()
     access_url = f'http://{run_config.http_address}:{run_config.http_port}/'
-    print(f"HTTP process PID={http_process.pid}")
-    print(f"To access your IDE, open {access_url} in your browser")
+    print(f'HTTP process PID={http_process.pid}')
+    print(f'To access your IDE, open {access_url} in your browser')
     print('Exit IDE or press Ctrl+C to stop Projector.')
 
-    projector_process = subprocess.Popen([f"{run_script_name}"], stdout=subprocess.DEVNULL,
+    projector_process = subprocess.Popen([f'{run_script_name}'], stdout=subprocess.DEVNULL,
                                          stderr=subprocess.DEVNULL)
 
     if run_browser:
@@ -126,14 +129,14 @@ def make_run_config(app_path=None):
         app_path = select_app_path()
 
     if app_path is None:
-        print("IDE was not selected, exiting...")
+        print('IDE was not selected, exiting...')
         sys.exit(1)
 
     http_address = select_http_address('localhost')
     http_port = select_http_port()
     projector_port = select_projector_port()
 
-    return RunConfig(app_path, "", projector_port, http_address, http_port)
+    return RunConfig(app_path, '', projector_port, http_address, http_port)
 
 
 def do_add_config(config_name, app_path=None, auto_run=False, run_browser=True):
@@ -143,24 +146,24 @@ def do_add_config(config_name, app_path=None, auto_run=False, run_browser=True):
     config_name = select_new_config_name(config_name)
 
     if config_name is None:
-        print("Configuration name was not selected, exiting...")
+        print('Configuration name was not selected, exiting...')
         sys.exit(1)
 
     run_config = make_run_config(app_path)
 
     if run_config.path_to_app is None:
-        print("IDE was not selected, exiting...")
+        print('IDE was not selected, exiting...')
         sys.exit(1)
 
     try:
         validate_run_config(run_config)
     except IsADirectoryError as exception:
-        print(f"Wrong configuration parameters: {str(exception)}, exiting ...")
+        print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
         sys.exit(1)
 
     save_config(config_name, run_config)
 
-    do_run = True if auto_run else click.prompt("Would you like to run new config? [y/n]",
+    do_run = True if auto_run else click.prompt('Would you like to run new config? [y/n]',
                                                 type=bool)
 
     if do_run:
@@ -170,26 +173,26 @@ def do_add_config(config_name, app_path=None, auto_run=False, run_browser=True):
 def do_remove_config(config_name=None):
     """Selects (if necessary) and removes selected run config."""
     config_name, _ = select_run_config(config_name)
-    print(f"Removing configuration {config_name}")
+    print(f'Removing configuration {config_name}')
     delete_config(config_name)
-    print("done.")
+    print('done.')
 
 
 def do_edit_config(config_name=None):
     """Selects (if necessary) and edits selected run config."""
     config_name, run_config = select_run_config(config_name)
-    print(f"Edit configuration {config_name}")
+    print(f'Edit configuration {config_name}')
     run_config = edit_config(run_config)
 
     try:
         validate_run_config(run_config)
     except IsADirectoryError as exception:
-        print(f"Wrong configuration parameters: {str(exception)}, exiting ...")
+        print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
         sys.exit(1)
 
     save_config(config_name, run_config)
 
-    print("done.")
+    print('done.')
 
 
 def do_rename_config(from_name, to_name):
@@ -212,28 +215,31 @@ def do_rename_config(from_name, to_name):
 
 
 def do_find_app(pattern=None):
+    """Prints known projector-compatible apps."""
     find_apps(pattern)
 
 
 def do_list_app(pattern=None):
+    """Prints apps installed by projector."""
     list_apps(pattern)
 
 
 def do_install_app(app_name, auto_run=False, allow_updates=False, run_browser=True):
+    """Installs specified app."""
     apps = get_compatible_apps(app_name)
 
     if len(apps) == 0:
-        print("There are no known IDEs matched to the given name.")
+        print('There are no known IDEs matched to the given name.')
         if app_name is None:
-            print("Try to reinstall Projector.")
-        print("Exiting...")
+            print('Try to reinstall Projector.')
+        print('Exiting...')
         sys.exit(1)
 
     if len(apps) > 1:
         app_name = select_known_app(app_name)
 
         if app_name is None:
-            print("IDE was not selected, exiting...")
+            print('IDE was not selected, exiting...')
             sys.exit(1)
     else:
         app_name = apps[0].name
@@ -241,18 +247,21 @@ def do_install_app(app_name, auto_run=False, allow_updates=False, run_browser=Tr
     apps = get_compatible_apps(app_name)
     app = apps[0]
 
-    print(f"Installing {app.name}")
+    print(f'Installing {app.name}')
 
     try:
         path_to_dist = download_file(app.url, get_download_cache_dir())
-    except Exception as e:
-        print(f"Unable to download a file, try again later: {str(e)}. Exiting ...")
+    except HTTPError as http:
+        print(f'Unable to download a file, try again later: {str(http)}. Exiting ...')
+        sys.exit(1)
+    except IOError as error:
+        print(f'Unable to write downloaded file, try again later: {str(error)}. Exiting ...')
         sys.exit(1)
 
     try:
         app_name = unpack_app(path_to_dist)
-    except Exception as e:
-        print(f"Unable to extract the archive: {str(e)}. Exiting...")
+    except IOError as error:
+        print(f'Unable to extract the archive: {str(error)}. Exiting...')
         sys.exit(1)
 
     config_name = make_config_name(app_name)
@@ -262,15 +271,16 @@ def do_install_app(app_name, auto_run=False, allow_updates=False, run_browser=Tr
     if not allow_updates:
         forbid_updates_for(app_path)
 
-    print("done.")
+    print('done.')
     do_add_config(config_name, app_path, auto_run, run_browser)
 
 
 def do_uninstall_app(app_name=None):
+    """Uninstalls specified app."""
     apps = get_installed_apps(app_name)
 
     if len(apps) == 0:
-        print("There are no installed apps matched the given name. Exiting...")
+        print('There are no installed apps matched the given name. Exiting...')
         sys.exit(1)
 
     if len(apps) > 1:
@@ -279,19 +289,19 @@ def do_uninstall_app(app_name=None):
         app_name = apps[0]
 
     if app_name is None:
-        print("IDE was not selected, exiting...")
+        print('IDE was not selected, exiting...')
         sys.exit(1)
 
     configs = get_configs_with_app(app_name)
 
     if configs:
-        print(f"Unable to uninstall {app_name} - there are configurations with this IDE:")
-        for c in configs:
-            print(c)
-        print("Try to remove configurations first. Exiting...")
+        print(f'Unable to uninstall {app_name} - there are configurations with this IDE:')
+        for config in configs:
+            print(config)
+        print('Try to remove configurations first. Exiting...')
         sys.exit(1)
 
-    print(f"Uninstalling {app_name}")
-    p = get_app_path(app_name)
-    shutil.rmtree(p)
-    print("done.")
+    print(f'Uninstalling {app_name}')
+    app_path = get_app_path(app_name)
+    shutil.rmtree(app_path)
+    print('done.')

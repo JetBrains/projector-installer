@@ -18,20 +18,20 @@
 """
 Global configuration constants, variables and functions.
 """
+
 import json
 import sys
-from dataclasses import dataclass
 from os import listdir, mkdir
 from os.path import dirname, join, expanduser, abspath
 from shutil import copyfile
-
+from dataclasses import dataclass
 from .utils import download_file, get_file_name_from_url
 
-USER_HOME = expanduser("~")
+USER_HOME = expanduser('~')
 INSTALL_DIR = dirname(abspath(__file__))
 HTTP_DIR = join(INSTALL_DIR, 'bundled', 'client')
 PROJECTOR_SERVER_DIR = join(INSTALL_DIR, 'bundled', 'server')
-PROJECTOR_MARKDOWN_PLUGIN_DIR = join(INSTALL_DIR, "bundled", "projector-markdown-plugin")
+PROJECTOR_MARKDOWN_PLUGIN_DIR = join(INSTALL_DIR, 'bundled', 'projector-markdown-plugin')
 DEF_HTTP_PORT = 8889
 DEF_PROJECTOR_PORT = 9999
 COMPATIBLE_IDE_FILE = 'compatible_ide.json'
@@ -51,7 +51,7 @@ def get_server_file_name():
 try:
     SERVER_JAR = get_server_file_name()
 except FileNotFoundError:
-    print("Cannot find a Projector server. Please reinstall Projector.")
+    print('Cannot find a Projector server. Please reinstall Projector.')
     sys.exit(2)
 
 DEF_CONFIG_DIR = '.projector'
@@ -61,22 +61,22 @@ config_dir = join(USER_HOME, DEF_CONFIG_DIR)
 
 def get_apps_dir():
     """Returns full path to applications directory."""
-    return join(config_dir, "apps")
+    return join(config_dir, 'apps')
 
 
 def get_run_configs_dir():
     """Returns full path to run configs directory."""
-    return join(config_dir, "configs")
+    return join(config_dir, 'configs')
 
 
 def get_download_cache_dir():
     """Returns full path to download cache directory."""
-    return join(config_dir, "cache")
+    return join(config_dir, 'cache')
 
 
 def get_lib_dir():
     """Returns full path to lib directory."""
-    return join(config_dir, "lib")
+    return join(config_dir, 'lib')
 
 
 def get_compatible_ide_file():
@@ -98,6 +98,7 @@ def download_compatible_ide_file():
 
 
 def copy_compatible_ide_file():
+    """Copy compatible ide file from module to lib dir."""
     source = join(INSTALL_DIR, COMPATIBLE_IDE_FILE)
     destination = join(get_lib_dir(), COMPATIBLE_IDE_FILE)
     copyfile(source, destination)
@@ -130,7 +131,7 @@ def init_compatible_apps():
     try:
         load_compatible_apps()
     except IOError:
-        print("Cannot load compatible ide file, exiting...")
+        print('Cannot load compatible ide file, exiting...')
         sys.exit(2)
 
 
