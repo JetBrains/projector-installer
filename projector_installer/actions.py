@@ -31,7 +31,7 @@ from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_pro
 
 from .utils import download_file
 
-from .dialogs import select_known_app, select_app_path, select_new_config_name, list_configs, \
+from .dialogs import select_compatible_app, select_app_path, select_new_config_name, list_configs, \
     find_apps, select_http_port, select_projector_port, edit_config, list_apps, \
     select_installed_app, select_run_config, select_http_address
 
@@ -236,7 +236,7 @@ def do_install_app(app_name, auto_run=False, allow_updates=False, run_browser=Tr
         sys.exit(1)
 
     if len(apps) > 1:
-        app_name = select_known_app(app_name)
+        app_name = select_compatible_app(app_name)
 
         if app_name is None:
             print('IDE was not selected, exiting...')
