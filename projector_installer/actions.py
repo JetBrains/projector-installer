@@ -72,7 +72,7 @@ def is_wsl():
 
 def do_run_browser(url):
     """Starts default browser and opens provided url in WSL."""
-    system(f'cmd.exe /c start {url} 2> nul')
+    system(f'cmd.exe /c start {url} 2> /dev/null')
 
 
 # noinspection PyShadowingNames
