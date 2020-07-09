@@ -65,6 +65,10 @@ projector config add --help
 
 ### Shortcut commands
 
+To simplify usage most useful commands have shortcuts. In simple cases 
+(when you have the only IDE installed, or you do not run several IDE instances simultaneously) 
+it is enough to use a couple of shortcut commands, such as install and run.
+
 - find  - find available IDEs (a shortcut for 'ide find')
  
 - install - install IDE (a shortcut for 'ide install')
@@ -99,10 +103,6 @@ finds all Projector-compatible IDEs which have 'goland' in their names.
    ``` 
     
 runs the configuration with name 'goland'
-
-To simplify usage most useful commands have shortcuts. In simple cases 
-(when you have the only IDE installed, or you do not run several IDE instances simultaneously) 
-it is enough to use a couple of shortcut commands, such as install and run.
 
 
 ### IDE commands
