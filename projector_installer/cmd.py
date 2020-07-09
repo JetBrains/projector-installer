@@ -89,7 +89,7 @@ def install_app(ide_name, auto_run, allow_updates, run_browser):
     """projector ide install [ide_name]
 
     Parameter ide_name is the name of IDE to install.
-    If no IDE name is given or the pattern is ambiguous, guides the user through the \
+    If no IDE name is given or the pattern is ambiguous, guides the user through the
     install process.
     """
     do_install_app(ide_name, auto_run, allow_updates, run_browser)
@@ -104,7 +104,7 @@ def uninstall(name_pattern):
     """projector ide install [ide_name_pattern]
 
     Parameter ide_name_pattern is matched to the name of IDE to uninstall.
-    If no name pattern is given or the pattern is ambiguous, guides the user through the \
+    If no name pattern is given or the pattern is ambiguous, guides the user through the
     uninstall process.
     """
     do_uninstall_app(name_pattern)
@@ -139,7 +139,7 @@ def run_config(config_name, run_browser):
     """projector config run config_name_pattern
 
     Parameter config_name_pattern specifies the configuration to run.
-    If no configuration specified or the pattern is ambiguous, selects a configuration \
+    If no configuration specified or the pattern is ambiguous, selects a configuration
     interactively.
     """
     do_run_config(config_name, run_browser)
