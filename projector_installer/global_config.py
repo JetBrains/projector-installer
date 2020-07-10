@@ -32,6 +32,7 @@ INSTALL_DIR = dirname(abspath(__file__))
 DEF_HTTP_PORT = 8889
 DEF_PROJECTOR_PORT = 9999
 COMPATIBLE_IDE_FILE = 'compatible_ide.json'
+PROJECTOR_LOG_FILE = 'projector.log'
 DEF_CONFIG_DIR = '.projector'
 config_dir = join(USER_HOME, DEF_CONFIG_DIR)
 
@@ -39,6 +40,11 @@ config_dir = join(USER_HOME, DEF_CONFIG_DIR)
 def get_path_to_license():
     """Returns full path to license file"""
     return join(INSTALL_DIR, 'LICENSE.txt')
+
+
+def get_path_to_projector_log():
+    """Returns full path to projector log file"""
+    return join(config_dir, PROJECTOR_LOG_FILE)
 
 
 def get_apps_dir():

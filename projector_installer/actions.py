@@ -35,7 +35,7 @@ from .dialogs import select_compatible_app, select_app_path, select_new_config_n
     find_apps, select_http_port, select_projector_port, edit_config, list_apps, \
     select_installed_app, select_run_config, select_http_address
 
-from .global_config import get_http_dir, get_download_cache_dir
+from .global_config import get_http_dir, get_download_cache_dir, get_path_to_projector_log
 from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, RunConfig, get_run_script, validate_run_config, \
@@ -87,10 +87,15 @@ def do_run_config(config_name=None, run_browser=True):
     if not path.isfile(run_script_name):
         print(f'Cannot find file {run_script_name}')
         print(f'To fix, try: projector config edit {config_name}')
-        return
+        sys.exit(1)
 
-    projector_process = subprocess.Popen([f'{run_script_name}'], stdout=subprocess.DEVNULL,
-                                         stderr=subprocess.DEVNULL)
+    projector_log = open(get_path_to_projector_log(), 'a')
+
+    # projector_process = subprocess.Popen([f'{run_script_name}'], stdout=subprocess.DEVNULL,
+    #                                      stderr=subprocess.DEVNULL)
+
+    projector_process = subprocess.Popen([f'{run_script_name}'], stdout=projector_log,
+                                         stderr=projector_log)
 
     http_process = HttpServerProcess(run_config.http_address, run_config.http_port, get_http_dir(),
                                      run_config.projector_port)
@@ -99,6 +104,8 @@ def do_run_config(config_name=None, run_browser=True):
         # pylint: disable=unused-argument
         if http_process and http_process.is_alive():
             http_process.terminate()
+
+        projector_log.close()
 
         print('\nExiting...')
         sys.exit(0)
@@ -121,6 +128,8 @@ def do_run_config(config_name=None, run_browser=True):
 
     if http_process and http_process.is_alive():
         http_process.terminate()
+
+    projector_log.close()
 
 
 def make_run_config(app_path=None):
