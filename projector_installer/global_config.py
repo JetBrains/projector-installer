@@ -175,6 +175,24 @@ def install_markdown_plugin():
     unpack_zip_file(file_path, get_lib_dir())
 
 
+def init_lib_dir():
+    """Initializes lib directory."""
+    # pylint: disable=W0703
+    try:
+        mkdir(get_lib_dir())
+        mkdir(get_http_dir())
+        mkdir(get_projector_server_dir())
+        mkdir(get_projector_markdown_plugin_dir())
+        # download_compatible_ide_file()
+        copy_compatible_ide_file()
+        install_server()
+        install_client()
+        install_markdown_plugin()
+    except Exception as exception:
+        print(f'Error during initialization: {str(exception)}, cleanup ...')
+        rmtree(get_lib_dir())
+        sys.exit(1)
+
 def init_config_dir():
     """Initializes global config directory."""
     # pylint: disable=W0703
@@ -183,16 +201,8 @@ def init_config_dir():
         mkdir(get_apps_dir())
         mkdir(get_run_configs_dir())
         mkdir(get_download_cache_dir())
-        mkdir(get_lib_dir())
-        mkdir(get_http_dir())
-        mkdir(get_projector_server_dir())
-        mkdir(get_projector_markdown_plugin_dir())
-        # download_compatible_ide_file()
-        copy_compatible_ide_file()
+        init_lib_dir()
         init_compatible_apps()
-        install_server()
-        install_client()
-        install_markdown_plugin()
     except Exception as exception:
         print(f'Error during initialization: {str(exception)}, cleanup ...')
         rmtree(config_dir)
