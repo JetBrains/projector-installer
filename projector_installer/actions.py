@@ -89,6 +89,9 @@ def do_run_config(config_name=None, run_browser=True):
         print(f'To fix, try: projector config edit {config_name}')
         return
 
+    projector_process = subprocess.Popen([f'{run_script_name}'], stdout=subprocess.DEVNULL,
+                                         stderr=subprocess.DEVNULL)
+
     http_process = HttpServerProcess(run_config.http_address, run_config.http_port, get_http_dir(),
                                      run_config.projector_port)
 
@@ -107,9 +110,6 @@ def do_run_config(config_name=None, run_browser=True):
     print(f'HTTP process PID={http_process.pid}')
     print(f'To access your IDE, open {access_url} in your browser')
     print('Exit IDE or press Ctrl+C to stop Projector.')
-
-    projector_process = subprocess.Popen([f'{run_script_name}'], stdout=subprocess.DEVNULL,
-                                         stderr=subprocess.DEVNULL)
 
     if run_browser:
         if is_wsl() and run_config.http_address == 'localhost':

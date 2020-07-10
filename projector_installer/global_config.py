@@ -36,6 +36,11 @@ DEF_CONFIG_DIR = '.projector'
 config_dir = join(USER_HOME, DEF_CONFIG_DIR)
 
 
+def get_path_to_license():
+    """Returns full path to license file"""
+    return join(INSTALL_DIR, 'LICENSE.txt')
+
+
 def get_apps_dir():
     """Returns full path to applications directory."""
     return join(config_dir, 'apps')
@@ -166,18 +171,23 @@ def install_markdown_plugin():
 
 def init_config_dir():
     """Initializes global config directory."""
-    mkdir(config_dir)
-    mkdir(get_apps_dir())
-    mkdir(get_run_configs_dir())
-    mkdir(get_download_cache_dir())
-    mkdir(get_lib_dir())
-    mkdir(get_http_dir())
-    mkdir(get_projector_server_dir())
-    mkdir(get_projector_markdown_plugin_dir())
-    # download_compatible_ide_file()
-    copy_compatible_ide_file()
-    init_compatible_apps()
-    install_server()
-    install_client()
-    install_markdown_plugin()
-
+    # pylint: disable=W0703
+    try:
+        mkdir(config_dir)
+        mkdir(get_apps_dir())
+        mkdir(get_run_configs_dir())
+        mkdir(get_download_cache_dir())
+        mkdir(get_lib_dir())
+        mkdir(get_http_dir())
+        mkdir(get_projector_server_dir())
+        mkdir(get_projector_markdown_plugin_dir())
+        # download_compatible_ide_file()
+        copy_compatible_ide_file()
+        init_compatible_apps()
+        install_server()
+        install_client()
+        install_markdown_plugin()
+    except Exception as exception:
+        print(f'Error during initialization: {str(exception)}, cleanup ...')
+        rmtree(config_dir)
+        sys.exit(1)

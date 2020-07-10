@@ -26,6 +26,7 @@ from .global_config import init_config_dir, init_compatible_apps
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
     do_rename_config
+from .license import display_license
 
 
 def is_first_start():
@@ -47,6 +48,7 @@ def projector(ctx, config_directory):
     global_config.config_dir = config_directory
 
     if is_first_start():
+        display_license()
         init_config_dir()
         print('Please select IDE to install:')
         do_install_app(None, auto_run=True, allow_updates=False, run_browser=True)
