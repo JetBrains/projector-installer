@@ -20,8 +20,11 @@ Misc utility functions.
 """
 
 import tarfile
+import zipfile
+from os import listdir
 from os.path import join, isfile, getsize, basename, isdir
 from pathlib import Path
+from shutil import copy
 
 from click import progressbar, echo
 import requests
@@ -29,6 +32,23 @@ import requests
 CHUNK_SIZE = 4 * 1024 * 1024
 PROGRESS_BAR_WIDTH = 50
 PROGRESS_BAR_TEMPLATE = '[%(bar)s]  %(info)s'
+
+
+def create_dir_if_not_exist(dir_name):
+    """Creates given directory with all parents if it is not exist."""
+    if not isdir(dir_name):
+        path = Path(dir_name)
+        path.mkdir(parents=True, exist_ok=True)
+
+
+def copy_all_files(source, destination):
+    """Copies all files from source directory to destination."""
+    for file_name in listdir(source):
+        from_path = join(source, file_name)
+        to_path = join(destination, file_name)
+
+        if isfile(from_path):
+            copy(from_path, to_path)
 
 
 def get_file_name_from_url(url):
@@ -71,25 +91,35 @@ def download_file(url, destination):
 
 
 def unpack_tar_file(file_path, destination):
-    """
-    Unpacks given file in destination directory.
-    """
+    """ Unpacks given file in destination directory. """
     print(f'Unpacking {basename(file_path)}')
-    tar_file = tarfile.open(file_path)
-    members = tar_file.getmembers()
-    app_name = members[0].name.split('/')[0]
 
-    with progressbar(length=len(members), width=PROGRESS_BAR_WIDTH,
-                     bar_template=PROGRESS_BAR_TEMPLATE) as progress_bar:
-        for member in members:
-            tar_file.extract(member, destination)
-            progress_bar.update(1)
+    with tarfile.open(file_path) as tar_file:
+        members = tar_file.getmembers()
+        dir_name = members[0].name.split('/')[0]
 
-    return app_name
+        with progressbar(length=len(members), width=PROGRESS_BAR_WIDTH,
+                         bar_template=PROGRESS_BAR_TEMPLATE) as progress_bar:
+            for member in members:
+                tar_file.extract(member, destination)
+                progress_bar.update(1)
+
+    return dir_name
 
 
-def create_dir_if_not_exist(dir_name):
-    """Creates given directory with all parents if it not exist."""
-    if not isdir(dir_name):
-        path = Path(dir_name)
-        path.mkdir(parents=True, exist_ok=True)
+def unpack_zip_file(file_path, destination):
+    """ Unpacks given file in destination directory. """
+    print(f'Unpacking {basename(file_path)}')
+
+    with zipfile.ZipFile(file_path) as zip_file:
+        file_names = zip_file.namelist()
+        dir_name = file_names[0].split('/')[0]
+
+        with progressbar(length=len(file_names), width=PROGRESS_BAR_WIDTH,
+                         bar_template=PROGRESS_BAR_TEMPLATE) as progress_bar:
+            for file_name in file_names:
+                zip_info = zip_file.getinfo(file_name)
+                zip_file.extract(zip_info, destination)
+                progress_bar.update(1)
+
+    return dir_name

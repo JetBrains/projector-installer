@@ -21,7 +21,7 @@ Ide configuration routines.
 
 from os.path import join, isfile, basename, dirname
 from distutils.dir_util import copy_tree
-from .global_config import PROJECTOR_MARKDOWN_PLUGIN_DIR
+from .global_config import get_projector_markdown_plugin_dir
 from .apps import get_config_dir, get_plugin_dir, get_bin_dir
 from .utils import create_dir_if_not_exist
 
@@ -61,9 +61,9 @@ def disable_markdown_plugin(app_path):
 def install_own_markdown_plugin(app_path):
     """Install projector markdown plugin"""
     destination_dir = get_plugin_dir(app_path)
-    destination_dir = join(destination_dir, basename(PROJECTOR_MARKDOWN_PLUGIN_DIR))
+    destination_dir = join(destination_dir, basename(get_projector_markdown_plugin_dir()))
 
-    copy_tree(PROJECTOR_MARKDOWN_PLUGIN_DIR, destination_dir)
+    copy_tree(get_projector_markdown_plugin_dir(), destination_dir)
 
 
 def install_projector_markdown_for(app_path):

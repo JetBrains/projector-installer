@@ -35,7 +35,7 @@ from .dialogs import select_compatible_app, select_app_path, select_new_config_n
     find_apps, select_http_port, select_projector_port, edit_config, list_apps, \
     select_installed_app, select_run_config, select_http_address
 
-from .global_config import HTTP_DIR, get_download_cache_dir
+from .global_config import get_http_dir, get_download_cache_dir
 from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, RunConfig, get_run_script, validate_run_config, \
@@ -89,7 +89,7 @@ def do_run_config(config_name=None, run_browser=True):
         print(f'To fix, try: projector config edit {config_name}')
         return
 
-    http_process = HttpServerProcess(run_config.http_address, run_config.http_port, HTTP_DIR,
+    http_process = HttpServerProcess(run_config.http_address, run_config.http_port, get_http_dir(),
                                      run_config.projector_port)
 
     def signal_handler(*args):

@@ -21,41 +21,18 @@ Global configuration constants, variables and functions.
 
 import json
 import sys
-from os import listdir, mkdir
+from os import mkdir
 from os.path import dirname, join, expanduser, abspath
-from shutil import copyfile
+from shutil import copyfile, rmtree
 from dataclasses import dataclass
-from .utils import download_file, get_file_name_from_url
+from .utils import download_file, get_file_name_from_url, unpack_zip_file, copy_all_files
 
 USER_HOME = expanduser('~')
 INSTALL_DIR = dirname(abspath(__file__))
-HTTP_DIR = join(INSTALL_DIR, 'bundled', 'client')
-PROJECTOR_SERVER_DIR = join(INSTALL_DIR, 'bundled', 'server')
-PROJECTOR_MARKDOWN_PLUGIN_DIR = join(INSTALL_DIR, 'bundled', 'projector-markdown-plugin')
 DEF_HTTP_PORT = 8889
 DEF_PROJECTOR_PORT = 9999
 COMPATIBLE_IDE_FILE = 'compatible_ide.json'
-
-
-def get_server_file_name():
-    """Returns full path to projector-server jar."""
-    file_list = [file_name for file_name in listdir(PROJECTOR_SERVER_DIR)
-                 if file_name.startswith('projector-server') and file_name.endswith('.jar')]
-
-    if len(file_list) == 1:
-        return join(PROJECTOR_SERVER_DIR, file_list[0])
-
-    raise FileNotFoundError
-
-
-try:
-    SERVER_JAR = get_server_file_name()
-except FileNotFoundError:
-    print('Cannot find a Projector server. Please reinstall Projector.')
-    sys.exit(2)
-
 DEF_CONFIG_DIR = '.projector'
-
 config_dir = join(USER_HOME, DEF_CONFIG_DIR)
 
 
@@ -135,13 +112,72 @@ def init_compatible_apps():
         sys.exit(2)
 
 
+def get_http_dir():
+    """Returns dir with client files."""
+    return join(get_lib_dir(), 'client')
+
+
+def get_projector_server_dir():
+    """Returns directory with projector server jar"""
+    return join(get_lib_dir(), 'server')
+
+
+def get_projector_markdown_plugin_dir():
+    """Returns directory with projector markdown plugin."""
+    return join(get_lib_dir(), 'projector-markdown-plugin')
+
+
+PROJECTOR_SERVER_URL = 'https://github.com/JetBrains/projector-server/releases/' \
+                       'download/v0.0.1/projector-server-v0.0.1.zip'
+
+
+def install_server():
+    """Downloads and installs projector server"""
+    download_file(PROJECTOR_SERVER_URL, get_download_cache_dir())
+    file_path = join(get_download_cache_dir(), get_file_name_from_url(PROJECTOR_SERVER_URL))
+    dir_name = unpack_zip_file(file_path, get_download_cache_dir())
+    temp_dir = join(get_download_cache_dir(), dir_name)
+    jars_path = join(temp_dir, 'lib')
+    copy_all_files(jars_path, get_projector_server_dir())
+    rmtree(temp_dir)
+
+
+PROJECTOR_CLIENT_URL = 'https://github.com/JetBrains/projector-client/releases/' \
+                       'download/v0.0.1/projector-client-web-distribution-v0.0.1.zip'
+
+
+def install_client():
+    """Downloads and installs projector client"""
+    download_file(PROJECTOR_CLIENT_URL, get_download_cache_dir())
+    file_path = join(get_download_cache_dir(), get_file_name_from_url(PROJECTOR_CLIENT_URL))
+    unpack_zip_file(file_path, get_http_dir())
+
+
+MARKDOWN_PLUGIN_URL = 'https://github.com/JetBrains/projector-markdown-plugin/releases/' \
+                      'download/v0.0.1/projector-markdown-plugin-v0.0.1.zip'
+
+
+def install_markdown_plugin():
+    """Downloads and installs projector markdown plugin"""
+    download_file(MARKDOWN_PLUGIN_URL, get_download_cache_dir())
+    file_path = join(get_download_cache_dir(), get_file_name_from_url(MARKDOWN_PLUGIN_URL))
+    unpack_zip_file(file_path, get_lib_dir())
+
+
 def init_config_dir():
     """Initializes global config directory."""
     mkdir(config_dir)
     mkdir(get_apps_dir())
     mkdir(get_run_configs_dir())
-    mkdir(get_lib_dir())
     mkdir(get_download_cache_dir())
+    mkdir(get_lib_dir())
+    mkdir(get_http_dir())
+    mkdir(get_projector_server_dir())
+    mkdir(get_projector_markdown_plugin_dir())
     # download_compatible_ide_file()
     copy_compatible_ide_file()
     init_compatible_apps()
+    install_server()
+    install_client()
+    install_markdown_plugin()
+

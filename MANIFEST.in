@@ -2,4 +2,3 @@ exclude projector_installer/__pycache__
 include projector_installer/LICENSE.txt
 include README.md
 include projector_installer/compatible_ide.json
-graft projector_installer/bundled

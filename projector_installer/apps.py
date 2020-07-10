@@ -22,7 +22,7 @@ from os import listdir, chmod, stat
 import json
 from dataclasses import dataclass
 
-from .global_config import get_apps_dir, PROJECTOR_SERVER_DIR, COMPATIBLE_APPS
+from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS
 from .utils import unpack_tar_file
 
 IDEA_RUN_CLASS = 'com.intellij.idea.Main'
@@ -78,7 +78,7 @@ def make_run_script(run_config, run_script):
             if line.startswith("IDE_BIN_HOME"):
                 line = f'IDE_BIN_HOME={join(run_config.path_to_app, "bin")}\n'
             elif line.find("classpath") != -1:
-                line = f'  -classpath "$CLASSPATH:{PROJECTOR_SERVER_DIR}/*" \\\n'
+                line = f'  -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
             elif line.find(IDEA_PATH_SELECTOR) != -1:
                 if run_config.ide_config_dir:
                     line = f'  -D{IDEA_PATH_SELECTOR}={run_config.ide_config_dir} \\\n'
