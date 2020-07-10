@@ -65,7 +65,7 @@ def ide():
     """
 
 
-@ide.command(short_help='Find Projector-compatible IDE')
+@click.command(short_help='Find Projector-compatible IDE')
 @click.argument('pattern', type=click.STRING, required=False)
 def find_app(pattern):
     """projector ide find [pattern]
