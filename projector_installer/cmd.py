@@ -90,8 +90,8 @@ ide.add_command(find_app, name='find')
               help='Run installed IDE without confirmation.')
 @click.option('--allow-updates', default=False, is_flag=True,
               help='Allow updates of installed IDE.')
-@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
-                                                               'environment.')
+@click.option('--run-browser/--no-browser', default=True,
+              help='Auto run browser in WSL environment.')
 def install_app(ide_name, auto_run, allow_updates, run_browser):
     """projector ide install [ide_name]
 
@@ -185,8 +185,8 @@ def show(config_name):
 @click.argument('ide_path', type=click.STRING, required=False)
 @click.option('--auto-run', default=False, is_flag=True,
               help='Run new config without confirmation.')
-@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
-                                                               'environment.')
+@click.option('--run-browser/--no-browser', default=True,
+              help='Auto run browser in WSL environment.')
 def add(config_name, ide_path, auto_run, run_browser):
     """projector config add [config_name]
 
@@ -230,8 +230,8 @@ def rename(from_name, to_name):
 
 @projector.command(short_help='Run selected configuration')
 @click.argument('config_name', type=click.STRING, required=False)
-@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
-                                                               'environment.')
+@click.option('--run-browser/--no-browser', default=True,
+              help='Auto run browser in WSL environment.')
 def run(config_name, run_browser):
     """projector run config_name
 
@@ -246,8 +246,8 @@ def run(config_name, run_browser):
               help='Run installed ide without confirmation.')
 @click.option('--allow-updates', default=False, is_flag=True,
               help='Allow updates of installed IDE.')
-@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
-                                                               'environment.')
+@click.option('--run-browser/--no-browser', default=True,
+              help='Auto run browser in WSL environment.')
 def install(ide_name, auto_run, allow_updates, run_browser):
     """projector install [ide_name]
 
