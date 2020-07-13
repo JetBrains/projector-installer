@@ -1,6 +1,6 @@
 # projector-installer 
 
-Install, configure and run JetBrains IDEs with projector-server in Linux or [WSL](https://docs.microsoft.com/windows/wsl/).
+Install, configure and run JetBrains IDEs with Projector Server in Linux or [WSL](https://docs.microsoft.com/windows/wsl/).
 
 ## Install
 To use projector-installer you need machine with Linux (or WSL) and with Python 3.6 or higher.
