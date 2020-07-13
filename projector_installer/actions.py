@@ -91,9 +91,6 @@ def do_run_config(config_name=None, run_browser=True):
 
     projector_log = open(get_path_to_projector_log(), 'a')
 
-    # projector_process = subprocess.Popen([f'{run_script_name}'], stdout=subprocess.DEVNULL,
-    #                                      stderr=subprocess.DEVNULL)
-
     projector_process = subprocess.Popen([f'{run_script_name}'], stdout=projector_log,
                                          stderr=projector_log)
 

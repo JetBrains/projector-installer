@@ -25,7 +25,8 @@ from os import mkdir
 from os.path import dirname, join, expanduser, abspath
 from shutil import copyfile, rmtree
 from dataclasses import dataclass
-from .utils import download_file, get_file_name_from_url, unpack_zip_file, copy_all_files
+from .utils import download_file, get_file_name_from_url, unpack_zip_file, copy_all_files, \
+    create_dir_if_not_exist
 
 USER_HOME = expanduser('~')
 INSTALL_DIR = dirname(abspath(__file__))
@@ -179,10 +180,10 @@ def init_lib_dir():
     """Initializes lib directory."""
     # pylint: disable=W0703
     try:
-        mkdir(get_lib_dir())
-        mkdir(get_http_dir())
-        mkdir(get_projector_server_dir())
-        mkdir(get_projector_markdown_plugin_dir())
+        create_dir_if_not_exist(get_lib_dir())
+        create_dir_if_not_exist(get_http_dir())
+        create_dir_if_not_exist(get_projector_server_dir())
+        create_dir_if_not_exist(get_projector_markdown_plugin_dir())
         # download_compatible_ide_file()
         copy_compatible_ide_file()
         install_server()
@@ -193,14 +194,15 @@ def init_lib_dir():
         rmtree(get_lib_dir())
         sys.exit(1)
 
+
 def init_config_dir():
     """Initializes global config directory."""
     # pylint: disable=W0703
     try:
-        mkdir(config_dir)
-        mkdir(get_apps_dir())
-        mkdir(get_run_configs_dir())
-        mkdir(get_download_cache_dir())
+        create_dir_if_not_exist(config_dir)
+        create_dir_if_not_exist(get_apps_dir())
+        create_dir_if_not_exist(get_run_configs_dir())
+        create_dir_if_not_exist(get_download_cache_dir())
         init_lib_dir()
         init_compatible_apps()
     except Exception as exception:

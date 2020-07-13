@@ -26,7 +26,6 @@ from .global_config import get_path_to_license
 
 def display_license():
     """Displays license, asks user to accept and exits appllication if license is not accepted."""
-    click.clear()
     license_file = get_path_to_license()
 
     subprocess.run(['less', '-P Please read license. Up/Down/Space - scroll, q - quit. ',

@@ -33,7 +33,7 @@ from .license import display_license
 
 def is_first_start():
     """Detects first app start."""
-    return not path.isdir(global_config.config_dir)
+    return not path.isdir(global_config.config_dir) or not path.isdir(get_lib_dir())
 
 
 @click.group(invoke_without_command=True)
