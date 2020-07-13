@@ -18,21 +18,24 @@
 """License related functions."""
 
 import sys
-import click
 import subprocess
+import click
 
 from .global_config import get_path_to_license
 
 
 def display_license():
-    """Displays license, asks user to accept and exits appllication if license is not accepted."""
+    """
+    Displays the license and asks the user to accept it.
+    Exits the program if the license is not accepted.
+    """
     license_file = get_path_to_license()
 
-    subprocess.run(['less', '-P Please read license. Up/Down/Space - scroll, q - quit. ',
-                    license_file])
+    subprocess.run(['less', '-P Please read the license. Up/Down/Space - scroll, q - quit. ',
+                    license_file], check=False)
 
-    accept = click.prompt('Do you accept license? [y/n]', type=bool)
+    accept = click.prompt('Do you accept the license? [y/n]', type=bool)
 
     if not accept:
-        click.echo('License was not accepted, exiting...')
+        click.echo('The license was not accepted, exiting...')
         sys.exit(2)

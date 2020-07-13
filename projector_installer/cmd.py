@@ -140,8 +140,8 @@ def config():
 
 @click.command(short_help='Run selected config')
 @click.argument('config_name', type=click.STRING, required=False)
-@click.option('--run-browser/--no-browser', default=True, help='Auto run browser in WSL '
-                                                               'environment.')
+@click.option('--run-browser/--no-browser', default=True,
+              help='Auto run browser in WSL environment.')
 def run_config(config_name, run_browser):
     """projector config run config_name_pattern
 

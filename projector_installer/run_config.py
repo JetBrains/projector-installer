@@ -141,10 +141,13 @@ def make_config_name(app_name):
     return app_name
 
 
-def validate_run_config(run_config):
+def validate_run_config(run_config: RunConfig):
     """Checks given config for validity."""
     if not isdir(run_config.path_to_app):
-        raise IsADirectoryError(f'IDE path does not exist: {run_config.path_to_app}')
+        raise ValueError(f'IDE path does not exist: {run_config.path_to_app}')
+
+    if run_config.http_port == run_config.projector_port:
+        raise ValueError('HTTP port can\'t be equal to projector port.')
 
 
 def get_used_http_ports():
@@ -155,6 +158,11 @@ def get_used_http_ports():
 def get_used_projector_ports():
     """Returns list of ports, used by projector servers in existing configs."""
     return [rc.projector_port for rc in get_run_configs().values()]
+
+
+def get_used_ports():
+    """Returns list of ports, used either by projector or http servers in existing configs."""
+    return get_used_http_ports() + get_used_projector_ports()
 
 
 def get_configs_with_app(app_name: str):

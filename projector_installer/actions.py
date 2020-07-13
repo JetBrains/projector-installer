@@ -163,7 +163,7 @@ def do_add_config(config_name, app_path=None, auto_run=False, run_browser=True):
 
     try:
         validate_run_config(run_config)
-    except IsADirectoryError as exception:
+    except ValueError as exception:
         print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
         sys.exit(1)
 
@@ -192,7 +192,7 @@ def do_edit_config(config_name=None):
 
     try:
         validate_run_config(run_config)
-    except IsADirectoryError as exception:
+    except ValueError as exception:
         print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
         sys.exit(1)
 

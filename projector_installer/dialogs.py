@@ -23,8 +23,8 @@ import click
 import netifaces
 
 from .apps import get_installed_apps, get_app_path, get_compatible_app_names
-from .run_config import get_run_configs, RunConfig, get_used_http_ports, get_used_projector_ports, \
-    get_run_config_names
+from .run_config import get_run_configs, RunConfig, get_run_config_names, \
+    get_used_projector_ports, get_used_http_ports
 
 from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
 
