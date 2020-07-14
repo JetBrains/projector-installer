@@ -31,8 +31,9 @@ def display_license():
     """
     license_file = get_path_to_license()
 
-    subprocess.run(['less', '-P Please read the license. Up/Down/Space - scroll, q - quit. ',
-                    license_file], check=False)
+    subprocess.run(
+        ['less', '-P Please read the license. Up/Down/Space - scroll, q - finish reading. ',
+         license_file], check=False)
 
     accept = click.prompt('Do you accept the license? [y/n]', type=bool)
 

@@ -17,4 +17,4 @@
 
 """projector-installer version"""
 
-__version__ = '0.0.1dev12'
+__version__ = '0.0.1dev13'
