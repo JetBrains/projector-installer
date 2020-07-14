@@ -17,9 +17,53 @@
 
 """projector-installer setup file."""
 
+from shutil import copyfile
+from os.path import isfile
 from setuptools import setup
+from setuptools import Command
+
+
+def copy_license():
+    """Copy license file to package"""
+    if isfile('LICENSE.txt'):
+        copyfile('LICENSE.txt', 'projector_installer/LICENSE.txt')
+
+
+try:
+    copy_license()
+except IOError:
+    pass
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
-setup(install_requires=requirements)
+
+class CopyLicenseCommand(Command):
+    """Command for copy license to package."""
+    description = "Copy LICENSE.txt to package."
+    user_options = []
+
+    def initialize_options(self):
+        """Override abstract method"""
+
+    def finalize_options(self):
+        """Override abstract method"""
+
+    # pylint: disable=R0201
+    def run(self):
+        """Execute copy_license"""
+        copy_license()
+
+
+setup(
+    install_requires=requirements,
+    package_data={
+        'projector-installer': [
+            'LICENSE.txt',
+            'compatible_ide.json'
+        ],
+    },
+    cmdclass=dict(
+        copy_license=CopyLicenseCommand,
+    ),
+)

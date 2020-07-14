@@ -143,4 +143,8 @@ projector config rename _from_config_name_ _to_config_name_ - rename an existing
 
 projector config show - show configuration details
 
- 
+## Build python wheel file
+Do not forget copy license file:
+```bash
+pip3 setup.py copy_license bdist_wheel
+```
