@@ -81,7 +81,7 @@ def select_installed_app(pattern=None):
 
 
 def select_compatible_app(pattern=None):
-    """Interactivelly selects app name from list of projector-compatible applications."""
+    """Interactively selects app name from list of projector-compatible applications."""
     app_names = get_compatible_app_names(pattern)
 
     while True:
@@ -220,14 +220,17 @@ def get_all_listening_ports():
     res = []
 
     with open('/proc/net/tcp', 'r') as file:
-        next(file)
-        for line in file:
-            split_line = line.strip().split(' ')
-            hex_port = split_line[1].split(':')[1]
-            hex_state = split_line[3]
+        try:
+            next(file)
+            for line in file:
+                split_line = line.strip().split(' ')
+                hex_port = split_line[1].split(':')[1]
+                hex_state = split_line[3]
 
-            if hex_state == '0A':
-                res.append(int(hex_port, 16))
+                if hex_state == '0A':
+                    res.append(int(hex_port, 16))
+        except StopIteration:
+            pass
 
     return res
 
