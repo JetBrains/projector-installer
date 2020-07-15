@@ -72,6 +72,12 @@ def do_run_browser(url: str) -> None:
     system(f'cmd.exe /c start {url} 2> /dev/null')
 
 
+def wsl_warning():
+    print('It seems that you are using WSL environment.')
+    print('WSL is still experimental technology, and if you experience any issues, accessing '
+          'projector from browser, please refer to appropriate part in Projector README file.')
+
+
 # noinspection PyShadowingNames
 def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
     """Executes specified config. If given name does not specify
@@ -113,7 +119,8 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     print('Exit IDE or press Ctrl+C to stop Projector.')
 
     if run_browser:
-        if is_wsl() and run_config.http_address == 'localhost':
+        if is_wsl():
+            wsl_warning()
             do_run_browser(access_url)
 
     projector_process.wait()
