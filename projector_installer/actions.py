@@ -74,8 +74,8 @@ def do_run_browser(url: str) -> None:
 
 def wsl_warning():
     print('It seems that you are using WSL environment.')
-    print('WSL is still experimental technology, and if you experience any issues, accessing '
-          'projector from browser, please refer to appropriate part in Projector README file.')
+    print('WSL is still experimental technology, and if you experience any issues accessing '
+          'projector from browser please refer to Projector README file.')
 
 
 # noinspection PyShadowingNames
