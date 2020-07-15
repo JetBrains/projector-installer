@@ -20,27 +20,17 @@
 from os import listdir, mkdir, path, rename
 from os.path import join, isdir
 from shutil import rmtree
-from dataclasses import dataclass
+from typing import Optional, Dict, List
 import configparser
 
 from .apps import get_app_path, make_run_script
-from .global_config import get_run_configs_dir
+from .global_config import get_run_configs_dir, RunConfig
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
 
 
-@dataclass
-class RunConfig:
-    """Run config dataclass"""
-    path_to_app: str
-    ide_config_dir: str
-    projector_port: int
-    http_address: str
-    http_port: int
-
-
-def load_config(config_name):
+def load_config(config_name: str) -> RunConfig:
     """Loads specified config from disk."""
     config = configparser.ConfigParser()
     config_path = join(get_run_configs_dir(), config_name, CONFIG_INI_NAME)
@@ -53,12 +43,12 @@ def load_config(config_name):
                      config.getint('HTTP.SERVER', 'PORT'))
 
 
-def get_run_script(config_name):
+def get_run_script(config_name: str) -> str:
     """Returns fuill path to projector run script"""
     return join(get_run_configs_dir(), config_name, RUN_SCRIPT_NAME)
 
 
-def generate_run_script(config_name: str):
+def generate_run_script(config_name: str) -> None:
     """Generates projector run script"""
     run_script = get_run_script(config_name)
     run_config = get_run_configs()[config_name]
@@ -66,7 +56,7 @@ def generate_run_script(config_name: str):
     make_run_script(run_config, run_script)
 
 
-def save_config(config_name: str, run_config: RunConfig):
+def save_config(config_name: str, run_config: RunConfig) -> None:
     """Saves given run config."""
     config = configparser.ConfigParser()
     config['IDE'] = {}
@@ -93,7 +83,7 @@ def save_config(config_name: str, run_config: RunConfig):
     generate_run_script(config_name)
 
 
-def get_run_configs(pattern=None):
+def get_run_configs(pattern: Optional[str] = None) -> Dict[str, RunConfig]:
     """Get run configs, matched given pattern."""
     res = {}
 
@@ -111,27 +101,27 @@ def get_run_configs(pattern=None):
     return res
 
 
-def get_run_config_names(pattern=None):
+def get_run_config_names(pattern: Optional[str] = None) -> List[str]:
     """Get sorted run config names list, matched to given pattern."""
     res = list(get_run_configs(pattern).keys())
     res.sort()
     return res
 
 
-def delete_config(config_name):
+def delete_config(config_name: str) -> None:
     """Removes specified config."""
     config_path = join(get_run_configs_dir(), config_name)
     rmtree(config_path, ignore_errors=True)
 
 
-def rename_config(from_name, to_name):
+def rename_config(from_name: str, to_name: str) -> None:
     """Renames config from_name to to_name."""
     from_path = join(get_run_configs_dir(), from_name)
     to_path = join(get_run_configs_dir(), to_name)
     rename(from_path, to_path)
 
 
-def make_config_name(app_name):
+def make_config_name(app_name: str) -> str:
     """Creates config name from application name."""
     pos = app_name.find('-')
 
@@ -141,7 +131,7 @@ def make_config_name(app_name):
     return app_name
 
 
-def validate_run_config(run_config: RunConfig):
+def validate_run_config(run_config: RunConfig) -> None:
     """Checks given config for validity."""
     if not isdir(run_config.path_to_app):
         raise ValueError(f'IDE path does not exist: {run_config.path_to_app}')
@@ -150,22 +140,22 @@ def validate_run_config(run_config: RunConfig):
         raise ValueError('HTTP port can\'t be equal to projector port.')
 
 
-def get_used_http_ports():
+def get_used_http_ports() -> List[int]:
     """Returns list of ports, used by http servers in existing configs."""
     return [rc.http_port for rc in get_run_configs().values()]
 
 
-def get_used_projector_ports():
+def get_used_projector_ports() -> List[int]:
     """Returns list of ports, used by projector servers in existing configs."""
     return [rc.projector_port for rc in get_run_configs().values()]
 
 
-def get_used_ports():
+def get_used_ports() -> List[int]:
     """Returns list of ports, used either by projector or http servers in existing configs."""
     return get_used_http_ports() + get_used_projector_ports()
 
 
-def get_configs_with_app(app_name: str):
+def get_configs_with_app(app_name: str) -> List[str]:
     """Returns list of configs which referees to given app name."""
     app_path = get_app_path(app_name)
     return [k for k, v in get_run_configs().items() if v.path_to_app == app_path]

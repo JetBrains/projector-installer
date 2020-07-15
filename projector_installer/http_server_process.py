@@ -18,6 +18,7 @@
 """HTTP server process module."""
 
 from os import chdir
+from typing import Any, Optional
 from http.server import SimpleHTTPRequestHandler
 import socketserver
 from multiprocessing import Process
@@ -26,11 +27,14 @@ import socket
 
 class NoLogServer(SimpleHTTPRequestHandler):
     """Custom http server class to serve static projector client files."""
+    address: str = ''
+    http_port: str = ''
+    projector_port: str = ''
 
-    def log_message(self, *args):
+    def log_message(self, *args: Any) -> None:
         pass
 
-    def do_GET(self):
+    def do_GET(self) -> None:
         try:
             if self.need_redirect():
                 self.send_response(301)
@@ -42,23 +46,23 @@ class NoLogServer(SimpleHTTPRequestHandler):
             pass
 
     @classmethod
-    def redirect_url(cls):
+    def redirect_url(cls) -> str:
         """Constructs redirect url."""
         return f'http://{cls.address}:{cls.http_port}/index.html?port={cls.projector_port}'
 
-    def is_empty_path(self):
+    def is_empty_path(self) -> bool:
         """Checks if current path is empty."""
         return not self.path or self.path == '/'
 
-    def path_contains_index_html(self):
+    def path_contains_index_html(self) -> bool:
         """Checks if path contains index.html"""
         return self.path.find('index.html') != -1
 
-    def path_contains_projector_port(self):
+    def path_contains_projector_port(self) -> bool:
         """Checks if path contains projector port."""
         return self.path.find(f'port={NoLogServer.projector_port}') != -1
 
-    def need_redirect(self):
+    def need_redirect(self) -> bool:
         """Checks if we need redirect request."""
         if self.is_empty_path():
             return True
@@ -72,19 +76,19 @@ class NoLogServer(SimpleHTTPRequestHandler):
 class HttpServerProcess(Process):
     """Http server process class."""
 
-    def __init__(self, address, port, directory, projector_port) -> object:
+    def __init__(self, address: str, port: int, directory: str, projector_port: int) -> None:
         super(HttpServerProcess, self).__init__(daemon=True)
         self.address = address
         self.port = port
         self.directory = directory
         self.projector_port = projector_port
-        self.httpd = None
+        self.httpd: Optional[socketserver.BaseServer] = None
 
-    def run(self):
+    def run(self) -> None:
         chdir(self.directory)
         NoLogServer.address = self.address
-        NoLogServer.http_port = self.port
-        NoLogServer.projector_port = self.projector_port
+        NoLogServer.http_port = str(self.port)
+        NoLogServer.projector_port = str(self.projector_port)
         socketserver.TCPServer.allow_reuse_address = True
 
         with socketserver.TCPServer((self.address, self.port), NoLogServer) as httpd:

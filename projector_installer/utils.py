@@ -34,14 +34,14 @@ PROGRESS_BAR_WIDTH = 50
 PROGRESS_BAR_TEMPLATE = '[%(bar)s]  %(info)s'
 
 
-def create_dir_if_not_exist(dir_name):
+def create_dir_if_not_exist(dir_name: str) -> None:
     """Creates given directory with all parents if it is not exist."""
     if not isdir(dir_name):
         path = Path(dir_name)
         path.mkdir(parents=True, exist_ok=True)
 
 
-def copy_all_files(source, destination):
+def copy_all_files(source: str, destination: str) -> None:
     """Copies all files from source directory to destination."""
     for file_name in listdir(source):
         from_path = join(source, file_name)
@@ -51,7 +51,7 @@ def copy_all_files(source, destination):
             copy(from_path, to_path)
 
 
-def get_file_name_from_url(url):
+def get_file_name_from_url(url: str) -> str:
     """
     Extracts file name from URL.
     """
@@ -65,7 +65,7 @@ def get_file_name_from_url(url):
     return result
 
 
-def download_file(url, destination):
+def download_file(url: str, destination: str) -> str:
     """
     Downloads file by given URL to destination dir.
     """
@@ -90,7 +90,7 @@ def download_file(url, destination):
     return file_path
 
 
-def unpack_tar_file(file_path, destination):
+def unpack_tar_file(file_path: str, destination: str) -> str:
     """ Unpacks given file in destination directory. """
     print(f'Unpacking {basename(file_path)}')
 
@@ -107,7 +107,7 @@ def unpack_tar_file(file_path, destination):
     return dir_name
 
 
-def unpack_zip_file(file_path, destination):
+def unpack_zip_file(file_path: str, destination: str) -> str:
     """ Unpacks given file in destination directory. """
     print(f'Unpacking {basename(file_path)}')
 

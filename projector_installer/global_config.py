@@ -21,63 +21,63 @@ Global configuration constants, variables and functions.
 
 import json
 import sys
-from os import mkdir
+from typing import List
 from os.path import dirname, join, expanduser, abspath
 from shutil import copyfile, rmtree
 from dataclasses import dataclass
 from .utils import download_file, get_file_name_from_url, unpack_zip_file, copy_all_files, \
     create_dir_if_not_exist
 
-USER_HOME = expanduser('~')
-INSTALL_DIR = dirname(abspath(__file__))
-DEF_HTTP_PORT = 8889
-DEF_PROJECTOR_PORT = 9999
-COMPATIBLE_IDE_FILE = 'compatible_ide.json'
-PROJECTOR_LOG_FILE = 'projector.log'
-DEF_CONFIG_DIR = '.projector'
-config_dir = join(USER_HOME, DEF_CONFIG_DIR)
+USER_HOME: str = expanduser('~')
+INSTALL_DIR: str = dirname(abspath(__file__))
+DEF_HTTP_PORT: int = 8889
+DEF_PROJECTOR_PORT: int = 9999
+COMPATIBLE_IDE_FILE: str = 'compatible_ide.json'
+PROJECTOR_LOG_FILE: str = 'projector.log'
+DEF_CONFIG_DIR: str = '.projector'
+config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
 
 
-def get_path_to_license():
+def get_path_to_license() -> str:
     """Returns full path to license file"""
     return join(INSTALL_DIR, 'LICENSE.txt')
 
 
-def get_path_to_projector_log():
+def get_path_to_projector_log() -> str:
     """Returns full path to projector log file"""
     return join(config_dir, PROJECTOR_LOG_FILE)
 
 
-def get_apps_dir():
+def get_apps_dir() -> str:
     """Returns full path to applications directory."""
     return join(config_dir, 'apps')
 
 
-def get_run_configs_dir():
+def get_run_configs_dir() -> str:
     """Returns full path to run configs directory."""
     return join(config_dir, 'configs')
 
 
-def get_download_cache_dir():
+def get_download_cache_dir() -> str:
     """Returns full path to download cache directory."""
     return join(config_dir, 'cache')
 
 
-def get_lib_dir():
+def get_lib_dir() -> str:
     """Returns full path to lib directory."""
     return join(config_dir, 'lib')
 
 
-def get_compatible_ide_file():
+def get_compatible_ide_file() -> str:
     """Returns full path to compatible ide file."""
     return join(get_lib_dir(), COMPATIBLE_IDE_FILE)
 
 
-COMPATIBLE_IDE_FILE_URL = \
+COMPATIBLE_IDE_FILE_URL: str = \
     'https://raw.githubusercontent.com/JetBrains/projector-installer/master/compatible_ide.json'
 
 
-def download_compatible_ide_file():
+def download_compatible_ide_file() -> None:
     """Downloads compatible ide json file from github repository."""
     download_file(COMPATIBLE_IDE_FILE_URL, get_download_cache_dir())
     name = get_file_name_from_url(COMPATIBLE_IDE_FILE_URL)
@@ -86,7 +86,7 @@ def download_compatible_ide_file():
     copyfile(source, destination)
 
 
-def copy_compatible_ide_file():
+def copy_compatible_ide_file() -> None:
     """Copy compatible ide file from module to lib dir."""
     source = join(INSTALL_DIR, COMPATIBLE_IDE_FILE)
     destination = join(get_lib_dir(), COMPATIBLE_IDE_FILE)
@@ -100,10 +100,20 @@ class CompatibleApp:
     url: str
 
 
-COMPATIBLE_APPS = []
+COMPATIBLE_APPS: List[CompatibleApp] = []
 
 
-def load_compatible_apps():
+@dataclass
+class RunConfig:
+    """Run config dataclass"""
+    path_to_app: str
+    ide_config_dir: str
+    projector_port: int
+    http_address: str
+    http_port: int
+
+
+def load_compatible_apps() -> None:
     """Loads compatible apps file to memory."""
     file_name = get_compatible_ide_file()
 
@@ -115,7 +125,7 @@ def load_compatible_apps():
         COMPATIBLE_APPS.append(app)
 
 
-def init_compatible_apps():
+def init_compatible_apps() -> None:
     """Initializes compatible apps list."""
     try:
         load_compatible_apps()
@@ -124,26 +134,26 @@ def init_compatible_apps():
         sys.exit(2)
 
 
-def get_http_dir():
+def get_http_dir() -> str:
     """Returns dir with client files."""
     return join(get_lib_dir(), 'client')
 
 
-def get_projector_server_dir():
+def get_projector_server_dir() -> str:
     """Returns directory with projector server jar"""
     return join(get_lib_dir(), 'server')
 
 
-def get_projector_markdown_plugin_dir():
+def get_projector_markdown_plugin_dir() -> str:
     """Returns directory with projector markdown plugin."""
     return join(get_lib_dir(), 'projector-markdown-plugin')
 
 
-PROJECTOR_SERVER_URL = 'https://github.com/JetBrains/projector-server/releases/' \
-                       'download/v0.0.1/projector-server-v0.0.1.zip'
+PROJECTOR_SERVER_URL: str = 'https://github.com/JetBrains/projector-server/releases/' \
+                            'download/v0.0.1/projector-server-v0.0.1.zip'
 
 
-def install_server():
+def install_server() -> None:
     """Downloads and installs projector server"""
     download_file(PROJECTOR_SERVER_URL, get_download_cache_dir())
     file_path = join(get_download_cache_dir(), get_file_name_from_url(PROJECTOR_SERVER_URL))
@@ -154,29 +164,29 @@ def install_server():
     rmtree(temp_dir)
 
 
-PROJECTOR_CLIENT_URL = 'https://github.com/JetBrains/projector-client/releases/' \
-                       'download/v0.0.1/projector-client-web-distribution-v0.0.1.zip'
+PROJECTOR_CLIENT_URL: str = 'https://github.com/JetBrains/projector-client/releases/' \
+                            'download/v0.0.1/projector-client-web-distribution-v0.0.1.zip'
 
 
-def install_client():
+def install_client() -> None:
     """Downloads and installs projector client"""
     download_file(PROJECTOR_CLIENT_URL, get_download_cache_dir())
     file_path = join(get_download_cache_dir(), get_file_name_from_url(PROJECTOR_CLIENT_URL))
     unpack_zip_file(file_path, get_http_dir())
 
 
-MARKDOWN_PLUGIN_URL = 'https://github.com/JetBrains/projector-markdown-plugin/releases/' \
-                      'download/v0.0.1/projector-markdown-plugin-v0.0.1.zip'
+MARKDOWN_PLUGIN_URL: str = 'https://github.com/JetBrains/projector-markdown-plugin/releases/' \
+                           'download/v0.0.1/projector-markdown-plugin-v0.0.1.zip'
 
 
-def install_markdown_plugin():
+def install_markdown_plugin() -> None:
     """Downloads and installs projector markdown plugin"""
     download_file(MARKDOWN_PLUGIN_URL, get_download_cache_dir())
     file_path = join(get_download_cache_dir(), get_file_name_from_url(MARKDOWN_PLUGIN_URL))
     unpack_zip_file(file_path, get_lib_dir())
 
 
-def init_lib_dir():
+def init_lib_dir() -> None:
     """Initializes lib directory."""
     # pylint: disable=W0703
     try:
@@ -195,7 +205,7 @@ def init_lib_dir():
         sys.exit(1)
 
 
-def init_config_dir():
+def init_config_dir() -> None:
     """Initializes global config directory."""
     # pylint: disable=W0703
     try:

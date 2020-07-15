@@ -24,7 +24,7 @@ import click
 from .global_config import get_path_to_license
 
 
-def display_license():
+def display_license() -> None:
     """
     Displays the license and asks the user to accept it.
     Exits the program if the license is not accepted.

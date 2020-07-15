@@ -19,10 +19,12 @@
 
 from os.path import join, expanduser, dirname
 from os import listdir, chmod, stat
+from typing import Optional, List
 import json
 from dataclasses import dataclass
 
-from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS
+from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS, \
+    CompatibleApp, RunConfig
 from .utils import unpack_tar_file
 
 IDEA_RUN_CLASS = 'com.intellij.idea.Main'
@@ -31,12 +33,12 @@ IDEA_PLATFORM_PREFIX = 'idea.platform.prefix'
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
 
 
-def unpack_app(file_path):
+def unpack_app(file_path: str) -> str:
     """Unpacks specified file to app directory."""
     return unpack_tar_file(file_path, get_apps_dir())
 
 
-def get_installed_apps(pattern=None):
+def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
     """Returns sorted list of installed apps, matched given pattern."""
     res = [file_name for file_name in listdir(get_apps_dir()) if
            pattern is None or file_name.lower().find(pattern.lower()) != -1]
@@ -44,7 +46,7 @@ def get_installed_apps(pattern=None):
     return res
 
 
-def get_compatible_apps(pattern=None):
+def get_compatible_apps(pattern: Optional[str] = None) -> List[CompatibleApp]:
     """Returns list of compatible apps, matched given pattern."""
     apps = [app for app in COMPATIBLE_APPS if
             pattern is None or app.name.lower().find(pattern.lower()) != -1]
@@ -57,20 +59,20 @@ def get_compatible_apps(pattern=None):
     return apps
 
 
-def get_compatible_app_names(pattern=None):
+def get_compatible_app_names(pattern: Optional[str] = None) -> List[str]:
     """Get sorted list of projector-compatible applications, matches given pattern."""
     res = [app.name for app in get_compatible_apps(pattern)]
     res.sort()
     return res
 
 
-def get_app_path(app_name):
+def get_app_path(app_name: str) -> str:
     """Returns full path to given app."""
     return join(get_apps_dir(), app_name)
 
 
-def make_run_script(run_config, run_script):
-    """Creates run scrtipt from ide launch script."""
+def make_run_script(run_config: RunConfig, run_script: str) -> None:
+    """Creates run script from ide launch script."""
     idea_script = get_launch_script(run_config.path_to_app)
 
     with open(idea_script, 'r') as src, open(run_script, 'w') as dst:
@@ -121,13 +123,13 @@ class Version:
     last: int
 
 
-def parse_version(version):
+def parse_version(version: str) -> Version:
     """Parses version string to Version class."""
     parsed = version.split(".")
     return Version(int(parsed[0]), int(parsed[1]), int(parsed[2] if len(parsed) > 2 else -1))
 
 
-def get_data_dir_from_script(run_script):
+def get_data_dir_from_script(run_script: str) -> str:
     """Returns idea data dir from run script."""
     with open(run_script, 'r') as file:
         for line in file:
@@ -144,7 +146,7 @@ def get_data_dir_from_script(run_script):
     raise Exception('Unable to find data directory in the launch script.')
 
 
-def get_product_info(app_path):
+def get_product_info(app_path: str) -> ProductInfo:
     """Parses product info file to ProductInfo class."""
     prod_info_path = join(app_path, PRODUCT_INFO)
     with open(prod_info_path, "r") as file:
@@ -169,13 +171,13 @@ def get_product_info(app_path):
         return product_info
 
 
-def get_launch_script(app_path):
+def get_launch_script(app_path: str) -> str:
     """Returns full path to launch script by ide path."""
     prod_info = get_product_info(app_path)
     return join(app_path, prod_info.launcher_path)
 
 
-def get_bin_dir(app_path):
+def get_bin_dir(app_path: str) -> str:
     """Get full path to ide bin dir."""
     run_script = get_launch_script(app_path)
     return dirname(run_script)
@@ -185,7 +187,7 @@ CONFIG_PREFIX = expanduser('~/')
 VER_2020_CONFIG_PREFIX = expanduser('~/.config/JetBrains')
 
 
-def get_config_dir(app_path):
+def get_config_dir(app_path: str) -> str:
     """Returns ide config directory."""
     product_info = get_product_info(app_path)
     version = parse_version(product_info.version)
@@ -196,10 +198,10 @@ def get_config_dir(app_path):
     return join(join(CONFIG_PREFIX, '.' + product_info.data_dir), 'config')
 
 
-PLUGIN_2020_PREFIX = expanduser('~/.local/share/JetBrains')
+PLUGIN_2020_PREFIX: str = expanduser('~/.local/share/JetBrains')
 
 
-def get_plugin_dir(app_path):
+def get_plugin_dir(app_path: str) -> str:
     """Returns full path to application plugin directory."""
     product_info = get_product_info(app_path)
     version = parse_version(product_info.version)

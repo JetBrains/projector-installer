@@ -16,12 +16,12 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """Real actions performed by projector script."""
 
-from os import path, system, uname
-
 import shutil
 import signal
 import subprocess
 import sys
+from typing import Optional
+from os import path, system, uname
 
 from requests import HTTPError
 import click
@@ -42,17 +42,17 @@ from .run_config import get_run_configs, RunConfig, get_run_script, validate_run
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app
 
 
-def do_list_config(pattern=None):
+def do_list_config(pattern: Optional[str] = None) -> None:
     """Displays existing run configs names."""
     list_configs(pattern)
 
 
-def do_show_config(config_name=None):
+def do_show_config(pattern: Optional[str] = None) -> None:
     """Shows details on run config.
     If given config name does not match unique config, runs interactive
      procedure to select it.
     """
-    config_name, run_config = select_run_config(config_name)
+    config_name, run_config = select_run_config(pattern)
     print(f'Configuration: {config_name}')
     print(f'IDE path: {run_config.path_to_app}')
     print(f'HTTP address: {run_config.http_address}')
@@ -65,18 +65,18 @@ def do_show_config(config_name=None):
           f'build={product_info.build_number}')
 
 
-def is_wsl():
+def is_wsl() -> bool:
     """Returns True if script is run in WSL environment."""
     return uname().release.find('microsoft') != -1
 
 
-def do_run_browser(url):
+def do_run_browser(url: str) -> None:
     """Starts default browser and opens provided url in WSL."""
     system(f'cmd.exe /c start {url} 2> /dev/null')
 
 
 # noinspection PyShadowingNames
-def do_run_config(config_name=None, run_browser=True):
+def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
     """Executes specified config. If given name does not specify
     config, runs interactive selection procedure."""
     config_name, run_config = select_run_config(config_name)
@@ -97,7 +97,7 @@ def do_run_config(config_name=None, run_browser=True):
     http_process = HttpServerProcess(run_config.http_address, run_config.http_port, get_http_dir(),
                                      run_config.projector_port)
 
-    def signal_handler(*args):
+    def signal_handler(*args):  # type: ignore
         # pylint: disable=unused-argument
         if http_process and http_process.is_alive():
             http_process.terminate()
@@ -129,7 +129,7 @@ def do_run_config(config_name=None, run_browser=True):
     projector_log.close()
 
 
-def make_run_config(app_path=None):
+def make_run_config(app_path: Optional[str] = None) -> RunConfig:
     """Creates run config with specified app_path."""
     if app_path is None:
         app_path = select_app_path()
@@ -145,11 +145,12 @@ def make_run_config(app_path=None):
     return RunConfig(app_path, '', projector_port, http_address, http_port)
 
 
-def do_add_config(config_name, app_path=None, auto_run=False, run_browser=True):
+def do_add_config(hint: Optional[str], app_path: Optional[str] = None, auto_run: bool = False, \
+                  run_browser: bool = True) -> None:
     """Adds new run config. If auto_run = True, runs it without questions.
     Asks user otherwise.
     """
-    config_name = select_new_config_name(config_name)
+    config_name = select_new_config_name(hint)
 
     if config_name is None:
         print('Configuration name was not selected, exiting...')
@@ -176,7 +177,7 @@ def do_add_config(config_name, app_path=None, auto_run=False, run_browser=True):
         do_run_config(config_name, run_browser)
 
 
-def do_remove_config(config_name=None):
+def do_remove_config(config_name: Optional[str] = None) -> None:
     """Selects (if necessary) and removes selected run config."""
     config_name, _ = select_run_config(config_name)
     print(f'Removing configuration {config_name}')
@@ -184,7 +185,7 @@ def do_remove_config(config_name=None):
     print('done.')
 
 
-def do_edit_config(config_name=None):
+def do_edit_config(config_name: Optional[str] = None) -> None:
     """Selects (if necessary) and edits selected run config."""
     config_name, run_config = select_run_config(config_name)
     print(f'Edit configuration {config_name}')
@@ -201,7 +202,7 @@ def do_edit_config(config_name=None):
     print('done.')
 
 
-def do_rename_config(from_name, to_name):
+def do_rename_config(from_name: str, to_name: str) -> None:
     """Renames run config."""
     run_configs = get_run_configs()
 
@@ -220,17 +221,18 @@ def do_rename_config(from_name, to_name):
     rename_config(from_name, to_name)
 
 
-def do_find_app(pattern=None):
+def do_find_app(pattern: Optional[str] = None) -> None:
     """Prints known projector-compatible apps."""
     find_apps(pattern)
 
 
-def do_list_app(pattern=None):
+def do_list_app(pattern: Optional[str] = None) -> None:
     """Prints apps installed by projector."""
     list_apps(pattern)
 
 
-def do_install_app(app_name, auto_run=False, allow_updates=False, run_browser=True):
+def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_updates: bool = False,
+                   run_browser: bool = True) -> None:
     """Installs specified app."""
     apps = get_compatible_apps(app_name)
 
@@ -281,7 +283,7 @@ def do_install_app(app_name, auto_run=False, allow_updates=False, run_browser=Tr
     do_add_config(config_name, app_path, auto_run, run_browser)
 
 
-def do_uninstall_app(app_name=None):
+def do_uninstall_app(app_name: Optional[str] = None) -> None:
     """Uninstalls specified app."""
     apps = get_installed_apps(app_name)
 

@@ -18,9 +18,9 @@
 """User dialog related procedures."""
 
 import sys
-
+from typing import Optional, Dict, List, Tuple
 import click
-import netifaces
+import netifaces  # type: ignore
 
 from .apps import get_installed_apps, get_app_path, get_compatible_app_names
 from .run_config import get_run_configs, RunConfig, get_run_config_names, \
@@ -29,46 +29,46 @@ from .run_config import get_run_configs, RunConfig, get_run_config_names, \
 from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
 
 
-def display_run_configs_names(config_names):
+def display_run_configs_names(config_names: List[str]) -> None:
     """Pretty-print config names."""
     for i, config_name in enumerate(config_names):
         print(f'\t{i + 1:4}. {config_name}')
 
 
-def list_configs(pattern=None):
+def list_configs(pattern: Optional[str] = None) -> None:
     """Displays names of run configs, matches to pattern."""
     config_names = get_run_config_names(pattern)
     display_run_configs_names(config_names)
 
 
-def display_run_configs(run_configs):
+def display_run_configs(run_configs: Dict[str, RunConfig]) -> None:
     """Display sorted names of given run configs."""
     config_names = list(run_configs.keys())
     config_names.sort()
     display_run_configs_names(config_names)
 
 
-def find_apps(pattern=None):
+def find_apps(pattern: Optional[str] = None) -> None:
     """Pretty-print projector-compatible applications, matched to given pattern."""
     app_names = get_compatible_app_names(pattern)
     for i, app_name in enumerate(app_names):
         print(f'\t{i + 1:4}. {app_name}')
 
 
-def list_apps(pattern=None):
+def list_apps(pattern: Optional[str] = None) -> None:
     """Pretty print the list of installed ide."""
     for i, app in enumerate(get_installed_apps(pattern)):
         print(f'\t{i + 1:4}. {app}')
 
 
-def select_installed_app(pattern=None):
+def select_installed_app(pattern: Optional[str] = None) -> Optional[str]:
     """Interactively selects installed ide."""
-    apps = get_installed_apps(pattern)
+    apps: List[str] = get_installed_apps(pattern)
 
     while True:
         list_apps(pattern)
         prompt = f'Choose an IDE number to uninstall or 0 to exit: [0-{len(apps)}]'
-        app_number = click.prompt(prompt, type=int)
+        app_number: int = click.prompt(prompt, type=int)
 
         if app_number < 0 or app_number > len(apps):
             print('Invalid number.')
@@ -80,14 +80,14 @@ def select_installed_app(pattern=None):
         return apps[app_number - 1]
 
 
-def select_compatible_app(pattern=None):
+def select_compatible_app(pattern: Optional[str] = None) -> Optional[str]:
     """Interactively selects app name from list of projector-compatible applications."""
-    app_names = get_compatible_app_names(pattern)
+    app_names: List[str] = get_compatible_app_names(pattern)
 
     while True:
         find_apps(pattern)
         prompt = f'Choose IDE number to install or 0 to exit: [0-{len(app_names)}]'
-        app_number = click.prompt(prompt, type=int)
+        app_number: int = click.prompt(prompt, type=int)
 
         if app_number < 0 or app_number > len(app_names):
             print('Invalid number.')
@@ -99,7 +99,7 @@ def select_compatible_app(pattern=None):
         return app_names[app_number - 1]
 
 
-def select_unused_config_name(hint):
+def select_unused_config_name(hint: str) -> str:
     """Generate unused config name."""
     run_configs = get_run_configs()
     cnt = 0
@@ -112,7 +112,7 @@ def select_unused_config_name(hint):
     return res
 
 
-def select_new_config_name(hint):
+def select_new_config_name(hint: Optional[str]) -> Optional[str]:
     """Prompts for new config name and checks for collisions."""
     run_config = get_run_configs()
 
@@ -123,7 +123,7 @@ def select_new_config_name(hint):
         prompt = 'Enter a new configuration name'
 
     while True:
-        name = click.prompt(prompt, default=hint)
+        name: str = click.prompt(prompt, default=hint)
 
         if not name:
             return None
@@ -137,9 +137,9 @@ def select_new_config_name(hint):
         return name
 
 
-def select_run_config(config_name):
+def select_run_config(config_name: Optional[str]) -> Tuple[str, RunConfig]:
     """Interactively select run config."""
-    run_configs = get_run_configs(config_name)
+    run_configs: Dict[str, RunConfig] = get_run_configs(config_name)
 
     if len(run_configs) == 0:
         print(f'Configuration with name {config_name} is unknown, exiting...')
@@ -166,7 +166,7 @@ def select_run_config(config_name):
     return list(run_configs.items())[0]
 
 
-def select_installed_app_path():
+def select_installed_app_path() -> Optional[str]:
     """Selects installed app and returns path to it."""
     apps = get_installed_apps()
 
@@ -185,13 +185,13 @@ def select_installed_app_path():
         return get_app_path(apps[app_number - 1])
 
 
-def select_manual_app_path():
+def select_manual_app_path() -> str:
     """Prompts for path to ide."""
-    path = click.prompt('Enter the path to IDE', type=str)
+    path: str = click.prompt('Enter the path to IDE', type=str)
     return path
 
 
-def select_app_path():
+def select_app_path() -> Optional[str]:
     """Select path to ide."""
     apps = get_installed_apps()
 
@@ -212,7 +212,7 @@ def select_app_path():
     return None
 
 
-def get_all_listening_ports():
+def get_all_listening_ports() -> List[int]:
     """
     Returns all tcp port numbers in LISTEN state (on any address).
     Reads port state from /proc/net/tcp.
@@ -235,12 +235,12 @@ def get_all_listening_ports():
     return res
 
 
-def is_open_port(port):
+def is_open_port(port: int) -> bool:
     """ Checks if tcp port is LISTEN state in system."""
     return port in get_all_listening_ports()
 
 
-def get_def_port(ports, default):
+def get_def_port(ports: List[int], default: int) -> int:
     """Returns default or first unused in system and in run configs port."""
     port = default
 
@@ -254,19 +254,19 @@ def get_def_port(ports, default):
     return port
 
 
-def get_def_http_port():
+def get_def_http_port() -> int:
     """Returns unused port for http server."""
     http_ports = get_used_http_ports()
     return get_def_port(http_ports, DEF_HTTP_PORT)
 
 
-def get_def_projector_port():
+def get_def_projector_port() -> int:
     """Returns unused port for projector server."""
     ports = get_used_projector_ports()
     return get_def_port(ports, DEF_PROJECTOR_PORT)
 
 
-def get_local_addresses():
+def get_local_addresses() -> List[str]:
     """Returns list of local ip addresses."""
     interfaces = netifaces.interfaces()
     res = []
@@ -283,7 +283,7 @@ def get_local_addresses():
     return res
 
 
-def check_listening_address(address):
+def check_listening_address(address: str) -> bool:
     """Check entered ip address for validity."""
     if address == 'localhost':
         return True
@@ -291,11 +291,11 @@ def check_listening_address(address):
     return address in get_local_addresses()
 
 
-def select_http_address(default):
+def select_http_address(default: str) -> str:
     """Selects address for http listening."""
     while True:
-        res = click.prompt('Enter HTTP listening address (press ENTER for default)',
-                           default=default)
+        res: str = click.prompt('Enter HTTP listening address (press ENTER for default)',
+                                default=default)
 
         if check_listening_address(res):
             return res
@@ -307,19 +307,23 @@ def select_http_address(default):
             click.echo(addr)
 
 
-def select_http_port():
+def select_http_port() -> int:
     """Selects port for http server."""
     port = get_def_http_port()
-    return click.prompt('Enter a desired HTTP port (press ENTER for default)', default=port)
+    res: int = click.prompt('Enter a desired HTTP port (press ENTER for default)',
+                            default=str(port))
+    return res
 
 
-def select_projector_port():
+def select_projector_port() -> int:
     """Selects port for projector server."""
     port = get_def_projector_port()
-    return click.prompt('Enter a desired Projector port (press ENTER for default)', default=port)
+    res: int = click.prompt('Enter a desired Projector port (press ENTER for default)',
+                            default=str(port))
+    return res
 
 
-def edit_config(config: RunConfig):
+def edit_config(config: RunConfig) -> RunConfig:
     """Edits existing config."""
     prompt = 'Enter the path to IDE (press ENTER for default)'
     config.path_to_app = click.prompt(prompt, default=config.path_to_app)
@@ -328,9 +332,9 @@ def edit_config(config: RunConfig):
     config.http_address = click.prompt(prompt, default=config.http_address)
 
     prompt = 'Enter a HTTP port (press ENTER for default)'
-    config.http_port = click.prompt(prompt, default=config.http_port)
+    config.http_port = click.prompt(prompt, default=str(config.http_port))
 
     prompt = 'Enter a Projector port (press ENTER for default)'
-    config.projector_port = click.prompt(prompt, default=config.projector_port)
+    config.projector_port = click.prompt(prompt, default=str(config.projector_port))
 
     return config

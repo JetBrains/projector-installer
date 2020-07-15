@@ -19,20 +19,19 @@
 
 from shutil import copyfile
 from os.path import isfile
-from setuptools import setup
+from typing import List
+from setuptools import setup  # type: ignore
 from setuptools import Command
 
 
-def copy_license():
+def copy_license() -> None:
     """Copy license file to package"""
     if isfile('LICENSE.txt'):
         copyfile('LICENSE.txt', 'projector_installer/LICENSE.txt')
 
 
-try:
-    copy_license()
-except IOError:
-    pass
+copy_license()
+
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
@@ -41,16 +40,16 @@ with open('requirements.txt') as f:
 class CopyLicenseCommand(Command):
     """Command for copy license to package."""
     description = "Copy LICENSE.txt to package."
-    user_options = []
+    user_options: List[str] = []
 
-    def initialize_options(self):
+    def initialize_options(self) -> None:
         """Override abstract method"""
 
-    def finalize_options(self):
+    def finalize_options(self) -> None:
         """Override abstract method"""
 
     # pylint: disable=R0201
-    def run(self):
+    def run(self) -> None:
         """Execute copy_license"""
         copy_license()
 
