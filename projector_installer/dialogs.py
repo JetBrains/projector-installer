@@ -338,3 +338,52 @@ def edit_config(config: RunConfig) -> RunConfig:
     config.projector_port = click.prompt(prompt, default=str(config.projector_port))
 
     return config
+
+
+def make_run_config(app_path: Optional[str] = None) -> RunConfig:
+    """Creates run config with specified app_path."""
+    if app_path is None:
+        app_path = select_app_path()
+
+    if app_path is None:
+        print('IDE was not selected, exiting...')
+        sys.exit(1)
+
+    http_address = select_http_address('localhost')
+    http_port = select_http_port()
+    projector_port = select_projector_port()
+
+    return RunConfig(app_path, '', projector_port, http_address, http_port)
+
+
+class UserInstallInput:
+    """Represents user answers during install session"""
+
+    def __init__(self, config_name: str, http_address: str, http_port: int,
+                 projector_port: int, do_run: bool) -> None:
+        self.config_name: str = config_name
+        self.http_address: str = http_address
+        self.http_port: int = http_port
+        self.projector_port: int = projector_port
+        self.do_run = do_run
+
+
+def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[UserInstallInput]:
+    """Interactively creates user input"""
+    config_name = select_new_config_name(config_name_hint)
+
+    if not config_name:
+        return None
+
+    http_address = select_http_address('localhost')
+    http_port = select_http_port()
+    projector_port = select_projector_port()
+    do_run = True if auto_run else click.prompt('Would you like to run installed ide? [y/n]',
+                                                type=bool)
+
+    return UserInstallInput(config_name, http_address, http_port, projector_port, do_run)
+
+
+def make_config_from_input(inp: UserInstallInput) -> RunConfig:
+    """Makes run config from user input"""
+    return RunConfig('', '', inp.projector_port, inp.http_address, inp.http_port)

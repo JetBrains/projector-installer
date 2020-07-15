@@ -123,7 +123,7 @@ def rename_config(from_name: str, to_name: str) -> None:
 
 def make_config_name(app_name: str) -> str:
     """Creates config name from application name."""
-    pos = app_name.find('-')
+    pos = app_name.find(' ')
 
     if pos != -1:
         return app_name[0:pos]

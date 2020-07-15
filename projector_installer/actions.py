@@ -23,21 +23,19 @@ import sys
 from typing import Optional
 from os import path, system, uname
 
-import click
-
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app
 
 from .utils import download_file
 
-from .dialogs import select_compatible_app, select_app_path, select_new_config_name, list_configs, \
-    find_apps, select_http_port, select_projector_port, edit_config, list_apps, \
-    select_installed_app, select_run_config, select_http_address
+from .dialogs import select_compatible_app, select_new_config_name, list_configs, \
+    find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
+    get_user_install_input, make_config_from_input
 
 from .global_config import get_http_dir, get_download_cache_dir, get_path_to_projector_log
 from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
-from .run_config import get_run_configs, RunConfig, get_run_script, validate_run_config, \
+from .run_config import get_run_configs, get_run_script, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app
 
 
@@ -128,25 +126,9 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     projector_log.close()
 
 
-def make_run_config(app_path: Optional[str] = None) -> RunConfig:
-    """Creates run config with specified app_path."""
-    if app_path is None:
-        app_path = select_app_path()
-
-    if app_path is None:
-        print('IDE was not selected, exiting...')
-        sys.exit(1)
-
-    http_address = select_http_address('localhost')
-    http_port = select_http_port()
-    projector_port = select_projector_port()
-
-    return RunConfig(app_path, '', projector_port, http_address, http_port)
-
-
-def do_add_config(hint: Optional[str], app_path: Optional[str] = None, auto_run: bool = False, \
-                  run_browser: bool = True) -> None:
-    """Adds new run config. If auto_run = True, runs it without questions.
+def do_add_config(hint: Optional[str], app_path: Optional[str] = None) -> None:
+    """
+    Adds new run config. If auto_run = True, runs it without questions.
     Asks user otherwise.
     """
     config_name = select_new_config_name(hint)
@@ -168,12 +150,6 @@ def do_add_config(hint: Optional[str], app_path: Optional[str] = None, auto_run:
         sys.exit(1)
 
     save_config(config_name, run_config)
-
-    do_run = True if auto_run else click.prompt('Would you like to run new config? [y/n]',
-                                                type=bool)
-
-    if do_run:
-        do_run_config(config_name, run_browser)
 
 
 def do_remove_config(config_name: Optional[str] = None) -> None:
@@ -253,6 +229,12 @@ def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_update
 
     apps = get_compatible_apps(app_name)
     app = apps[0]
+    config_name_hint = make_config_name(app.name)
+    user_input = get_user_install_input(config_name_hint, auto_run)
+
+    if user_input is None:
+        print('Config parameters was not specified, exiting ...')
+        sys.exit(1)
 
     print(f'Installing {app.name}')
 
@@ -265,18 +247,29 @@ def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_update
     try:
         app_name = unpack_app(path_to_dist)
     except IOError as error:
-        print(f'Unable to extract the archive: {str(error)}. Exiting...')
+        print(f'Unable to extract the archive: {str(error)}, exiting...')
         sys.exit(1)
 
-    config_name = make_config_name(app_name)
     app_path = get_app_path(app_name)
     install_projector_markdown_for(app_path)
 
     if not allow_updates:
         forbid_updates_for(app_path)
 
-    print('done.')
-    do_add_config(config_name, app_path, auto_run, run_browser)
+    config_name = user_input.config_name
+    run_config = make_config_from_input(user_input)
+    run_config.path_to_app = app_path
+
+    try:
+        validate_run_config(run_config)
+    except ValueError as exception:
+        print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
+        sys.exit(1)
+
+    save_config(config_name, run_config)
+
+    if user_input.do_run:
+        do_run_config(config_name, run_browser)
 
 
 def do_uninstall_app(app_name: Optional[str] = None) -> None:

@@ -184,17 +184,12 @@ def show(config_name: Optional[str]) -> None:
 @config.command(short_help='Add new configuration')
 @click.argument('config_name', type=click.STRING, required=False)
 @click.argument('ide_path', type=click.STRING, required=False)
-@click.option('--auto-run', default=False, is_flag=True,
-              help='Run new config without confirmation.')
-@click.option('--run-browser/--no-browser', default=True,
-              help='Auto run browser in WSL environment.')
-def add(config_name: Optional[str], ide_path: Optional[str], auto_run: bool, run_browser: bool) \
-        -> None:
+def add(config_name: Optional[str], ide_path: Optional[str]) -> None:
     """projector config add [config_name]
 
     Add a new configuration.
     """
-    do_add_config(config_name, ide_path, auto_run, run_browser)
+    do_add_config(config_name, ide_path)
 
 
 @config.command(short_help='Remove configuration')
