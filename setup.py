@@ -32,7 +32,6 @@ def copy_license() -> None:
 
 copy_license()
 
-
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
@@ -56,12 +55,6 @@ class CopyLicenseCommand(Command):
 
 setup(
     install_requires=requirements,
-    package_data={
-        'projector-installer': [
-            'LICENSE.txt',
-            'compatible_ide.json'
-        ],
-    },
     cmdclass=dict(
         copy_license=CopyLicenseCommand,
     ),
