@@ -55,7 +55,7 @@ class CopyLicenseCommand(Command):
 
 setup(
     install_requires=requirements,
-    cmdclass=dict(
-        copy_license=CopyLicenseCommand,
-    ),
+    cmdclass={
+        'copy_license': CopyLicenseCommand
+    }
 )

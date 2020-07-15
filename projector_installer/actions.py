@@ -72,7 +72,8 @@ def do_run_browser(url: str) -> None:
     system(f'cmd.exe /c start {url} 2> /dev/null')
 
 
-def wsl_warning():
+def wsl_warning() -> None:
+    """Show warning for WSL environment."""
     print('It seems that you are using WSL environment.')
     print('WSL is still experimental technology, and if you experience any issues accessing '
           'projector from browser please refer to Projector README file.')
