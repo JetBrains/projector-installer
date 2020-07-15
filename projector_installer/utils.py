@@ -25,9 +25,9 @@ from os import listdir
 from os.path import join, isfile, getsize, basename, isdir
 from pathlib import Path
 from shutil import copy
+from urllib.request import urlopen
 
 from click import progressbar, echo
-import requests
 
 CHUNK_SIZE = 4 * 1024 * 1024
 PROGRESS_BAR_WIDTH = 50
@@ -72,9 +72,13 @@ def download_file(url: str, destination: str) -> str:
     file_name = get_file_name_from_url(url)
     file_path = join(destination, file_name)
 
-    with requests.get(url, stream=True) as req:
-        req.raise_for_status()
-        total = int(req.headers['Content-Length'])
+    with urlopen(url) as resp:
+        code: int = resp.getcode()
+
+        if code != 200:
+            raise IOError(f'Bad HTTP response code: {code}')
+
+        total = int(resp.getheader('Content-Length'))
 
         if not isfile(file_path) or getsize(file_path) != total:
             echo(f'Downloading {file_name}')
@@ -82,10 +86,15 @@ def download_file(url: str, destination: str) -> str:
                     progressbar(length=total,
                                 width=PROGRESS_BAR_WIDTH,
                                 bar_template=PROGRESS_BAR_TEMPLATE) as progress_bar:
-                for chunk in req.iter_content(CHUNK_SIZE):
-                    if chunk:
-                        file.write(chunk)
-                        progress_bar.update(len(chunk))
+
+                while True:
+                    chunk = resp.read(CHUNK_SIZE)
+
+                    if not chunk:
+                        break
+
+                    file.write(chunk)
+                    progress_bar.update(len(chunk))
 
     return file_path
 

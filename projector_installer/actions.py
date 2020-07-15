@@ -23,7 +23,6 @@ import sys
 from typing import Optional
 from os import path, system, uname
 
-from requests import HTTPError
 import click
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
@@ -259,9 +258,6 @@ def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_update
 
     try:
         path_to_dist = download_file(app.url, get_download_cache_dir())
-    except HTTPError as http:
-        print(f'Unable to download a file, try again later: {str(http)}. Exiting ...')
-        sys.exit(1)
     except IOError as error:
         print(f'Unable to write downloaded file, try again later: {str(error)}. Exiting ...')
         sys.exit(1)
