@@ -24,7 +24,6 @@ import sys
 from typing import List
 from os.path import dirname, join, expanduser, abspath
 from shutil import copyfile, rmtree
-from dataclasses import dataclass
 from .utils import download_file, get_file_name_from_url, unpack_zip_file, copy_all_files, \
     create_dir_if_not_exist
 
@@ -93,24 +92,26 @@ def copy_compatible_ide_file() -> None:
     copyfile(source, destination)
 
 
-@dataclass(frozen=True)
 class CompatibleApp:
     """Compatible application entry."""
-    name: str
-    url: str
+
+    def __init__(self, name: str, url: str) -> None:
+        self.name: str = name
+        self.url: str = url
 
 
 COMPATIBLE_APPS: List[CompatibleApp] = []
 
 
-@dataclass
 class RunConfig:
     """Run config dataclass"""
-    path_to_app: str
-    ide_config_dir: str
-    projector_port: int
-    http_address: str
-    http_port: int
+    def __init__(self, path_to_app: str, ide_config_dir: str, projector_port: int,
+                 http_address: str, http_port: int) -> None:
+        self.path_to_app: str = path_to_app
+        self.ide_config_dir: str = ide_config_dir
+        self.projector_port: int = projector_port
+        self.http_address: str = http_address
+        self.http_port: int = http_port
 
 
 def load_compatible_apps() -> None:
