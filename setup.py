@@ -19,9 +19,8 @@
 
 from shutil import copyfile
 from os.path import isfile
-from typing import List
 from setuptools import setup  # type: ignore
-from setuptools import Command
+from setuptools.command.install import install # type: ignore
 
 
 def copy_license() -> None:
@@ -36,26 +35,23 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 
-class CopyLicenseCommand(Command):
-    """Command for copy license to package."""
-    description = "Copy LICENSE.txt to package."
-    user_options: List[str] = []
+class CustomInstallCommand(install):
+    """
+    Customized install command.
+    """
 
-    def initialize_options(self) -> None:
-        """Override abstract method"""
-
-    def finalize_options(self) -> None:
-        """Override abstract method"""
-
-    # pylint: disable=R0201
     def run(self) -> None:
-        """Execute copy_license"""
+        """
+        Downloads and stores additional data in package.
+        """
+
         copy_license()
+        install.run(self)
 
 
 setup(
     install_requires=requirements,
     cmdclass={
-        'copy_license': CopyLicenseCommand
+        'install': CustomInstallCommand
     }
 )
