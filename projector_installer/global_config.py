@@ -34,6 +34,10 @@ DEF_PROJECTOR_PORT: int = 9999
 COMPATIBLE_IDE_FILE: str = 'compatible_ide.json'
 PROJECTOR_LOG_FILE: str = 'projector.log'
 DEF_CONFIG_DIR: str = '.projector'
+BUNDLED_DIR: str = 'bundled'
+SERVER_DIR: str = 'server'
+CLIENT_DIR: str = 'client'
+PLUGIN_DIR: str = 'plugin'
 config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
 
 
