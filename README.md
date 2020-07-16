@@ -2,12 +2,12 @@
 [![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
  
 
-Install, configure and run JetBrains IDEs with Projector Server in Linux or [WSL](https://docs.microsoft.com/windows/wsl/).
+Install, configure and run JetBrains IDEs with Projector Server on Linux or in [WSL](https://docs.microsoft.com/windows/wsl/).
 
 ## Install
 To use projector-installer you need machine with Linux (or WSL) and with Python 3.6 or higher.
 
-### install from PiPi
+### install from PyPi
 ```bash
 pip3 install projector-installer 
 ```
@@ -20,6 +20,7 @@ pip3 install projector_installer-VERSION-py3-none-any.whl
 ```bash 
 git clone https://github.com/JetBrains/projector-installer.git
 cd projector-installer
+pip3 install -r requirements.txt 
 pip3 install .
 ```
 
