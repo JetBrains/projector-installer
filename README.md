@@ -144,16 +144,15 @@ projector config rename _from_config_name_ _to_config_name_ - rename an existing
 projector config show - show configuration details
 
 ## Build python wheel file
-Do not forget copy license file:
 ```bash
-pip3 setup.py copy_license bdist_wheel
+python3 setup.py bundle bdist_wheel
 ```
 
 ## Resolving WSL issues
 WSL is new technology and sometimes there are problems with network interfaces forwarding from Linux to Windows system.
 (Example: https://github.com/microsoft/WSL/issues/4636)
 
-If you have issues with accesing Projector, running in WSL from browser, try the following: 
+If you have issues with accessing Projector, running in WSL from browser, try the following: 
 
  -  From  PowerShell, running with admin privileges run: 
  ```Get-Service LxssManager | Restart-Service```

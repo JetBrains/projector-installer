@@ -20,6 +20,7 @@
 from shutil import copyfile, rmtree
 from os.path import isfile, join, isdir
 from os import remove
+from typing import List
 from setuptools import setup  # type: ignore
 from setuptools.command.install import install  # type: ignore
 from setuptools import Command
@@ -27,7 +28,7 @@ from setuptools import Command
 from projector_installer.utils import create_dir_if_not_exist, download_file, unpack_zip_file, \
     get_file_name_from_url, copy_all_files
 
-from projector_installer.global_config import BUNDLED_DIR, SERVER_DIR, CLIENT_DIR, PLUGIN_DIR
+from projector_installer.global_config import BUNDLED_DIR, SERVER_DIR, CLIENT_DIR
 
 
 def copy_license() -> None:
@@ -43,7 +44,7 @@ PACKAGE_DIR = 'projector_installer'
 bundled_dir = join(PACKAGE_DIR, BUNDLED_DIR)
 server_dir = join(bundled_dir, SERVER_DIR)
 client_dir = join(bundled_dir, CLIENT_DIR)
-plugin_dir = join(bundled_dir, PLUGIN_DIR)
+plugin_dir = bundled_dir
 
 PROJECTOR_SERVER_URL: str = 'https://github.com/JetBrains/projector-server/releases/' \
                             'download/v0.0.1/projector-server-v0.0.1.zip'
@@ -84,6 +85,7 @@ def download_plugin(to_dir: str) -> None:
 
 
 def download_bundled_data() -> None:
+    """Downloads data to bundle in package"""
 
     if not isdir(bundled_dir):
         create_dir_if_not_exist(bundled_dir)
@@ -98,13 +100,13 @@ def download_bundled_data() -> None:
 class BundleCommand(Command):
     """Download bundled data."""
     description = 'Download bundled data.'
-    user_options = []
+    user_options: List[str] = []
 
     def initialize_options(self) -> None:
-        pass
+        """Abstract method stub"""
 
     def finalize_options(self) -> None:
-        pass
+        """Abstract method stub"""
 
     def run(self) -> None:
         """Run command."""
