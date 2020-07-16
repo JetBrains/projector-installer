@@ -1,4 +1,6 @@
-# projector-installer 
+# projector-installer
+[![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+ 
 
 Install, configure and run JetBrains IDEs with Projector Server in Linux or [WSL](https://docs.microsoft.com/windows/wsl/).
 
@@ -106,42 +108,42 @@ runs the configuration with name 'goland'
 
 
 ### IDE commands
-projector ide find - display all Projector-compatible IDEs
+`projector ide find` - display all Projector-compatible IDEs
 
-projector ide find _pattern_ - display Projector-compatible IDEs whose names match the given pattern
+`projector ide find pattern` - display Projector-compatible IDEs whose names match the given pattern
 
-projector ide list - display all installed IDEs
+`projector ide list` - display all installed IDEs
 
-projector ide list _pattern_ - display Projector-compatible IDEs whose names match the given pattern
+`projector ide list pattern` - display Projector-compatible IDEs whose names match the given pattern
 
-projector ide install - select and install IDE interactively
+`projector ide install` - select and install IDE interactively
  
-projector ide install _ide_name_ - install the specified IDE
+`projector ide install ide_name` - install the specified IDE
 
-projector ide uninstall - uninstall IDE interactively 
+`projector ide uninstall` - uninstall IDE interactively 
 
-projector ide uninstall _ide_name_ - uninstall the specified IDE 
+`projector ide uninstall ide_name` - uninstall the specified IDE 
 
 ### Config commands 
-projector config run - run default or interactively selected configuration with Projector
+`projector config run` - run default or interactively selected configuration with Projector
  
-projector config run _configuration_ - run the specified configuration
+`projector config run configuration` - run the specified configuration
 
-projector config list - list all existing configurations
+`projector config list` - list all existing configurations
  
-projector config add - add a new configuration
+`projector config add` - add a new configuration
 
-projector config edit - change an existing configuration
+`projector config edit` - change an existing configuration
 
-projector config edit _configuration_ - change the specified configuration
+`projector config edit configuration` - change the specified configuration
 
-projector config remove - select configuration and remove it 
+`projector config remove` - select configuration and remove it 
 
-projector config remove _config_name_ - remove a configuration
+`projector config remove config_name` - remove a configuration
 
-projector config rename _from_config_name_ _to_config_name_ - rename an existing configuration
+`projector config rename from_config_name to_config_name` - rename an existing configuration
 
-projector config show - show configuration details
+`projector config show` - show configuration details
 
 ## Build python wheel file
 ```bash
