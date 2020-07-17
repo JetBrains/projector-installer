@@ -4,8 +4,25 @@
 
 Install, configure and run JetBrains IDEs with [Projector](https://github.com/JetBrains/projector-server/blob/master/docs/Projector.md) Server on Linux or in [WSL](https://docs.microsoft.com/windows/wsl/).
 
-## Install
+## Prerequisites
 To use projector-installer you need machine with Linux (or WSL) and with Python 3.6 or higher.
+Before install projector-installer make sure that you have python3 and pip3 in your system. 
+In Debian-based distributive you can install them using the command:
+```bash
+sudo apt install python3 python3-pip 
+``` 
+Also make sure that you have installed the following packets: 
+ - libext6
+ - libxrender1
+ - libxtst6
+ - libfreetype6
+   
+In Debian-based distributive you can install them using the command:
+```bash
+sudo apt install libext6 libxrender1 libxtst6 libfreetype6  
+```    
+
+## Installation
 
 ### install from PyPi
 ```bash
@@ -25,15 +42,13 @@ pip3 install .
 ```
 
 ### install in virtual environment
-
 ```commandline
-
 python3 -m venv venv
 source ./venv/bin/activate 
 pip3 install  projector-installer 
 ``` 
 
-After that the command _projector_ is available. 
+After that the command `projector` is available. 
 
 _NOTE:_ In fresh Linux installations the directory ```~/.local/bin```
 can be missed in the ```PATH``` variable. If the ```projector``` command
@@ -151,12 +166,40 @@ runs the configuration with name 'goland'
 python3 setup.py bundle bdist_wheel
 ```
 
+## Troubleshooting
+- `projector` command is unavailable after installation.
+
+In fresh Linux installations the directory `~/.local/bin`
+can be missed in the `PATH` variable. If the `projector` command
+is not available after installation, try to restart the terminal.
+
+- On WSL can't access URL, displayed in projector console from Windows browser.
+
+Please refer to section [Resolving WSL issues](#Resolving-WSL-issues).
+
+- projector exits immediately after `projector run`
+
+Make sure, that you installed all packages, mentioned in [Prerequisites](#Prerequisites) section.     
+
 ## Resolving WSL issues
 WSL is new technology and sometimes there are problems with network interfaces forwarding from Linux to Windows system.
 (Example: https://github.com/microsoft/WSL/issues/4636)
 
-If you have issues with accessing Projector, running in WSL from browser, try the following: 
-
- -  From  PowerShell, running with admin privileges run: 
- ```Get-Service LxssManager | Restart-Service```
+If you have issues with accessing Projector running in WSL from browser, try the following: 
+ 
+ - Restart your WSL environment:
+ ```wsl --shutdown```
+ and start your linux console again. 
+ 
+ *WARNING!* The `wsl --shutdown` command will close all Linux consoles. 
+ Save your work before stopping WSL!
+ 
+ - Use HTTP address other than localhost.
+ Usually WSL have problems forwarding localhost interface only. 
+ Try to use listening address other than localhost.
+ You can assign HTTP listening address during initial installation or using 
+ `projector config edit` command. 
+ 
+ *WARNING!* Using external address for projector HTTP server can be dangerous, 
+ use this method with caution.   
    
