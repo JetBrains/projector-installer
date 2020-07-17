@@ -185,8 +185,13 @@ Make sure, that you installed all packages, mentioned in [Prerequisites](#Prereq
 WSL is new technology and sometimes there are problems with network interfaces forwarding from Linux to Windows system.
 (Example: https://github.com/microsoft/WSL/issues/4636)
 
-If you have issues with accessing Projector running in WSL from browser, try the following: 
- 
+If you have issues with accessing Projector running in WSL from browser, try do the following:
+
+ - Do not use several WSL machines in the same time. Connectivity issues happens rarely if only one 
+ WSL machine is running. You can check state of existing WSL machies using `wsl -l -v` command.
+
+ - Try command `Get-Service LxssManager | Restart-Service` in PowerShell console
+  
  - Restart your WSL environment:
  ```wsl --shutdown```
  and start your linux console again. 
@@ -202,4 +207,5 @@ If you have issues with accessing Projector running in WSL from browser, try the
  
  *WARNING!* Using external address for projector HTTP server can be dangerous, 
  use this method with caution.   
+   
    
