@@ -191,13 +191,16 @@ If you have issues with accessing Projector running in WSL from browser, try do 
  WSL machine is running. You can check state of existing WSL machies using `wsl -l -v` command.
 
  - Try command `Get-Service LxssManager | Restart-Service` in PowerShell console
-  
- - Restart your WSL environment:
+ 
+  - Restart your WSL environment:
  ```wsl --shutdown```
  and start your linux console again. 
  
  *WARNING!* The `wsl --shutdown` command will close all Linux consoles. 
  Save your work before stopping WSL!
+ 
+ - Using docker service with WSL2 backend can cause connectivity issues. 
+ Try to disable it and restart WSL terminal.
  
  - Use HTTP address other than localhost.
  Usually WSL have problems forwarding localhost interface only. 
