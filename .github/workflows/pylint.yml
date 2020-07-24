@@ -22,7 +22,6 @@ jobs:
         pip install pylint
         sudo apt install gcc -y
         pip install -r requirements.txt
-    - name: Python Pylint GitHub Action
-      uses: fylein/python-pylint-github-action@v1
-      with:
-        args: pylint --rcfile=pylintrc projector_installer/ setup.py
+    - name: Python Pylint
+      run: |
+        pylint --rcfile=pylintrc projector_installer/ setup.py
