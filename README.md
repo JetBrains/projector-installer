@@ -38,6 +38,7 @@ pip3 install projector_installer-VERSION-py3-none-any.whl
 git clone https://github.com/JetBrains/projector-installer.git
 cd projector-installer
 pip3 install -r requirements.txt 
+python3 setup.py bundle
 pip3 install .
 ```
 
