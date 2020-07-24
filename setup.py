@@ -21,8 +21,8 @@ from projector_installer.global_config import BUNDLED_DIR, SERVER_DIR, CLIENT_DI
 
 def copy_license() -> None:
     """Copy license file to package"""
-    if isfile('LICENSE.txt'):
-        copyfile('LICENSE.txt', 'projector_installer/LICENSE.txt')
+    if isfile('license/LICENSE.txt'):
+        copyfile('license/LICENSE.txt', 'projector_installer/LICENSE.txt')
 
 
 with open('requirements.txt') as f:

@@ -23,7 +23,8 @@ def display_license() -> None:
         ['less', '-P Please read the license. Up/Down/Space - scroll, q - finish reading. ',
          license_file], check=False)
 
-    accept = click.prompt('Do you accept the license? [y/n]', type=bool)
+    accept = click.prompt('This software includes components licensed under GPLv2. Do you accept '
+                          'this license? [y/n]', type=bool)
 
     if not accept:
         click.echo('The license was not accepted, exiting...')
