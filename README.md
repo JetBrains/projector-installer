@@ -1,7 +1,7 @@
 # projector-installer
 [![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 ![PyLint Runner](https://github.com/JetBrains/projector-installer/workflows/PyLint%20Runner/badge.svg)
- 
+![MyPy Runner](https://github.com/JetBrains/projector-installer/workflows/MyPy%20Runner/badge.svg) 
 
 Install, configure and run JetBrains IDEs with [Projector](https://github.com/JetBrains/projector-server/blob/master/docs/Projector.md) Server on Linux or in [WSL](https://docs.microsoft.com/windows/wsl/).
 
