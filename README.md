@@ -169,6 +169,14 @@ pip3 install wheel
 python3 setup.py bundle bdist_wheel
 ```
 
+## Publish
+```shell script
+rm -r projector_installer/bundled dist  # Remove old build files
+python3 setup.py bundle sdist bdist_wheel  # Build required files
+python3 -m twine upload --repository testpypi --verbose dist/*  # Upload to https://test.pypi.org/project/projector-installer/
+python3 -m twine upload dist/*  # Upload to https://pypi.org/project/projector-installer/
+```
+
 ## FAQ
 1. Where is the projector-installer keeps downloaded IDE and run configurations?
    - All necessary stuff kept in configuration directory. Usually configuration 
@@ -219,5 +227,4 @@ If you have issues with accessing Projector running in WSL from browser, try do 
  
  *WARNING!* Using external address for projector HTTP server can be dangerous, 
  use this method with caution.   
-   
    
