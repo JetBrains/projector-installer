@@ -163,6 +163,7 @@ runs the configuration with name 'goland'
 
 ## Build python wheel file
 ```bash
+pip3 install wheel
 python3 setup.py bundle bdist_wheel
 ```
 
