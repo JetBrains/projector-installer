@@ -35,10 +35,10 @@ client_dir = join(bundled_dir, CLIENT_DIR)
 plugin_dir = bundled_dir
 
 PROJECTOR_SERVER_URL: str = 'https://github.com/JetBrains/projector-server/releases/' \
-                            'download/v0.0.1/projector-server-v0.0.1.zip'
+                            'download/v0.42.4/projector-server-v0.42.4.zip'
 
 PROJECTOR_CLIENT_URL: str = 'https://github.com/JetBrains/projector-client/releases/' \
-                            'download/v0.0.1/projector-client-web-distribution-v0.0.1.zip'
+                            'download/v0.42.4/projector-client-web-distribution-v0.42.4.zip'
 
 MARKDOWN_PLUGIN_URL: str = 'https://github.com/JetBrains/projector-markdown-plugin/releases/' \
                            'download/v0.0.1/projector-markdown-plugin-v0.0.1.zip'
