@@ -21,7 +21,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         sudo apt install gcc -y
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install -r requirements.txt
     - name: Python Pylint GitHub Action
       uses: fylein/python-pylint-github-action@v1
       with:
