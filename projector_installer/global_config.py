@@ -10,9 +10,11 @@ Global configuration constants, variables and functions.
 import json
 import sys
 from typing import List
-from os.path import dirname, join, expanduser, abspath
 from shutil import rmtree
-from .utils import create_dir_if_not_exist
+from socket import timeout
+from os.path import dirname, join, expanduser, abspath
+
+from .utils import create_dir_if_not_exist, download_file, get_file_name_from_url
 
 USER_HOME: str = expanduser('~')
 INSTALL_DIR: str = dirname(abspath(__file__))
@@ -58,26 +60,18 @@ def get_compatible_ide_file() -> str:
     return join(INSTALL_DIR, COMPATIBLE_IDE_FILE)
 
 
-# COMPATIBLE_IDE_FILE_URL: str = \
-#     'https://raw.githubusercontent.com/JetBrains/projector-installer/master/compatible_ide.json'
-#
-#
-# def download_compatible_ide_file() -> None:
-#     """Downloads compatible ide json file from github repository."""
-#     download_file(COMPATIBLE_IDE_FILE_URL, get_download_cache_dir())
-#     name = get_file_name_from_url(COMPATIBLE_IDE_FILE_URL)
-#     source = join(get_download_cache_dir(), name)
-#     destination = join(get_lib_dir(), name)
-#     copyfile(source, destination)
-
-
-
 class CompatibleApp:
     """Compatible application entry."""
 
     def __init__(self, name: str, url: str) -> None:
         self.name: str = name
         self.url: str = url
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, CompatibleApp):
+            return self.name == other.name and self.url == other.url
+
+        return False
 
 
 COMPATIBLE_APPS: List[CompatibleApp] = []
@@ -95,24 +89,50 @@ class RunConfig:
         self.http_port: int = http_port
 
 
-def load_compatible_apps() -> None:
+def load_compatible_apps_from_file(file_name: str) -> None:
     """Loads compatible apps file to memory."""
-    file_name = get_compatible_ide_file()
-
     with open(file_name, 'r') as file:
         data = json.load(file)
 
     for entry in data:
         app = CompatibleApp(entry['name'], entry['url'])
-        COMPATIBLE_APPS.append(app)
+        if app not in COMPATIBLE_APPS:
+            COMPATIBLE_APPS.append(app)
+
+
+COMPATIBLE_IDE_FILE_URL: str = \
+    'https://raw.githubusercontent.com/JetBrains/projector-installer/master/' \
+    'projector_installer/compatible_ide.json'
+
+
+def download_compatible_apps() -> str:
+    """Downloads compatible ide json file from github repository."""
+    try:
+        download_file(COMPATIBLE_IDE_FILE_URL, get_download_cache_dir(), timeout=3, silent=True)
+        name = get_file_name_from_url(COMPATIBLE_IDE_FILE_URL)
+        file_name = join(get_download_cache_dir(), name)
+
+        return file_name
+    except timeout:
+        return ''
+
+
+def load_compatible_apps() -> None:
+    """Loads compatible apps dictionary from bundled file and github-stored Json"""
+    file_name = get_compatible_ide_file()
+    load_compatible_apps_from_file(file_name)
+    github_file = download_compatible_apps()
+
+    if github_file:
+        load_compatible_apps_from_file(github_file)
 
 
 def init_compatible_apps() -> None:
     """Initializes compatible apps list."""
     try:
         load_compatible_apps()
-    except IOError:
-        print('Cannot load compatible ide file, exiting...')
+    except IOError as error:
+        print(f'Cannot load compatible ide file: {str(error)}. Exiting...')
         sys.exit(2)
 
 

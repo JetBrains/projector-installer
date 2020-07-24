@@ -14,6 +14,7 @@ from os.path import join, isfile, getsize, basename, isdir
 from pathlib import Path
 from shutil import copy
 from urllib.request import urlopen
+from typing import Optional
 
 from click import progressbar, echo
 
@@ -53,14 +54,15 @@ def get_file_name_from_url(url: str) -> str:
     return result
 
 
-def download_file(url: str, destination: str) -> str:
+def download_file(url: str, destination: str, timeout: Optional[int] = None,
+                  silent: Optional[bool] = False) -> str:
     """
     Downloads file by given URL to destination dir.
     """
     file_name = get_file_name_from_url(url)
     file_path = join(destination, file_name)
 
-    with urlopen(url) as resp:
+    with urlopen(url, timeout=timeout) as resp:
         code: int = resp.getcode()
 
         if code != 200:
@@ -69,7 +71,10 @@ def download_file(url: str, destination: str) -> str:
         total = int(resp.getheader('Content-Length'))
 
         if not isfile(file_path) or getsize(file_path) != total:
-            echo(f'Downloading {file_name}')
+
+            if not silent:
+                echo(f'Downloading {file_name}')
+
             with open(file_path, 'wb') as file, \
                     progressbar(length=total,
                                 width=PROGRESS_BAR_WIDTH,
@@ -82,7 +87,9 @@ def download_file(url: str, destination: str) -> str:
                         break
 
                     file.write(chunk)
-                    progress_bar.update(len(chunk))
+
+                    if not silent:
+                        progress_bar.update(len(chunk))
 
     return file_path
 
