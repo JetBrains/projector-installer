@@ -168,6 +168,12 @@ pip3 install wheel
 python3 setup.py bundle bdist_wheel
 ```
 
+## FAQ
+1. Where is the projector-installer keeps downloaded IDE and run configurations?
+   - All necessary stuff kept in configuration directory. Usually configuration 
+   directory is named ~/.projector. But user can specify another location for config directory,
+   using option --config-directory, for example: `projector --config-directory=config run`  
+
 ## Troubleshooting
 - `projector` command is unavailable after installation.
 
