@@ -1,0 +1,31 @@
+name: PyLint/MyPy Runner
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Requirements
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+        pip install mypy
+        sudo apt install gcc -y
+        pip install -r requirements.txt
+    - name: Python Pylint
+      run: |
+        pylint --rcfile=pylintrc projector_installer/ setup.py
+    - name: Python MyPy
+      run: |
+        mypy projector_installer/ setup.py
