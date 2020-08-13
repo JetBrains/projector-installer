@@ -12,14 +12,14 @@ In Debian-based distributive you can install them using the command:
 sudo apt install python3 python3-pip 
 ``` 
 Also make sure that you have installed the following packets: 
- - libext6
+ - libxext6
  - libxrender1
  - libxtst6
  - libfreetype6
    
 In Debian-based distributive you can install them using the command:
 ```bash
-sudo apt install libext6 libxrender1 libxtst6 libfreetype6  
+sudo apt install libxext6 libxrender1 libxtst6 libfreetype6  
 ```    
 
 ## Installation
