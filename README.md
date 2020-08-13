@@ -185,9 +185,11 @@ python3 -m twine upload dist/*  # Upload to https://pypi.org/project/projector-i
 ## Troubleshooting
 - `projector` command is unavailable after installation.
 
-In fresh Linux installations the directory `~/.local/bin`
+In some Linux distributions the directory `~/.local/bin`
 can be missed in the `PATH` variable. If the `projector` command
-is not available after installation, try to restart the terminal.
+is not available after installation, try run `source ~/.profile`.
+If it does not help, try add the following line at the end of your ~/.profile:
+`export  PATH=${PATH}:~/.local/bin` and run `source ~/.profile`.
 
 - On WSL can't access URL, displayed in projector console from Windows browser.
 
