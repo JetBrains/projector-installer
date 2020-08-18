@@ -24,7 +24,8 @@ from .global_config import get_http_dir, get_download_cache_dir, get_path_to_pro
 from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, get_run_script, validate_run_config, \
-    save_config, delete_config, rename_config, make_config_name, get_configs_with_app
+    save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
+    update_markdown_plugin
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -191,6 +192,14 @@ def do_rename_config(from_name: str, to_name: str) -> None:
         sys.exit(1)
 
     rename_config(from_name, to_name)
+
+
+def do_update_markdown_plugin(config_name: Optional[str] = None) -> None:
+    """Performs markdown plugin update"""
+    config_name, run_config = select_run_config(config_name)
+    print(f'Updating markdown plugin in configuration {config_name}')
+
+    update_markdown_plugin(run_config)
 
 
 def do_find_app(pattern: Optional[str] = None) -> None:
