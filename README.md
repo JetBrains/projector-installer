@@ -162,6 +162,9 @@ runs the configuration with name 'goland'
 
 `projector config show` - show configuration details
 
+`projector config update-markdown-plugin` - updates projector markdown plugin in existing configuration 
+with bundled version. Can be useful after update projector-installer package.
+
 ## Build python wheel file
 ```bash
 pip3 install wheel
