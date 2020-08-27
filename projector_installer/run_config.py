@@ -14,14 +14,10 @@ import configparser
 from .apps import get_app_path, make_run_script
 from .global_config import get_run_configs_dir, RunConfig
 from .ide_configuration import install_own_markdown_plugin
-from .secrets import generate_server_secrets
+from .secret_config import generate_server_secrets
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
-SSL_PROPERTIES_FILE = 'ssl.properties'
-HTTP_CERT_FILE = 'http_server.crt'
-HTTP_KEY_FILE = 'http_server.key'
-PROJECTOR_JKS_FILE = 'projector.jks'
 
 
 def load_config(config_name: str) -> RunConfig:
@@ -172,23 +168,3 @@ def update_markdown_plugin(run_config: RunConfig) -> None:
 def is_secure(run_config: RunConfig) -> bool:
     """Checks if secure configuration"""
     return run_config.token != ''
-
-
-def get_server_cert_file(config_name: str) -> str:
-    """Returns full path to http server certificate file"""
-    return join(get_run_configs_dir(), config_name, HTTP_CERT_FILE)
-
-
-def get_server_key_file(config_name: str) -> str:
-    """Returns full path to http server key file"""
-    return join(get_run_configs_dir(), config_name, HTTP_KEY_FILE)
-
-
-def get_ssl_properties_file(config_name: str) -> str:
-    """Returns full path to ssl.propertirs file"""
-    return join(get_run_configs_dir(), config_name, SSL_PROPERTIES_FILE)
-
-
-def get_projector_jks_file(config_name: str) -> str:
-    """Returns full path to http server key file"""
-    return join(get_run_configs_dir(), config_name, PROJECTOR_JKS_FILE)

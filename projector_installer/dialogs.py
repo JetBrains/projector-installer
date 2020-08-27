@@ -16,7 +16,7 @@ from .run_config import get_run_configs, RunConfig, get_run_config_names, \
     get_used_projector_ports, get_used_http_ports
 
 from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
-from .secrets import generate_token
+from .secret_config import generate_token
 
 
 def display_run_configs_names(config_names: List[str]) -> None:

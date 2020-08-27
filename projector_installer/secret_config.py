@@ -9,9 +9,13 @@ from os.path import join, isfile
 import secrets
 import string
 
-from .global_config import get_ssl_dir, RunConfig
-from .run_config import get_ssl_properties_file, get_projector_jks_file
+from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir
 from .utils import create_dir_if_not_exist
+
+SSL_PROPERTIES_FILE = 'ssl.properties'
+HTTP_CERT_FILE = 'http_server.crt'
+HTTP_KEY_FILE = 'http_server.key'
+PROJECTOR_JKS_FILE = 'projector.jks'
 
 DEF_TOKEN_LEN = 20
 CA_NAME = 'ca'
@@ -21,6 +25,26 @@ def generate_token() -> str:
     """Generates token to access server's secrets"""
     alphabet = string.ascii_letters + string.digits
     return ''.join(secrets.choice(alphabet) for i in range(DEF_TOKEN_LEN))
+
+
+def get_server_cert_file(config_name: str) -> str:
+    """Returns full path to http server certificate file"""
+    return join(get_run_configs_dir(), config_name, HTTP_CERT_FILE)
+
+
+def get_server_key_file(config_name: str) -> str:
+    """Returns full path to http server key file"""
+    return join(get_run_configs_dir(), config_name, HTTP_KEY_FILE)
+
+
+def get_ssl_properties_file(config_name: str) -> str:
+    """Returns full path to ssl.properties file"""
+    return join(get_run_configs_dir(), config_name, SSL_PROPERTIES_FILE)
+
+
+def get_projector_jks_file(config_name: str) -> str:
+    """Returns full path to http server key file"""
+    return join(get_run_configs_dir(), config_name, PROJECTOR_JKS_FILE)
 
 
 def get_ca_cert_file() -> str:

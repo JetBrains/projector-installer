@@ -14,7 +14,8 @@ import socket
 import ssl
 
 from .global_config import RunConfig
-from .run_config import is_secure, get_server_cert_file, get_server_key_file
+from .run_config import is_secure
+from .secret_config import get_server_cert_file, get_server_key_file
 
 
 class NoLogServer(SimpleHTTPRequestHandler):
