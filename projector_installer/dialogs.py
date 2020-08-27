@@ -344,7 +344,7 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
     projector_port = select_projector_port()
     secure_config = click.prompt(
         'Use secure connection '
-        '(this option requires installing a projector CA certificate to browser)? [y/n]',
+        '(this option requires installing a projector\'s certificate to browser)? [y/n]',
         type=bool)
 
     token = generate_token() if secure_config else ''
@@ -380,7 +380,7 @@ def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[Us
 
     secure_config = click.prompt(
         'Use secure connection '
-        '(this option requires installing a new certificate to browser)? [y/n]',
+        '(this option requires installing a projector\'s certificate to browser)? [y/n]',
         type=bool)
 
     return UserInstallInput(config_name, http_address, http_port, projector_port,
