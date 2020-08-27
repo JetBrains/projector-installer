@@ -4,7 +4,6 @@
 
 """Secure config related stuff"""
 import subprocess
-from os import getcwd, chdir
 from os.path import join, isfile
 import secrets
 import string
@@ -15,7 +14,7 @@ from .utils import create_dir_if_not_exist
 SSL_PROPERTIES_FILE = 'ssl.properties'
 HTTP_CERT_FILE = 'http_server.crt'
 HTTP_KEY_FILE = 'http_server.key'
-PROJECTOR_JKS_FILE = 'projector.jks'
+PROJECTOR_JKS_NAME = 'projector'
 
 DEF_TOKEN_LEN = 20
 CA_NAME = 'ca'
@@ -27,12 +26,12 @@ def generate_token() -> str:
     return ''.join(secrets.choice(alphabet) for i in range(DEF_TOKEN_LEN))
 
 
-def get_server_cert_file(config_name: str) -> str:
+def get_http_cert_file(config_name: str) -> str:
     """Returns full path to http server certificate file"""
     return join(get_run_configs_dir(), config_name, HTTP_CERT_FILE)
 
 
-def get_server_key_file(config_name: str) -> str:
+def get_http_key_file(config_name: str) -> str:
     """Returns full path to http server key file"""
     return join(get_run_configs_dir(), config_name, HTTP_KEY_FILE)
 
@@ -44,7 +43,7 @@ def get_ssl_properties_file(config_name: str) -> str:
 
 def get_projector_jks_file(config_name: str) -> str:
     """Returns full path to http server key file"""
-    return join(get_run_configs_dir(), config_name, PROJECTOR_JKS_FILE)
+    return join(get_run_configs_dir(), config_name, f'{PROJECTOR_JKS_NAME}.jks')
 
 
 def get_ca_cert_file() -> str:
@@ -69,62 +68,59 @@ def is_ca_exist() -> bool:
     return ret
 
 
-# keytool -genkeypair -v \
-#   -alias ca \
-#   -dname "CN=$AUTORITY-CA, OU=Development, O=$AUTORITY, L=SPB, S=SPB, C=RU" \
-#   -keystore ca.jks \
-#   -keypass:env PW \
-#   -storepass:env PW \
-#   -keyalg RSA \
-#   -keysize 4096 \
-#   -ext KeyUsage:critical="keyCertSign" \
-#   -ext BasicConstraints:critical="ca:true" \
-#   -validity 9999
-#
-
 CA_PASSWORD = '85TibAyPS3NZX3'
-DIST_NAME = '"CN=PROJECTOR-CA, OU=Development, O=Projector, L=SPB, S=SPB, C=RU"'
-
-GENERATE_CA = ['-genkeypair', '-alias', CA_NAME,
-               '-dbname', DIST_NAME, '-keystore', get_ca_jks_file(),
-               '-keypass', CA_PASSWORD, '-storepass', CA_PASSWORD,
-               '-keyalg', 'RSA', '-keysize', '4096',
-               '-ext', 'KeyUsage:critical="keyCertSign"',
-               '-ext', 'BasicConstraints:critical="ca:true"',
-               '-validity', '9999'
-               ]
-
-#
-# keytool -export -v \
-#   -alias ca \
-#   -file ca.crt \
-#   -keypass:env PW \
-#   -storepass:env PW \
-#   -keystore ca.jks \
-#   -rfc
+DIST_NAME = 'CN=PROJECTOR-CA, OU=Development, O=Projector, L=SPB, S=SPB, C=RU'
 
 
-EXPORT_CA = ['-export', '-alias', 'ca', '-file', f'{get_ca_cert_file()}', '-keypass', CA_PASSWORD,
-             '-storepass', CA_PASSWORD, '-keystore', f'{get_ca_jks_file()}', '-rfc']
+def get_generate_ca_command():
+    """Returns list of args for generate ca"""
+    return ['-genkeypair', '-alias', CA_NAME,
+            '-dname', DIST_NAME, '-keystore', get_ca_jks_file(),
+            '-keypass', CA_PASSWORD, '-storepass', CA_PASSWORD,
+            '-keyalg', 'RSA', '-keysize', '4096',
+            '-ext', 'KeyUsage:critical=keyCertSign',
+            '-ext', 'BasicConstraints:critical=ca:true',
+            '-validity', '9999'
+            ]
+
+
+def get_export_ca_command():
+    """Returns list of args for export ca.crt"""
+    return ['-export', '-alias', 'ca', '-file', f'{get_ca_cert_file()}', '-keypass', CA_PASSWORD,
+            '-storepass', CA_PASSWORD, '-keystore', f'{get_ca_jks_file()}', '-rfc']
 
 
 def generate_ca(keytool_path: str) -> None:
     """Creates CA"""
-    cwd = getcwd()
     create_dir_if_not_exist(get_ssl_dir())
-    chdir(get_ssl_dir())
-    # generate ca
-    cmd = [keytool_path] + GENERATE_CA
-    subprocess.check_call(cmd)
-    cmd = [keytool_path] + EXPORT_CA
-    subprocess.check_call(cmd)
+    cmd = [keytool_path] + get_generate_ca_command()
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    cmd = [keytool_path] + get_export_ca_command()
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
 
-    chdir(cwd)
 
+# Create a server certificate
+# keytool -genkeypair -v \
+#   -alias $ID_VALUE \
+#   -dname "CN=$SERVER, OU=Development, O=$SERVER, L=SPB, S=SPB, C=RU" \
+#   -keystore $ID_VALUE.jks \
+#   -keypass:env PW \
+#   -storepass:env PW \
+#   -keyalg RSA \
+#   -keysize 2048 \
+#   -validity 385
+
+
+
+def get_projector_gen_jks_args():
+    return [
+        '-genkeypair', '-alias', PROJECTOR_JKS_NAME, '-dname',
+    ]
 
 def generate_projector_jks(run_config: RunConfig, keytool_path: str) -> None:
     """Generates projector jks for given config"""
     file_name = get_projector_jks_file(run_config.name)
+
 
 
 def generate_ssl_properties_file(config_name: str, token: str) -> None:
@@ -152,3 +148,5 @@ def generate_server_secrets(run_config: RunConfig) -> None:
         generate_ca(keytool_path)
 
     generate_projector_jks(run_config, keytool_path)
+    generate_ssl_properties_file(run_config.name, run_config.token)
+    generate_http_cert(run_config)

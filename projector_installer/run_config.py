@@ -61,6 +61,7 @@ def save_config(run_config: RunConfig) -> None:
     config['HTTP.SERVER']['PORT'] = str(run_config.http_port)
 
     if is_secure(run_config):
+        config['SSL'] = {}
         config['SSL']['TOKEN'] = run_config.token
 
     config_path = join(get_run_configs_dir(), run_config.name)
