@@ -8,7 +8,7 @@ import shutil
 import signal
 import subprocess
 import sys
-from typing import Optional
+from typing import Optional, Dict
 from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
@@ -20,12 +20,13 @@ from .dialogs import select_compatible_app, select_new_config_name, list_configs
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, make_config_from_input
 
-from .global_config import get_http_dir, get_download_cache_dir, get_path_to_projector_log
+from .global_config import get_http_dir, get_download_cache_dir, get_path_to_projector_log, \
+    RunConfig
 from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, get_run_script, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    update_markdown_plugin
+    update_markdown_plugin, is_secure, get_ssl_properties_file
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -69,6 +70,30 @@ def wsl_warning() -> None:
           'https://github.com/JetBrains/projector-installer#resolving-wsl-issues')
 
 
+def get_environment(run_config: RunConfig) -> Dict[str, str]:
+    """Prepare environment for projector server process"""
+
+    env: Dict[str, str] = {}
+
+    if is_secure(run_config):
+        env = {
+            'ORG_JETBRAINS_PROJECTOR_SERVER_SSL_PROPERTIES_PATH':
+                get_ssl_properties_file(run_config.name),
+            'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN':
+                run_config.token
+        }
+
+    return env
+
+
+def get_access_url(run_config: RunConfig) -> str:
+    """Returns access URL for given config"""
+    if is_secure(run_config):
+        return f'https://{run_config.http_address}:{run_config.http_port}/'
+
+    return f'http://{run_config.http_address}:{run_config.http_port}/'
+
+
 # noinspection PyShadowingNames
 def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
     """Executes specified config. If given name does not specify
@@ -84,12 +109,14 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
         sys.exit(1)
 
     projector_log = open(get_path_to_projector_log(), 'a')
+    env = get_environment(run_config)
 
-    projector_process = subprocess.Popen([f'{run_script_name}'], stdout=projector_log,
-                                         stderr=projector_log)
+    projector_process = subprocess.Popen([f'{run_script_name}'],
+                                         stdout=projector_log,
+                                         stderr=projector_log,
+                                         env=env)
 
-    http_process = HttpServerProcess(run_config.http_address, run_config.http_port, get_http_dir(),
-                                     run_config.projector_port)
+    http_process = HttpServerProcess(run_config, get_http_dir())
 
     def signal_handler(*args):  # type: ignore
         # pylint: disable=unused-argument
@@ -104,7 +131,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     signal.signal(signal.SIGINT, signal_handler)
 
     http_process.start()
-    access_url = f'http://{run_config.http_address}:{run_config.http_port}/'
+    access_url = get_access_url(run_config)
     print(f'HTTP process PID={http_process.pid}')
     print(f'To access your IDE, open {access_url} in your browser')
     print('Exit IDE or press Ctrl+C to stop Projector.')
@@ -135,7 +162,7 @@ def do_add_config(hint: Optional[str], app_path: Optional[str] = None) -> None:
         print('Configuration name was not selected, exiting...')
         sys.exit(1)
 
-    run_config = make_run_config(app_path)
+    run_config = make_run_config(config_name, app_path)
 
     if run_config.path_to_app is None:
         print('IDE was not selected, exiting...')
@@ -147,7 +174,7 @@ def do_add_config(hint: Optional[str], app_path: Optional[str] = None) -> None:
         print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
         sys.exit(1)
 
-    save_config(config_name, run_config)
+    save_config(run_config)
 
 
 def do_remove_config(config_name: Optional[str] = None) -> None:
@@ -170,7 +197,7 @@ def do_edit_config(config_name: Optional[str] = None) -> None:
         print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
         sys.exit(1)
 
-    save_config(config_name, run_config)
+    save_config(run_config)
 
     print('done.')
 
@@ -262,7 +289,6 @@ def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_update
     if not allow_updates:
         forbid_updates_for(app_path)
 
-    config_name = user_input.config_name
     run_config = make_config_from_input(user_input)
     run_config.path_to_app = app_path
 
@@ -272,10 +298,10 @@ def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_update
         print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
         sys.exit(1)
 
-    save_config(config_name, run_config)
+    save_config(run_config)
 
     if user_input.do_run:
-        do_run_config(config_name, run_browser)
+        do_run_config(run_config.name, run_browser)
 
 
 def do_uninstall_app(app_name: Optional[str] = None) -> None:

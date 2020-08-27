@@ -16,6 +16,7 @@ from .run_config import get_run_configs, RunConfig, get_run_config_names, \
     get_used_projector_ports, get_used_http_ports
 
 from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
+from .secrets import generate_token
 
 
 def display_run_configs_names(config_names: List[str]) -> None:
@@ -329,7 +330,7 @@ def edit_config(config: RunConfig) -> RunConfig:
     return config
 
 
-def make_run_config(app_path: Optional[str] = None) -> RunConfig:
+def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConfig:
     """Creates run config with specified app_path."""
     if app_path is None:
         app_path = select_app_path()
@@ -341,20 +342,27 @@ def make_run_config(app_path: Optional[str] = None) -> RunConfig:
     http_address = select_http_address('localhost')
     http_port = select_http_port()
     projector_port = select_projector_port()
+    secure_config = click.prompt(
+        'Use secure connection '
+        '(this option requires installing a projector CA certificate to browser)? [y/n]',
+        type=bool)
 
-    return RunConfig(expanduser(app_path), '', projector_port, http_address, http_port)
+    token = generate_token() if secure_config else ''
+    return RunConfig(config_name, expanduser(app_path), projector_port,
+                     http_address, http_port, token)
 
 
 class UserInstallInput:
     """Represents user answers during install session"""
 
     def __init__(self, config_name: str, http_address: str, http_port: int,
-                 projector_port: int, do_run: bool) -> None:
+                 projector_port: int, do_run: bool, secure_config: bool) -> None:
         self.config_name: str = config_name
         self.http_address: str = http_address
         self.http_port: int = http_port
         self.projector_port: int = projector_port
         self.do_run = do_run
+        self.secure_config = secure_config
 
 
 def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[UserInstallInput]:
@@ -370,9 +378,17 @@ def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[Us
     do_run = True if auto_run else click.prompt('Would you like to run installed ide? [y/n]',
                                                 type=bool)
 
-    return UserInstallInput(config_name, http_address, http_port, projector_port, do_run)
+    secure_config = click.prompt(
+        'Use secure connection '
+        '(this option requires installing a new certificate to browser)? [y/n]',
+        type=bool)
+
+    return UserInstallInput(config_name, http_address, http_port, projector_port,
+                            do_run, secure_config)
 
 
 def make_config_from_input(inp: UserInstallInput) -> RunConfig:
     """Makes run config from user input"""
-    return RunConfig('', '', inp.projector_port, inp.http_address, inp.http_port)
+    token = generate_token() if inp.secure_config else ''
+    return RunConfig(inp.config_name, '', inp.projector_port,
+                     inp.http_address, inp.http_port, token)

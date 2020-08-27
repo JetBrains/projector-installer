@@ -55,6 +55,11 @@ def get_download_cache_dir() -> str:
     return join(config_dir, 'cache')
 
 
+def get_ssl_dir() -> str:
+    """Returns full path to ssl directory."""
+    return join(config_dir, 'ssl')
+
+
 def get_compatible_ide_file() -> str:
     """Returns full path to compatible ide file."""
     return join(INSTALL_DIR, COMPATIBLE_IDE_FILE)
@@ -80,13 +85,14 @@ COMPATIBLE_APPS: List[CompatibleApp] = []
 class RunConfig:
     """Run config dataclass"""
 
-    def __init__(self, path_to_app: str, ide_config_dir: str, projector_port: int,
-                 http_address: str, http_port: int) -> None:
+    def __init__(self, own_name: str, path_to_app: str, projector_port: int,
+                 http_address: str, http_port: int, token: str) -> None:
+        self.name = own_name
         self.path_to_app: str = path_to_app
-        self.ide_config_dir: str = ide_config_dir
         self.projector_port: int = projector_port
         self.http_address: str = http_address
         self.http_port: int = http_port
+        self.token = token
 
 
 def load_compatible_apps_from_file(file_name: str) -> None:
