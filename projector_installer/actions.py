@@ -13,6 +13,7 @@ from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app
+from .secret_config import get_ssl_properties_file
 
 from .utils import download_file
 
@@ -26,7 +27,7 @@ from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, get_run_script, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    update_markdown_plugin, is_secure, get_ssl_properties_file
+    update_markdown_plugin, is_secure
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
