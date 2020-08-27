@@ -14,9 +14,14 @@ import configparser
 from .apps import get_app_path, make_run_script
 from .global_config import get_run_configs_dir, RunConfig
 from .ide_configuration import install_own_markdown_plugin
+from .secrets import generate_server_secrets
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
+SSL_PROPERTIES_FILE = 'ssl.properties'
+HTTP_CERT_FILE = 'http_server.crt'
+HTTP_KEY_FILE = 'http_server.key'
+PROJECTOR_JKS_FILE = 'projector.jks'
 
 
 def load_config(config_name: str) -> RunConfig:
@@ -25,15 +30,16 @@ def load_config(config_name: str) -> RunConfig:
     config_path = join(get_run_configs_dir(), config_name, CONFIG_INI_NAME)
     config.read(config_path)
 
-    return RunConfig(config.get('IDE', 'PATH'),
-                     config.get('IDE', 'CONFIG_DIR'),
+    return RunConfig(config_name,
+                     config.get('IDE', 'PATH'),
                      config.getint('PROJECTOR', 'PORT'),
                      config.get('HTTP.SERVER', 'ADDRESS'),
-                     config.getint('HTTP.SERVER', 'PORT'))
+                     config.getint('HTTP.SERVER', 'PORT'),
+                     config.get('SSL', 'TOKEN', fallback=''))
 
 
 def get_run_script(config_name: str) -> str:
-    """Returns fuill path to projector run script"""
+    """Returns full path to projector run script"""
     return join(get_run_configs_dir(), config_name, RUN_SCRIPT_NAME)
 
 
@@ -45,12 +51,11 @@ def generate_run_script(config_name: str) -> None:
     make_run_script(run_config, run_script)
 
 
-def save_config(config_name: str, run_config: RunConfig) -> None:
+def save_config(run_config: RunConfig) -> None:
     """Saves given run config."""
     config = configparser.ConfigParser()
     config['IDE'] = {}
     config['IDE']['PATH'] = run_config.path_to_app
-    config['IDE']['CONFIG_DIR'] = run_config.ide_config_dir
 
     config['PROJECTOR'] = {}
     config['PROJECTOR']['PORT'] = str(run_config.projector_port)
@@ -59,7 +64,10 @@ def save_config(config_name: str, run_config: RunConfig) -> None:
     config['HTTP.SERVER']['ADDRESS'] = run_config.http_address
     config['HTTP.SERVER']['PORT'] = str(run_config.http_port)
 
-    config_path = join(get_run_configs_dir(), config_name)
+    if is_secure(run_config):
+        config['SSL']['TOKEN'] = run_config.token
+
+    config_path = join(get_run_configs_dir(), run_config.name)
 
     if not path.isdir(config_path):
         mkdir(config_path)
@@ -69,7 +77,10 @@ def save_config(config_name: str, run_config: RunConfig) -> None:
     with open(config_path, 'w') as configfile:
         config.write(configfile)
 
-    generate_run_script(config_name)
+    generate_run_script(run_config.name)
+
+    if is_secure(run_config):
+        generate_server_secrets(run_config)
 
 
 def get_run_configs(pattern: Optional[str] = None) -> Dict[str, RunConfig]:
@@ -156,3 +167,28 @@ def update_markdown_plugin(run_config: RunConfig) -> None:
     Useful after script update.
     """
     install_own_markdown_plugin(run_config.path_to_app)
+
+
+def is_secure(run_config: RunConfig) -> bool:
+    """Checks if secure configuration"""
+    return run_config.token != ''
+
+
+def get_server_cert_file(config_name: str) -> str:
+    """Returns full path to http server certificate file"""
+    return join(get_run_configs_dir(), config_name, HTTP_CERT_FILE)
+
+
+def get_server_key_file(config_name: str) -> str:
+    """Returns full path to http server key file"""
+    return join(get_run_configs_dir(), config_name, HTTP_KEY_FILE)
+
+
+def get_ssl_properties_file(config_name: str) -> str:
+    """Returns full path to ssl.propertirs file"""
+    return join(get_run_configs_dir(), config_name, SSL_PROPERTIES_FILE)
+
+
+def get_projector_jks_file(config_name: str) -> str:
+    """Returns full path to http server key file"""
+    return join(get_run_configs_dir(), config_name, PROJECTOR_JKS_FILE)

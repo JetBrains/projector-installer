@@ -4,7 +4,6 @@
 
 
 """Command line interface to projector-installer"""
-
 from os import path
 from typing import Any, Optional
 import click

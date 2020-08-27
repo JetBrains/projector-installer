@@ -11,13 +11,18 @@ from http.server import SimpleHTTPRequestHandler
 import socketserver
 from multiprocessing import Process
 import socket
+import ssl
+
+from .global_config import RunConfig
+from .run_config import is_secure, get_server_cert_file, get_server_key_file
 
 
 class NoLogServer(SimpleHTTPRequestHandler):
     """Custom http server class to serve static projector client files."""
     address: str = ''
-    http_port: str = ''
+    port: str = ''
     projector_port: str = ''
+    token: str = ''
 
     def log_message(self, *args: Any) -> None:
         pass
@@ -34,9 +39,22 @@ class NoLogServer(SimpleHTTPRequestHandler):
             pass
 
     @classmethod
+    def init_with(cls, run_config: RunConfig) -> None:
+        """Initializes server with run config params"""
+        cls.address = run_config.http_address
+        cls.port = str(run_config.http_port)
+        cls.projector_port = str(run_config.projector_port)
+        cls.token = run_config.token
+
+    @classmethod
     def redirect_url(cls) -> str:
         """Constructs redirect url."""
-        return f'http://{cls.address}:{cls.http_port}/index.html?port={cls.projector_port}'
+
+        if len(cls.token) > 0:  # secure connection
+            return f'https://{cls.address}:{cls.port}/index.html?' \
+                   f'token={cls.token}&port={cls.projector_port}'
+
+        return f'http://{cls.address}:{cls.port}/index.html?port={cls.projector_port}'
 
     def is_empty_path(self) -> bool:
         """Checks if current path is empty."""
@@ -64,22 +82,26 @@ class NoLogServer(SimpleHTTPRequestHandler):
 class HttpServerProcess(Process):
     """Http server process class."""
 
-    def __init__(self, address: str, port: int, directory: str, projector_port: int) -> None:
+    def __init__(self, run_config: RunConfig, directory: str) -> None:
         super().__init__(daemon=True)
-        self.address = address
-        self.port = port
+        self.run_config = run_config
         self.directory = directory
-        self.projector_port = projector_port
         self.httpd: Optional[socketserver.BaseServer] = None
 
     def run(self) -> None:
         chdir(self.directory)
-        NoLogServer.address = self.address
-        NoLogServer.http_port = str(self.port)
-        NoLogServer.projector_port = str(self.projector_port)
+        NoLogServer.init_with(self.run_config)
         socketserver.TCPServer.allow_reuse_address = True
 
-        with socketserver.TCPServer((self.address, self.port), NoLogServer) as httpd:
+        with socketserver.TCPServer((self.run_config.http_address,
+                                     self.run_config.http_port),
+                                    NoLogServer) as httpd:
+            if is_secure(self.run_config):
+                context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+                context.load_cert_chain(get_server_cert_file(self.run_config.name),
+                                        get_server_key_file(self.run_config.name))
+                httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
+
             self.httpd = httpd
 
             try:
