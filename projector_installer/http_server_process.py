@@ -29,7 +29,7 @@ class NoLogServer(SimpleHTTPRequestHandler):
                 self.send_header('Location', NoLogServer.redirect_url())
                 self.end_headers()
             else:
-                super(NoLogServer, self).do_GET()
+                super().do_GET()
         except socket.error:
             pass
 
@@ -65,7 +65,7 @@ class HttpServerProcess(Process):
     """Http server process class."""
 
     def __init__(self, address: str, port: int, directory: str, projector_port: int) -> None:
-        super(HttpServerProcess, self).__init__(daemon=True)
+        super().__init__(daemon=True)
         self.address = address
         self.port = port
         self.directory = directory
@@ -94,4 +94,4 @@ class HttpServerProcess(Process):
             self.httpd.shutdown()
             self.httpd.server_close()
 
-        super(HttpServerProcess, self).terminate()
+        super().terminate()
