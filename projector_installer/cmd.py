@@ -5,6 +5,7 @@
 
 """Command line interface to projector-installer"""
 from os import path
+from os.path import expanduser, realpath, expandvars
 from typing import Any, Optional
 import click
 
@@ -33,7 +34,7 @@ def projector(ctx: Any, config_directory: str) -> None:
     This script helps to install, manage, and run JetBrains IDEs with Projector.
     """
 
-    global_config.config_dir = config_directory
+    global_config.config_dir = realpath(expandvars(expanduser(config_directory)))
 
     if is_first_start():
         display_license()
