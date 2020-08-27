@@ -14,7 +14,7 @@ from .global_config import init_config_dir, init_compatible_apps
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
-    do_rename_config
+    do_rename_config, do_update_markdown_plugin
 from .license import display_license
 
 
@@ -205,6 +205,19 @@ def rename(from_name: str, to_name: str) -> None:
     Rename an existing configuration.
     """
     do_rename_config(from_name, to_name)
+
+
+@config.command(short_help='Update markdown plugin in existing configuration')
+@click.argument('config_name', type=click.STRING, required=False)
+def update_markdown_plugin(config_name: Optional[str]) -> None:
+    """projector config update-markdown-plugin [config_name]
+
+    Update markdown plugin in existing configuration.
+    """
+    do_update_markdown_plugin(config_name)
+
+
+config.add_command(update_markdown_plugin, name='update-markdown-plugin')
 
 
 # Projector commands shortcuts

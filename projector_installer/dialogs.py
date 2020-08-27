@@ -6,6 +6,7 @@
 """User dialog related procedures."""
 
 import sys
+from os.path import expanduser
 from typing import Optional, Dict, List, Tuple
 import click
 import netifaces  # type: ignore
@@ -341,7 +342,7 @@ def make_run_config(app_path: Optional[str] = None) -> RunConfig:
     http_port = select_http_port()
     projector_port = select_projector_port()
 
-    return RunConfig(app_path, '', projector_port, http_address, http_port)
+    return RunConfig(expanduser(app_path), '', projector_port, http_address, http_port)
 
 
 class UserInstallInput:

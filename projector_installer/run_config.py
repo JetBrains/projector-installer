@@ -13,6 +13,7 @@ import configparser
 
 from .apps import get_app_path, make_run_script
 from .global_config import get_run_configs_dir, RunConfig
+from .ide_configuration import install_own_markdown_plugin
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
@@ -147,3 +148,11 @@ def get_configs_with_app(app_name: str) -> List[str]:
     """Returns list of configs which referees to given app name."""
     app_path = get_app_path(app_name)
     return [k for k, v in get_run_configs().items() if v.path_to_app == app_path]
+
+
+def update_markdown_plugin(run_config: RunConfig) -> None:
+    """
+    Updates markdown plugin in specified config with bundled version.
+    Useful after script update.
+    """
+    install_own_markdown_plugin(run_config.path_to_app)
