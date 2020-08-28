@@ -140,7 +140,8 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
         print('If browser warns on unsecure connection, install projector certificate:')
         print(get_ca_cert_file())
         print('Refer to: ')
-        print('https://github.com/JetBrains/projector-installer/blob/master/README.md#Secure-connection')
+        print('https://github.com/JetBrains/projector-installer/blob/master/'
+              'README.md#Secure-connection')
 
     print('Exit IDE or press Ctrl+C to stop Projector.')
 
