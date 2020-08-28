@@ -3,11 +3,13 @@
 #  in the LICENSE file.
 
 """Secure config related stuff"""
+from os.path import join, isfile
+from typing import List
+
+import re
 import subprocess
 import secrets
 import string
-from os.path import join, isfile
-from typing import List
 
 from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir
 from .utils import create_dir_if_not_exist
@@ -186,11 +188,22 @@ def get_projector_cert_sign_request_args(run_config: RunConfig) -> List[str]:
 
 def is_ip_address(address: str) -> bool:
     """Detects if given string is IP address"""
-    return address != 'localhost'
+    return re.match(
+        r'^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.)'
+        '{3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
+        address)
+
+
+def get_projector_san(address: str) -> str:
+    """Returns san"""
+    if is_ip_address(address):
+        return "IP:" + address
+
+    return "DNS:" + address
 
 
 def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
-    """Returns list of args to sugn projector server cert"""
+    """Returns list of args to sign projector server cert"""
     return [
         '-gencert',
         '-alias', CA_NAME,
@@ -201,7 +214,7 @@ def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
         '-outfile', get_projector_cert_file(run_config.name),
         '-ext', 'KeyUsage:critical=digitalSignature,keyEncipherment',
         '-ext', 'EKU=serverAuth',
-        '-ext', 'SAN=DNS:localhost',
+        '-ext', f'SAN={get_projector_san(run_config.http_address)}',
         '-rfc'
     ]
 
