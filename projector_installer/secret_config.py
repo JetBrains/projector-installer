@@ -4,9 +4,9 @@
 
 """Secure config related stuff"""
 import subprocess
-from os.path import join, isfile
 import secrets
 import string
+from os.path import join, isfile
 from typing import List
 
 from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir
@@ -102,7 +102,7 @@ def is_ca_exist() -> bool:
 DIST_CA_NAME = 'CN=PROJECTOR-CA, OU=Development, O=Projector, L=SPB, S=SPB, C=RU'
 
 
-def get_generate_ca_command():
+def get_generate_ca_command() -> List[str]:
     """Returns list of args for generate ca"""
     return ['-genkeypair', '-alias', CA_NAME,
             '-dname', DIST_CA_NAME, '-keystore', get_ca_jks_file(),
@@ -121,6 +121,7 @@ def get_export_ca_command() -> List[str]:
 
 
 def get_convert_ca_to_pkcs12() -> List[str]:
+    """Returns list of args for convert ca to pkcs12 format"""
     return [
         '-importkeystore', '-srckeystore', get_ca_jks_file(),
         '-srcstoretype', 'JKS',
@@ -131,14 +132,8 @@ def get_convert_ca_to_pkcs12() -> List[str]:
     ]
 
 
-# # extract ca.key from pkcs12
-# openssl
-# pkcs12 - in ca.p12 - nodes - nocerts - out
-# ca.key - passin
-# env: PW
-
-
-def get_extract_ca_key_args():
+def get_extract_ca_key_args() -> List[str]:
+    """Returns list of openssl args for extract ca key"""
     return [
         'pkcs12',
         '-in', get_ca_pkcs12_file(),
@@ -180,26 +175,22 @@ def get_projector_gen_jks_args(run_config: RunConfig) -> List[str]:
 
 
 def get_projector_cert_sign_request_args(run_config: RunConfig) -> List[str]:
+    """Returns list of args for request cert sign"""
     return [
-        '-certreq', '-alias', PROJECTOR_JKS_NAME, '-keypass', run_config.token, '-storepass', run_config.token,
-        '-keystore', get_projector_jks_file(run_config.name), '-file', get_projector_csr_file(run_config.name)
+        '-certreq', '-alias', PROJECTOR_JKS_NAME, '-keypass', run_config.token,
+        '-storepass', run_config.token,
+        '-keystore', get_projector_jks_file(run_config.name),
+        '-file', get_projector_csr_file(run_config.name)
     ]
 
 
-# TODO: Fix is_ip_address function
-def is_ip_address(address: str):
+def is_ip_address(address: str) -> bool:
     """Detects if given string is IP address"""
     return address != 'localhost'
 
 
-def get_san_value(http_address: str) -> str:
-    if is_ip_address(http_address):
-        return 'IP:' + http_address
-
-    return 'DNS:' + http_address
-
-
 def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
+    """Returns list of args to sugn projector server cert"""
     return [
         '-gencert',
         '-alias', CA_NAME,
@@ -216,6 +207,7 @@ def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
 
 
 def get_projector_import_ca_args(run_config: RunConfig) -> List[str]:
+    """Returns list of args to import ca to projector jks"""
     return [
         '-import', '-alias', CA_NAME,
         '-file', get_ca_cert_file(),
@@ -227,6 +219,7 @@ def get_projector_import_ca_args(run_config: RunConfig) -> List[str]:
 
 
 def get_projector_import_cert_args(run_config: RunConfig) -> List[str]:
+    """Returns list of args tyo import projector cert to jks"""
     return [
         '-import', '-alias', PROJECTOR_JKS_NAME,
         '-file', get_projector_cert_file(run_config.name),
@@ -270,52 +263,8 @@ def get_http_gen_args(run_config: RunConfig) -> List[str]:
     ]
 
 
-def get_http_cert_sign_request_args(run_config: RunConfig) -> List[str]:
-    return [
-        '-certreq', '-alias', HTTP_SERVER, '-keypass', run_config.token, '-storepass', run_config.token,
-        '-keystore', get_http_jks_file(run_config.name), '-file', get_http_csr_file(run_config.name)
-    ]
-
-
-def get_http_cert_sign_args(run_config: RunConfig) -> List[str]:
-    return [
-        '-gencert',
-        '-alias', CA_NAME,
-        '-keypass', run_config.token,
-        '-storepass', CA_PASSWORD,
-        '-keystore', get_ca_jks_file(),
-        '-infile', get_http_csr_file(run_config.name),
-        '-outfile', get_http_cert_file(run_config.name),
-        '-ext', 'KeyUsage:critical=digitalSignature,keyEncipherment',
-        '-ext', 'EKU=serverAuth',
-        '-ext', f'SAN={get_san_value(run_config.http_address)}',
-        '-rfc'
-    ]
-
-
-def get_convert_to_pkcs12_args(run_config: RunConfig) -> List[str]:
-    return [
-        '-importkeystore', '-srckeystore', get_projector_jks_file(run_config.name),
-        '-srcstoretype', 'JKS',
-        '-srcstorepass', run_config.token,
-        '-destkeystore', get_projector_pkcs12_file(run_config.name),
-        '-deststoretype', 'pkcs12',
-        '-deststorepass', run_config.token
-    ]
-
-
-def get_extract_http_key_args(run_config: RunConfig):
-    return [
-        'pkcs12',
-        '-in', get_projector_pkcs12_file(run_config.name),
-        '-nodes',
-        '-nocerts',
-        '-out', get_http_key_file(run_config.name),
-        '-passin', f'pass:{run_config.token}'
-    ]
-
-
 def get_openssl_generate_key_args(run_config: RunConfig) -> List[str]:
+    """Get openssl generate keys arg"""
     return ['genrsa',
             '-out', get_http_key_file(run_config.name),
             '2048'
@@ -323,10 +272,12 @@ def get_openssl_generate_key_args(run_config: RunConfig) -> List[str]:
 
 
 def get_openssl_subj(http_address: str) -> str:
+    """Returns subject string for http server cert request"""
     return "/C=RU/ST=SPB/L=SPB/O=Projector/OU=projector-installer/CN=" + http_address
 
 
 def get_openssl_generate_cert_req(run_config: RunConfig) -> List[str]:
+    """Returns openssl args to genetrate cert sign request"""
     return ['req', '-new',
             '-key', get_http_key_file(run_config.name),
             '-out', get_http_csr_file(run_config.name),
@@ -335,6 +286,7 @@ def get_openssl_generate_cert_req(run_config: RunConfig) -> List[str]:
 
 
 def get_openssl_sign_args(run_config: RunConfig) -> List[str]:
+    """Returns openssl list of args for sign cert"""
     return [
         'x509', '-req',
         '-in', get_http_csr_file(run_config.name),
