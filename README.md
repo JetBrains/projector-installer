@@ -22,6 +22,12 @@ In Debian-based distributive you can install them using the command:
 sudo apt install libxext6 libxrender1 libxtst6 libfreetype6  
 ```    
 
+To use [secure connection](#Secure-connection) feature you have to install OpenSSL utility:
+```bash
+sudo apt install openssl
+```
+
+
 ## Installation
 
 ### install from PyPi
@@ -178,6 +184,8 @@ python3 setup.py bundle sdist bdist_wheel  # Build required files
 python3 -m twine upload --repository testpypi --verbose dist/*  # Upload to https://test.pypi.org/project/projector-installer/
 python3 -m twine upload dist/*  # Upload to https://pypi.org/project/projector-installer/
 ```
+
+## Secure connection
 
 ## FAQ
 1. Where is the projector-installer keeps downloaded IDE and run configurations?
