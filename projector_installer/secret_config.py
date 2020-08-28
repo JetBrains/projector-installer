@@ -154,16 +154,16 @@ def generate_ca(keytool_path: str) -> None:
     create_dir_if_not_exist(get_ssl_dir())
 
     cmd = [keytool_path] + get_generate_ca_command()
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = [keytool_path] + get_export_ca_command()
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = [keytool_path] + get_convert_ca_to_pkcs12()
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = ['openssl'] + get_extract_ca_key_args()
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 DIST_PROJECTOR_NAME = 'CN=Idea, OU=Development, O=Idea, L=SPB, S=SPB, C=RU'
@@ -242,19 +242,19 @@ def generate_projector_jks(run_config: RunConfig) -> None:
     keytool_path = get_jbr_keytool(run_config.path_to_app)
 
     cmd = [keytool_path] + get_projector_gen_jks_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = [keytool_path] + get_projector_cert_sign_request_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = [keytool_path] + get_projector_cert_sign_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = [keytool_path] + get_projector_import_ca_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = [keytool_path] + get_projector_import_cert_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 DIST_HTTP_NAME = 'CN=Http, OU=Development, O=Idea, L=SPB, S=SPB, C=RU'
@@ -357,10 +357,18 @@ def get_openssl_generate_key_args(run_config: RunConfig) -> List[str]:
             ]
 
 
+# -subj "/C=NL/ST=Zuid Holland/L=Rotterdam/O=Sparkling Network/OU=IT Department/CN=ssl.raymii.org"
+
+
+def get_openssl_subj(http_address: str) -> str:
+    return "/C=RU/ST=SPB/L=SPB/O=Projector/OU=projector-installer/CN=" + http_address
+
+
 def get_openssl_generate_cert_req(run_config: RunConfig) -> List[str]:
     return ['req', '-new',
             '-key', get_http_key_file(run_config.name),
-            '-out', get_http_csr_file(run_config.name)
+            '-out', get_http_csr_file(run_config.name),
+            '-subj', get_openssl_subj(run_config.http_address)
             ]
 
 
@@ -379,13 +387,13 @@ def get_openssl_sign_args(run_config: RunConfig) -> List[str]:
 def generate_http_cert(run_config: RunConfig) -> None:
     """Generates http certificate and key files"""
     cmd = ['openssl'] + get_openssl_generate_key_args(run_config)
-    subprocess.check_call(cmd)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = ['openssl'] + get_openssl_generate_cert_req(run_config)
-    subprocess.check_call(cmd)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = ['openssl'] + get_openssl_sign_args(run_config)
-    subprocess.check_call(cmd)
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def generate_ssl_properties_file(config_name: str, token: str) -> None:
