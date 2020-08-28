@@ -13,7 +13,7 @@ from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app
-from .secret_config import get_ssl_properties_file
+from .secret_config import get_ssl_properties_file, get_ca_cert_file
 
 from .utils import download_file
 
@@ -135,6 +135,13 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     access_url = get_access_url(run_config)
     print(f'HTTP process PID={http_process.pid}')
     print(f'To access your IDE, open {access_url} in your browser')
+
+    if is_secure(run_config):
+        print('If browser warns on unsecure connection, install projector certificate:')
+        print(get_ca_cert_file())
+        print('Refer to: ')
+        print('https://github.com/JetBrains/projector-installer/blob/master/README.md#Secure-connection')
+
     print('Exit IDE or press Ctrl+C to stop Projector.')
 
     if run_browser:
