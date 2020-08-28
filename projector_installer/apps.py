@@ -74,7 +74,7 @@ def make_run_script(run_config: RunConfig, run_script: str) -> None:
             elif line.find(IDEA_RUN_CLASS) != -1:
                 line = f'  -Dorg.jetbrains.projector.server.port={run_config.projector_port} \\\n'
                 line += f'  -Dorg.jetbrains.projector.server.classToLaunch={IDEA_RUN_CLASS} \\\n'
-                line += f'  {PROJECTOR_RUN_CLASS}\n'
+                line += f'  {PROJECTOR_RUN_CLASS}\\\n'
 
             dst.write(line)
 
