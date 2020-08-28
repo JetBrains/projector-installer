@@ -3,6 +3,7 @@
 #  in the LICENSE file.
 
 """Secure config related stuff"""
+import socket
 from os.path import join, isfile
 from typing import List
 
@@ -23,10 +24,10 @@ CA_NAME = 'ca'
 CA_PASSWORD = '85TibAyPS3NZX3'
 
 
-def generate_token() -> str:
+def generate_token(length: int = DEF_TOKEN_LEN) -> str:
     """Generates token to access server's secrets"""
     alphabet = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(alphabet) for i in range(DEF_TOKEN_LEN))
+    return ''.join(secrets.choice(alphabet) for i in range(length))
 
 
 def get_http_cert_file(config_name: str) -> str:
@@ -101,13 +102,17 @@ def is_ca_exist() -> bool:
     return ret
 
 
-DIST_CA_NAME = 'CN=PROJECTOR-CA, OU=Development, O=Projector, L=SPB, S=SPB, C=RU'
+def get_ca_dist_name() -> str:
+    """Returns CA Dist name"""
+
+    return f'CN=PROJECTOR-{socket.gethostname()}-{generate_token(5)}-CA, ' \
+           f'OU=Development, O=Projector, L=SPB, S=SPB, C=RU'
 
 
 def get_generate_ca_command() -> List[str]:
     """Returns list of args for generate ca"""
     return ['-genkeypair', '-alias', CA_NAME,
-            '-dname', DIST_CA_NAME, '-keystore', get_ca_jks_file(),
+            '-dname', get_ca_dist_name(), '-keystore', get_ca_jks_file(),
             '-keypass', CA_PASSWORD, '-storepass', CA_PASSWORD,
             '-keyalg', 'RSA', '-keysize', '4096',
             '-ext', 'KeyUsage:critical=keyCertSign',
