@@ -53,9 +53,9 @@ class NoLogServer(SimpleHTTPRequestHandler):
 
         if len(cls.token) > 0:  # secure connection
             return f'https://{cls.address}:{cls.port}/index.html?' \
-                   f'token={cls.token}&port={cls.projector_port}'
+                   f'token={cls.token}&host=localhost&port={cls.projector_port}'
 
-        return f'http://{cls.address}:{cls.port}/index.html?port={cls.projector_port}'
+        return f'http://{cls.address}:{cls.port}/index.html?host=localhost&port={cls.projector_port}'
 
     def is_empty_path(self) -> bool:
         """Checks if current path is empty."""

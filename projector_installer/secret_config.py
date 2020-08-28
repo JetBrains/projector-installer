@@ -315,49 +315,11 @@ def get_extract_http_key_args(run_config: RunConfig):
     ]
 
 
-#
-# def generate_http_cert(run_config: RunConfig) -> None:
-#     """Generates http certificate and key files"""
-#     keytool_path = get_jbr_keytool(run_config.path_to_app)
-#
-#     # generate keypair
-#     cmd = [keytool_path] + get_http_gen_args(run_config)
-#     subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
-#
-#     # create request for signing
-#     cmd = [keytool_path] + get_http_cert_sign_request_args(run_config)
-#     subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
-#
-#     # create cert signed with CA
-#     cmd = [keytool_path] + get_http_cert_sign_args(run_config)
-#     subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
-#
-#     # convert projector jks to pkcs12
-#     cmd = [keytool_path] + get_convert_to_pkcs12_args(run_config)
-#     subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
-#
-#     # export http key with openssl
-#     cmd = ['openssl'] + get_extract_http_key_args(run_config)
-#     # subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
-#     subprocess.check_call(cmd)
-
-# http server self signed cert
-# generate key
-# openssl genrsa -out http_server.key 2048
-# genearte cert request
-# openssl req -new -key http_server.key -out http_server.csr
-
-# sign with ca.key
-# openssl x509 -req -in http_server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out http_server.crt -days 5000
-
 def get_openssl_generate_key_args(run_config: RunConfig) -> List[str]:
     return ['genrsa',
             '-out', get_http_key_file(run_config.name),
             '2048'
             ]
-
-
-# -subj "/C=NL/ST=Zuid Holland/L=Rotterdam/O=Sparkling Network/OU=IT Department/CN=ssl.raymii.org"
 
 
 def get_openssl_subj(http_address: str) -> str:
