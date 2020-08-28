@@ -196,7 +196,7 @@ def is_ip_address(address: str) -> bool:
     return re.match(
         r'^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.)'
         '{3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
-        address)
+        address) is not None
 
 
 def get_projector_san(address: str) -> str:
