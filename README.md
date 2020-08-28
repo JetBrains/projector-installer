@@ -174,6 +174,7 @@ with bundled version. Can be useful after update projector-installer package.
 ## Build python wheel file
 ```bash
 pip3 install wheel
+rm -r projector_installer/bundled dist build  # Remove old build files
 python3 setup.py bundle bdist_wheel
 ```
 
