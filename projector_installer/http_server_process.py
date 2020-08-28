@@ -8,8 +8,9 @@
 from os import chdir
 from typing import Any, Optional
 from http.server import SimpleHTTPRequestHandler
-import socketserver
 from multiprocessing import Process
+
+import socketserver
 import socket
 import ssl
 
@@ -55,7 +56,8 @@ class NoLogServer(SimpleHTTPRequestHandler):
             return f'https://{cls.address}:{cls.port}/index.html?' \
                    f'token={cls.token}&host=localhost&port={cls.projector_port}'
 
-        return f'http://{cls.address}:{cls.port}/index.html?host=localhost&port={cls.projector_port}'
+        return f'http://{cls.address}:{cls.port}/index.html?' \
+               f'host=localhost&port={cls.projector_port}'
 
     def is_empty_path(self) -> bool:
         """Checks if current path is empty."""
