@@ -16,7 +16,7 @@ import ssl
 
 from .global_config import RunConfig
 from .run_config import is_secure
-from .secure_config import get_http_cert_file, get_http_key_file
+from .secure_config import get_http_crt_file, get_http_key_file
 
 
 class NoLogServer(SimpleHTTPRequestHandler):
@@ -101,7 +101,7 @@ class HttpServerProcess(Process):
                                     NoLogServer) as httpd:
             if is_secure(self.run_config):
                 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-                context.load_cert_chain(get_http_cert_file(self.run_config.name),
+                context.load_cert_chain(get_http_crt_file(self.run_config.name),
                                         get_http_key_file(self.run_config.name))
                 httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
 
