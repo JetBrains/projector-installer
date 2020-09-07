@@ -14,7 +14,7 @@ import configparser
 from .apps import get_app_path, make_run_script
 from .global_config import get_run_configs_dir, RunConfig
 from .ide_configuration import install_own_markdown_plugin
-from .secret_config import generate_server_secrets
+from .secure_config import generate_server_secrets
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'

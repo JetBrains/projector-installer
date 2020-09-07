@@ -16,7 +16,7 @@ import ssl
 
 from .global_config import RunConfig
 from .run_config import is_secure
-from .secret_config import get_http_cert_file, get_http_key_file
+from .secure_config import get_http_cert_file, get_http_key_file
 
 
 class NoLogServer(SimpleHTTPRequestHandler):
