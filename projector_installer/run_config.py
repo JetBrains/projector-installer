@@ -34,16 +34,14 @@ def load_config(config_name: str) -> RunConfig:
                      config.get('SSL', 'TOKEN', fallback=''))
 
 
-def get_run_script(config_name: str) -> str:
+def get_run_script_path(config_name: str) -> str:
     """Returns full path to projector run script"""
     return join(get_run_configs_dir(), config_name, RUN_SCRIPT_NAME)
 
 
-def generate_run_script(config_name: str) -> None:
+def generate_run_script(run_config: RunConfig) -> None:
     """Generates projector run script"""
-    run_script = get_run_script(config_name)
-    run_config = get_run_configs()[config_name]
-
+    run_script = get_run_script_path(run_config.config_name)
     make_run_script(run_config, run_script)
 
 
@@ -74,7 +72,7 @@ def save_config(run_config: RunConfig) -> None:
     with open(config_path, 'w') as configfile:
         config.write(configfile)
 
-    generate_run_script(run_config.name)
+    generate_run_script(run_config)
 
     if is_secure(run_config):
         generate_server_secrets(run_config)

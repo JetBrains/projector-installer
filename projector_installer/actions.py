@@ -25,7 +25,7 @@ from .global_config import get_http_dir, get_download_cache_dir, get_path_to_pro
     RunConfig
 from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
-from .run_config import get_run_configs, get_run_script, validate_run_config, \
+from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
     update_markdown_plugin, is_secure
 
@@ -102,7 +102,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     config_name, run_config = select_run_config(config_name)
 
     print(f'Configuration name: {config_name}')
-    run_script_name = get_run_script(config_name)
+    run_script_name = get_run_script_path(config_name)
 
     if not path.isfile(run_script_name):
         print(f'Cannot find file {run_script_name}')
