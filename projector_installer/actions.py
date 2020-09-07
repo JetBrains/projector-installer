@@ -13,7 +13,7 @@ from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app
-from .secret_config import get_ssl_properties_file, get_ca_cert_file
+from .secure_config import get_ssl_properties_file, get_ca_cert_file
 
 from .utils import download_file
 
