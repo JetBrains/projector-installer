@@ -40,6 +40,7 @@ PROJECTOR_SERVER_URL: str = 'https://github.com/JetBrains/projector-server/relea
 PROJECTOR_CLIENT_URL: str = 'https://github.com/JetBrains/projector-client/releases/' \
                             'download/v0.44.8/projector-client-web-distribution-v0.44.8.zip'
 
+
 MARKDOWN_PLUGIN_URL: str = 'https://github.com/JetBrains/projector-markdown-plugin/releases/' \
                            'download/v0.42.2/projector-markdown-plugin-v0.42.2.zip'
 
