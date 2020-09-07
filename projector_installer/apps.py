@@ -75,7 +75,7 @@ def make_run_script(run_config: RunConfig, run_script: str) -> None:
 
                 if is_secure(run_config):
                     line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
-                    line += f' -D{TOKEN_ENV_NAME}=\"{run_config.token}\" \\\n'
+                    # line += f' -D{TOKEN_ENV_NAME}=\"{run_config.token}\" \\\n'
 
                 line += f'  {PROJECTOR_RUN_CLASS}\\\n'
 
