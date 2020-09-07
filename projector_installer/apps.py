@@ -68,14 +68,14 @@ def make_run_script(run_config: RunConfig, run_script: str) -> None:
             if line.startswith("IDE_BIN_HOME"):
                 line = f'IDE_BIN_HOME={join(run_config.path_to_app, "bin")}\n'
             elif line.find("classpath") != -1:
-                line = f'  -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
+                line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
             elif line.find(IDEA_RUN_CLASS) != -1:
-                line = f'  -Dorg.jetbrains.projector.server.port={run_config.projector_port} \\\n'
-                line += f'  -Dorg.jetbrains.projector.server.classToLaunch={IDEA_RUN_CLASS} \\\n'
+                line = f' -Dorg.jetbrains.projector.server.port={run_config.projector_port} \\\n'
+                line += f' -Dorg.jetbrains.projector.server.classToLaunch={IDEA_RUN_CLASS} \\\n'
 
                 if is_secure(run_config):
-                    line += f'  -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
-                    line += f'  -D{TOKEN_ENV_NAME}=\"{run_config.token}\" \\\n'
+                    line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
+                    line += f' -D{TOKEN_ENV_NAME}=\"{run_config.token}\" \\\n'
 
                 line += f'  {PROJECTOR_RUN_CLASS}\\\n'
 
