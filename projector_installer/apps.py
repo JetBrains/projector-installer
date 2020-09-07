@@ -12,7 +12,7 @@ import json
 
 from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS, \
     CompatibleApp, RunConfig
-from .secure_config import is_secure, get_ssl_properties_file, SSL_ENV_NAME, TOKEN_ENV_NAME
+from .secure_config import is_secure, get_ssl_properties_file, SSL_ENV_NAME
 from .utils import unpack_tar_file
 
 IDEA_RUN_CLASS = 'com.intellij.idea.Main'
