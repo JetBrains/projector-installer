@@ -87,7 +87,7 @@ class RunConfig:
 
     def __init__(self, own_name: str, path_to_app: str, projector_port: int,
                  http_address: str, http_port: int, token: str) -> None:
-        self.name = own_name
+        self.name: str = own_name
         self.path_to_app: str = path_to_app
         self.projector_port: int = projector_port
         self.http_address: str = http_address
