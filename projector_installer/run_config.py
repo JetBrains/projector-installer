@@ -41,7 +41,7 @@ def get_run_script_path(config_name: str) -> str:
 
 def generate_run_script(run_config: RunConfig) -> None:
     """Generates projector run script"""
-    run_script = get_run_script_path(run_config.config_name)
+    run_script = get_run_script_path(run_config.name)
     make_run_script(run_config, run_script)
 
 
