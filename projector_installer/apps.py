@@ -12,6 +12,7 @@ import json
 
 from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS, \
     CompatibleApp, RunConfig
+from .secure_config import is_secure, get_ssl_properties_file, SSL_ENV_NAME, TOKEN_ENV_NAME
 from .utils import unpack_tar_file
 
 IDEA_RUN_CLASS = 'com.intellij.idea.Main'
@@ -71,6 +72,11 @@ def make_run_script(run_config: RunConfig, run_script: str) -> None:
             elif line.find(IDEA_RUN_CLASS) != -1:
                 line = f'  -Dorg.jetbrains.projector.server.port={run_config.projector_port} \\\n'
                 line += f'  -Dorg.jetbrains.projector.server.classToLaunch={IDEA_RUN_CLASS} \\\n'
+
+                if is_secure(run_config):
+                    line += f'  -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
+                    line += f'  -D{TOKEN_ENV_NAME}=\"{run_config.token}\" \\\n'
+
                 line += f'  {PROJECTOR_RUN_CLASS}\\\n'
 
             dst.write(line)
