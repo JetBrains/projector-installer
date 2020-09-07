@@ -15,6 +15,9 @@ import string
 from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir
 from .utils import create_dir_if_not_exist, remove_file_if_exist
 
+SSL_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_SSL_PROPERTIES_PATH'
+TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
+
 SSL_PROPERTIES_FILE = 'ssl.properties'
 PROJECTOR_JKS_NAME = 'projector'
 HTTP_SERVER = 'http_server'
@@ -372,8 +375,13 @@ def generate_server_secrets(run_config: RunConfig) -> None:
     if not is_ca_exist():
         generate_ca(keytool_path)
 
-    if not are_exist_server_secrets(run_config.name): #  if not all files exist
-        remove_server_secrets(run_config.name) #remove existing files
+    if not are_exist_server_secrets(run_config.name):  # if not all files exist
+        remove_server_secrets(run_config.name)  # remove existing files
         generate_projector_jks(run_config)
         generate_ssl_properties_file(run_config.name, run_config.token)
         generate_http_cert(run_config)
+
+
+def is_secure(run_config: RunConfig) -> bool:
+    """Checks if secure configuration"""
+    return run_config.token != ''

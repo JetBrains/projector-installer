@@ -8,12 +8,12 @@ import shutil
 import signal
 import subprocess
 import sys
-from typing import Optional, Dict
+from typing import Optional
 from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app
-from .secure_config import get_ssl_properties_file, get_ca_crt_file
+from .secure_config import get_ca_crt_file, is_secure
 
 from .utils import download_file
 
@@ -27,7 +27,7 @@ from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    update_markdown_plugin, is_secure
+    update_markdown_plugin
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -71,22 +71,6 @@ def wsl_warning() -> None:
           'https://github.com/JetBrains/projector-installer#resolving-wsl-issues')
 
 
-def get_environment(run_config: RunConfig) -> Dict[str, str]:
-    """Prepare environment for projector server process"""
-
-    env: Dict[str, str] = {}
-
-    if is_secure(run_config):
-        env = {
-            'ORG_JETBRAINS_PROJECTOR_SERVER_SSL_PROPERTIES_PATH':
-                get_ssl_properties_file(run_config.name),
-            'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN':
-                run_config.token
-        }
-
-    return env
-
-
 def get_access_url(run_config: RunConfig) -> str:
     """Returns access URL for given config"""
     if is_secure(run_config):
@@ -110,12 +94,10 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
         sys.exit(1)
 
     projector_log = open(get_path_to_projector_log(), 'a')
-    env = get_environment(run_config)
 
     projector_process = subprocess.Popen([f'{run_script_name}'],
                                          stdout=projector_log,
-                                         stderr=projector_log,
-                                         env=env)
+                                         stderr=projector_log)
 
     http_process = HttpServerProcess(run_config, get_http_dir())
 

@@ -14,7 +14,7 @@ import configparser
 from .apps import get_app_path, make_run_script
 from .global_config import get_run_configs_dir, RunConfig
 from .ide_configuration import install_own_markdown_plugin
-from .secure_config import generate_server_secrets
+from .secure_config import generate_server_secrets, is_secure
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
@@ -162,8 +162,3 @@ def update_markdown_plugin(run_config: RunConfig) -> None:
     Useful after script update.
     """
     install_own_markdown_plugin(run_config.path_to_app)
-
-
-def is_secure(run_config: RunConfig) -> bool:
-    """Checks if secure configuration"""
-    return run_config.token != ''
