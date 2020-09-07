@@ -13,7 +13,7 @@ from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app
-from .secure_config import get_ssl_properties_file, get_ca_cert_file
+from .secure_config import get_ssl_properties_file, get_ca_crt_file
 
 from .utils import download_file
 
@@ -138,7 +138,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
 
     if is_secure(run_config):
         print('If browser warns on unsecure connection, install projector certificate:')
-        print(get_ca_cert_file())
+        print(get_ca_crt_file())
         print('Refer to: ')
         print('https://github.com/JetBrains/projector-installer/blob/master/'
               'README.md#Secure-connection')

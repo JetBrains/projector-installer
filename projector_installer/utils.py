@@ -9,7 +9,7 @@ Misc utility functions.
 
 import tarfile
 import zipfile
-from os import listdir
+from os import listdir, remove
 from os.path import join, isfile, getsize, basename, isdir
 from pathlib import Path
 from shutil import copy
@@ -28,6 +28,12 @@ def create_dir_if_not_exist(dir_name: str) -> None:
     if not isdir(dir_name):
         path = Path(dir_name)
         path.mkdir(parents=True, exist_ok=True)
+
+
+def remove_file_if_exist(file_name: str) -> None:
+    """Removes existing file"""
+    if isfile(file_name):
+        remove(file_name)
 
 
 def copy_all_files(source: str, destination: str) -> None:

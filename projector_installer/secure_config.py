@@ -13,7 +13,7 @@ import secrets
 import string
 
 from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir
-from .utils import create_dir_if_not_exist
+from .utils import create_dir_if_not_exist, remove_file_if_exist
 
 SSL_PROPERTIES_FILE = 'ssl.properties'
 PROJECTOR_JKS_NAME = 'projector'
@@ -30,7 +30,7 @@ def generate_token(length: int = DEF_TOKEN_LEN) -> str:
     return ''.join(secrets.choice(alphabet) for i in range(length))
 
 
-def get_http_cert_file(config_name: str) -> str:
+def get_http_crt_file(config_name: str) -> str:
     """Returns full path to http server certificate file"""
     return join(get_run_configs_dir(), config_name, f'{HTTP_SERVER}.crt')
 
@@ -70,12 +70,12 @@ def get_projector_csr_file(config_name: str) -> str:
     return join(get_run_configs_dir(), config_name, f'{PROJECTOR_JKS_NAME}.csr')
 
 
-def get_projector_cert_file(config_name: str) -> str:
+def get_projector_crt_file(config_name: str) -> str:
     """Returns full path to projector server crt file"""
     return join(get_run_configs_dir(), config_name, f'{PROJECTOR_JKS_NAME}.crt')
 
 
-def get_ca_cert_file() -> str:
+def get_ca_crt_file() -> str:
     """Returns full path to ca certificate file"""
     return join(get_ssl_dir(), f'{CA_NAME}.crt')
 
@@ -98,7 +98,7 @@ def get_ca_pkcs12_file() -> str:
 def is_ca_exist() -> bool:
     """Checks if ca already generated"""
     ret = isfile(get_ca_jks_file())
-    ret = ret and isfile(get_ca_cert_file())
+    ret = ret and isfile(get_ca_crt_file())
     return ret
 
 
@@ -123,7 +123,7 @@ def get_generate_ca_command() -> List[str]:
 
 def get_export_ca_command() -> List[str]:
     """Returns list of args for export ca.crt"""
-    return ['-export', '-alias', CA_NAME, '-file', get_ca_cert_file(), '-keypass', CA_PASSWORD,
+    return ['-export', '-alias', CA_NAME, '-file', get_ca_crt_file(), '-keypass', CA_PASSWORD,
             '-storepass', CA_PASSWORD, '-keystore', get_ca_jks_file(), '-rfc']
 
 
@@ -216,7 +216,7 @@ def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
         '-storepass', CA_PASSWORD,
         '-keystore', get_ca_jks_file(),
         '-infile', get_projector_csr_file(run_config.name),
-        '-outfile', get_projector_cert_file(run_config.name),
+        '-outfile', get_projector_crt_file(run_config.name),
         '-ext', 'KeyUsage:critical=digitalSignature,keyEncipherment',
         '-ext', 'EKU=serverAuth',
         '-ext', f'SAN={get_projector_san(run_config.http_address)}',
@@ -228,7 +228,7 @@ def get_projector_import_ca_args(run_config: RunConfig) -> List[str]:
     """Returns list of args to import ca to projector jks"""
     return [
         '-import', '-alias', CA_NAME,
-        '-file', get_ca_cert_file(),
+        '-file', get_ca_crt_file(),
         '-keystore', get_projector_jks_file(run_config.name),
         '-storetype', 'JKS',
         '-storepass', run_config.token,
@@ -240,7 +240,7 @@ def get_projector_import_cert_args(run_config: RunConfig) -> List[str]:
     """Returns list of args tyo import projector cert to jks"""
     return [
         '-import', '-alias', PROJECTOR_JKS_NAME,
-        '-file', get_projector_cert_file(run_config.name),
+        '-file', get_projector_crt_file(run_config.name),
         '-keystore', get_projector_jks_file(run_config.name),
         '-storetype', 'JKS',
         '-storepass', run_config.token
@@ -308,10 +308,10 @@ def get_openssl_sign_args(run_config: RunConfig) -> List[str]:
     return [
         'x509', '-req',
         '-in', get_http_csr_file(run_config.name),
-        '-CA', get_ca_cert_file(),
+        '-CA', get_ca_crt_file(),
         '-CAkey', get_ca_key_file(),
         '-CAcreateserial',
-        '-out', get_http_cert_file(run_config.name),
+        '-out', get_http_crt_file(run_config.name),
         '-days', '4500'
     ]
 
@@ -342,12 +342,38 @@ def get_jbr_keytool(path_to_app: str) -> str:
     return join(path_to_app, 'jbr', 'bin', 'keytool')
 
 
+def are_exist_server_secrets(config_name: str) -> bool:
+    """Returns True if all secure connection related server config files exist"""
+    ret: bool = isfile(get_projector_jks_file(config_name))
+    ret = ret and isfile(get_projector_csr_file(config_name))
+    ret = ret and isfile(get_projector_crt_file(config_name))
+    ret = ret and isfile(get_ssl_properties_file(config_name))
+    ret = ret and isfile(get_http_csr_file(config_name))
+    ret = ret and isfile(get_http_crt_file(config_name))
+    ret = ret and isfile(get_http_key_file(config_name))
+
+    return ret
+
+
+def remove_server_secrets(config_name: str) -> None:
+    """Removes existing server secret files"""
+    remove_file_if_exist(get_projector_jks_file(config_name))
+    remove_file_if_exist(get_projector_csr_file(config_name))
+    remove_file_if_exist(get_projector_crt_file(config_name))
+    remove_file_if_exist(get_ssl_properties_file(config_name))
+    remove_file_if_exist(get_http_csr_file(config_name))
+    remove_file_if_exist(get_http_crt_file(config_name))
+    remove_file_if_exist(get_http_key_file(config_name))
+
+
 def generate_server_secrets(run_config: RunConfig) -> None:
     """Generate all secret connection related stuff for given config"""
     keytool_path = get_jbr_keytool(run_config.path_to_app)
     if not is_ca_exist():
         generate_ca(keytool_path)
 
-    generate_projector_jks(run_config)
-    generate_ssl_properties_file(run_config.name, run_config.token)
-    generate_http_cert(run_config)
+    if not are_exist_server_secrets(run_config.name): #  if not all files exist
+        remove_server_secrets(run_config.name) #remove existing files
+        generate_projector_jks(run_config)
+        generate_ssl_properties_file(run_config.name, run_config.token)
+        generate_http_cert(run_config)
