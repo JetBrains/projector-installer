@@ -188,10 +188,10 @@ python3 -m twine upload dist/*  # Upload to https://pypi.org/project/projector-i
 
 ## Secure connection
 
-During installation projector asks the user if they want to use a secure 
+During installation Projector asks the user if they want to use a secure 
 connection. If the user chooses "yes", installer configures Projector to 
 use HTTPS for accessing a built-in HTTP server and WSS to communicate 
-with the projector server. Using a secure connection may be a good idea 
+with the Projector server. Using a secure connection may be a good idea 
 for a number of reasons:
 
 - HTTPS/WSS are more secure than plain HTTP/WS protocols.
@@ -200,10 +200,10 @@ for example, [Asynchronous Clipboard API](https://w3c.github.io/clipboard-apis/#
 So using Projector with insecure protocols may limit its functionality.
 
 However, using a secure connection requires installing a self-signed 
-root certificate authorityu (CA) to the browser; otherwise browser 
+root certificate authority (CA) to the browser; otherwise browser 
 forbids connection to Projector. When one runs a secure configuration, 
 projector-installer proposes to install a root CA and displays a path 
-to a file with the certificate. Please note that you should install CA 
+to the file with the certificate. Please note that you should install CA 
 in each browser only once. Next sections describe this procedure for 
 Chrome/Firefox on Linux and Windows. 
 
