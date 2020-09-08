@@ -251,7 +251,8 @@ to localhost you may do the following:
 
 ## FAQ
 <a name="config_dir"></a>
-1. 
+1. Where does projector-installer keep downloaded IDE and run configurations?
+
 All the necessary stuff is kept in the configuration directory. Usually 
 configuration directory is ~/.projector. But the user can specify 
 another location for it, using option --config-directory, for example: 
