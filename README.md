@@ -188,18 +188,18 @@ python3 -m twine upload dist/*  # Upload to https://pypi.org/project/projector-i
 
 ## Secure connection
 
-During installation projector asks user if he wants to use secure connection. 
-If you answered "yes" installer configures projector to use https protocol for accessing 
-builtin http server and wss protocol to communicate with projector server. 
+During installation Projector asks user if he wants to use secure connection. 
+If you answered "yes" installer configures Projector to use https protocol for accessing 
+builtin http server and wss protocol to communicate with Projector server. 
 Using secure connection may be a good idea for a number of reasons:
 
 - https/wss are more secure than plain http/ws protocols.
 - some Javascript features unavailable in insecure environments. 
 For example: https://w3c.github.io/clipboard-apis/#async-clipboard-api .
-So using projector with insecure protocols may limit its functionality.   
+So using Projector with insecure protocols may limit its functionality.   
 
 However using secure connection requires installing self-signed root CA to the browser -
-otherwise browser will forbid connection to projector.   
+otherwise browser will forbid connection to Projector.   
 When you run secure configuration projector-installer proposes user to install 
 root CA and displays path to file with certificate. Please note - you should install CA 
 in each browser only once. Next sections describes this procedure for Chrome/Firefox 
@@ -216,47 +216,36 @@ Before configuring browser make sure that this file is available.
 ### Chromium on Linux
 
 To install certificate to Chromium browser do the following:
-- go to Chromium settings
-- click on "Privacy and Security"
-- click "More"
-- click "Manage certificates"
-- click "Authorities"
-- click "Import" and enter path to [certificate file](#CA_certificate_file) 
-- in opened dialog mark "Trust this certificate for identifying websites"
-- click "Ok"
+1. In Chromium settings choose Privacy and Security > More > Manage certificates > Authorities.
+2. Click "Import" and select [certificate file](#CA_certificate_file)
+3. In the opened dialog mark "Trust this certificate for identifying websites" and confirm your choice. 
 
 To simplify access by https with self-signed certificate 
 to localhost you may do the following: 
 
-- goto url chrome://flags/#allow-insecure-localhost
-- click "Enable" and restart browser
+1. goto url chrome://flags/#allow-insecure-localhost
+2. click "Enable" and restart browser
 
 ### Chrome on Windows
-- go to Settings
-- click on "Privacy and Security"
-- click on "Security"
-- click on "Manage certificates"
-- go to "Trusted Root Certificate Authorities"
-- click "Import" and select [certificate file](#CA_certificate_file)
-- click next and confirm that you wanted to install new certificate 
+1. go to Settings > Privacy and Security > Security > Manage certificates   
+2. go to "Trusted Root Certificate Authorities"
+3. click "Import" and select [certificate file](#CA_certificate_file)
+4. click next and confirm that you wanted to install new certificate 
 
 To simplify access by https with self-signed certificate 
 to localhost you may do the following: 
 
-- goto url chrome://flags/#allow-insecure-localhost
-- click "Enable" and restart browser
+1. goto url chrome://flags/#allow-insecure-localhost
+2. click "Enable" and restart browser
 
 ### Firefox 
-- go to "Preferences"
-- click "Privacy & Security"
-- scroll to "Certificates"
-- click "View Certificates"
-- select "Authorities"
-- click "Import" and select [certificate file](#CA_certificate_file)
-- select "Trust this CA to identify websites."
-- click "Ok" 
-- click "Ok"
-
+1. go to Preferences > Privacy & Security 
+2. scroll to "Certificates"
+3. click "View Certificates"
+4. select "Authorities"
+5. click "Import" and select [certificate file](#CA_certificate_file)
+6. select "Trust this CA to identify websites."
+7. confirm your choice
 
 ## FAQ
  <a name="config_dir"></a>
