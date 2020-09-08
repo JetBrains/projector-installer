@@ -195,7 +195,7 @@ Using secure connection may be a good idea for a number of reasons:
 
 - https/wss are more secure than plain http/ws protocols.
 - some Javascript features unavailable in insecure environments. 
-For example [Asynchronous Clipboard API](#https://w3c.github.io/clipboard-apis/#async-clipboard-api).
+For example: https://w3c.github.io/clipboard-apis/#async-clipboard-api .
 So using projector with insecure protocols may limit its functionality.   
 
 However using secure connection requires installing self-signed root CA to the browser -
@@ -208,8 +208,10 @@ on Linux and Windows.
 ### CA certificate file 
 Projector keeps CA certificate in [configuration directory](#config_dir), in file ssl/ca.crt. 
 Before configuring browser make sure that this file is available. 
-Note: projector-installer generates this file during configuration of first secure run config.
-Warning: Do not share content of config_dir/ssl with anybody!
+
+*Note:* projector-installer generates this file during configuration of first secure run config.
+
+*Warning:* Do not share content of config_dir/ssl with anybody!
 
 ### Chromium on Linux
 
