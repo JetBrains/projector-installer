@@ -9,9 +9,8 @@ Misc utility functions.
 
 import tarfile
 import zipfile
-from os import listdir, remove
+from os import listdir, remove, makedirs
 from os.path import join, isfile, getsize, basename, isdir
-from pathlib import Path
 from shutil import copy
 from urllib.request import urlopen
 from typing import Optional
@@ -26,8 +25,7 @@ PROGRESS_BAR_TEMPLATE = '[%(bar)s]  %(info)s'
 def create_dir_if_not_exist(dir_name: str) -> None:
     """Creates given directory with all parents if it is not exist."""
     if not isdir(dir_name):
-        path = Path(dir_name)
-        path.mkdir(parents=True, exist_ok=True)
+        makedirs(dir_name, mode=0o700, exist_ok=True)
 
 
 def remove_file_if_exist(file_name: str) -> None:
