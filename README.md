@@ -188,22 +188,24 @@ python3 -m twine upload dist/*  # Upload to https://pypi.org/project/projector-i
 
 ## Secure connection
 
-During installation Projector asks user if he wants to use secure connection. 
-If you answered "yes" installer configures Projector to use https protocol for accessing 
-builtin http server and wss protocol to communicate with Projector server. 
-Using secure connection may be a good idea for a number of reasons:
+During installation projector asks the user if they want to use a secure 
+connection. If the user chooses "yes", installer configures Projector to 
+use HTTPS for accessing a built-in HTTP server and WSS to communicate 
+with the projector server. Using a secure connection may be a good idea 
+for a number of reasons:
 
-- https/wss are more secure than plain http/ws protocols.
-- some Javascript features unavailable in insecure environments. 
-For example: https://w3c.github.io/clipboard-apis/#async-clipboard-api .
-So using Projector with insecure protocols may limit its functionality.   
+- HTTPS/WSS are more secure than plain HTTP/WS protocols.
+- some JavaScript features are not available in insecure environments, 
+for example, [Asynchronous Clipboard API](https://w3c.github.io/clipboard-apis/#async-clipboard-api). 
+So using Projector with insecure protocols may limit its functionality.
 
-However using secure connection requires installing self-signed root CA to the browser -
-otherwise browser will forbid connection to Projector.   
-When you run secure configuration projector-installer proposes user to install 
-root CA and displays path to file with certificate. Please note - you should install CA 
-in each browser only once. Next sections describes this procedure for Chrome/Firefox 
-on Linux and Windows.
+However, using a secure connection requires installing a self-signed 
+root certificate authorityu (CA) to the browser; otherwise browser 
+forbids connection to Projector. When one runs a secure configuration, 
+projector-installer proposes to install a root CA and displays a path 
+to a file with the certificate. Please note that you should install CA 
+in each browser only once. Next sections describe this procedure for 
+Chrome/Firefox on Linux and Windows. 
 
 ### CA certificate file 
 Projector keeps CA certificate in [configuration directory](#config_dir), in file ssl/ca.crt. 
@@ -248,11 +250,12 @@ to localhost you may do the following:
 7. confirm your choice
 
 ## FAQ
- <a name="config_dir"></a>
-1. Where is the projector-installer keeps downloaded IDE and run configurations?
-   - All necessary stuff kept in configuration directory. Usually configuration 
-   directory is named ~/.projector. But user can specify another location for config directory,
-   using option --config-directory, for example: `projector --config-directory=config run`  
+<a name="config_dir"></a>
+1. 
+All the necessary stuff is kept in the configuration directory. Usually 
+configuration directory is ~/.projector. But the user can specify 
+another location for it, using option --config-directory, for example: 
+`projector --config-directory=config run`
 
 ## Troubleshooting
 - `projector` command is unavailable after installation.
