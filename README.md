@@ -207,6 +207,7 @@ to the file with the certificate. Please note that you should install CA
 in each browser only once. Next sections describe this procedure for 
 Chrome/Firefox on Linux and Windows. 
 
+<a name="cert_file"></a>
 ### CA certificate file 
 Projector keeps CA certificate in [configuration directory](#config_dir), in file ssl/ca.crt. 
 Before configuring browser make sure that this file is available. 
@@ -219,33 +220,21 @@ Before configuring browser make sure that this file is available.
 
 To install certificate to Chromium browser do the following:
 1. In Chromium settings choose Privacy and Security > More > Manage certificates > Authorities.
-2. Click "Import" and select [certificate file](#CA_certificate_file)
+2. Click "Import" and select [certificate file](#cert_file)
 3. In the opened dialog mark "Trust this certificate for identifying websites" and confirm your choice. 
-
-To simplify access by https with self-signed certificate 
-to localhost you may do the following: 
-
-1. goto url chrome://flags/#allow-insecure-localhost
-2. click "Enable" and restart browser
 
 ### Chrome on Windows
 1. go to Settings > Privacy and Security > Security > Manage certificates   
 2. go to "Trusted Root Certificate Authorities"
-3. click "Import" and select [certificate file](#CA_certificate_file)
+3. click "Import" and select [certificate file](#cert_file)
 4. click next and confirm that you wanted to install new certificate 
-
-To simplify access by https with self-signed certificate 
-to localhost you may do the following: 
-
-1. goto url chrome://flags/#allow-insecure-localhost
-2. click "Enable" and restart browser
 
 ### Firefox 
 1. go to Preferences > Privacy & Security 
 2. scroll to "Certificates"
 3. click "View Certificates"
 4. select "Authorities"
-5. click "Import" and select [certificate file](#CA_certificate_file)
+5. click "Import" and select [certificate file](#cert_file)
 6. select "Trust this CA to identify websites."
 7. confirm your choice
 
