@@ -192,10 +192,7 @@ During installation Projector asks the user if they want to use a secure
 connection. If the user chooses "yes", installer configures Projector to 
 use HTTPS for accessing a built-in HTTP server and WSS to communicate 
 with the Projector server. Using a secure connection may be a good idea 
-for a number of reasons:
-
-- HTTPS/WSS are more secure than plain HTTP/WS protocols.
-- some JavaScript features are not available in insecure environments, 
+because some JavaScript features are not available in insecure environments, 
 for example, [Asynchronous Clipboard API](https://w3c.github.io/clipboard-apis/#async-clipboard-api). 
 So using Projector with insecure protocols may limit its functionality.
 
@@ -213,8 +210,6 @@ Projector keeps CA certificate in [configuration directory](#config_dir), in fil
 Before configuring browser make sure that this file is available. 
 
 *Note:* projector-installer generates this file during configuration of first secure run config.
-
-*Warning:* Do not share content of config_dir/ssl with anybody!
 
 ### Chromium on Linux
 
