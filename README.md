@@ -233,8 +233,10 @@ To install certificate to Chromium browser do the following:
 6. select "Trust this CA to identify websites."
 7. confirm your choice
 
-When first time connect to Projector via https, please confirm that you trust
-to new certificate.  
+When user first time connect to Projector via https, browser will warn you on 
+insecure connection. The reason of this is described here: 
+https://support.mozilla.org/en-US/kb/error-codes-secure-websites#w_self-signed-certificate    
+Please confirm that you trust to the new certificate.   
 
 ## FAQ
 <a name="config_dir"></a>
