@@ -233,6 +233,9 @@ To install certificate to Chromium browser do the following:
 6. select "Trust this CA to identify websites."
 7. confirm your choice
 
+When first time connect to Projector via https, please confirm that you trust
+to new certificate.  
+
 ## FAQ
 <a name="config_dir"></a>
 1. Where does projector-installer keep downloaded IDE and run configurations?
