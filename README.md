@@ -196,47 +196,7 @@ because some JavaScript features are not available in insecure environments,
 for example, [Asynchronous Clipboard API](https://w3c.github.io/clipboard-apis/#async-clipboard-api). 
 So using Projector with insecure protocols may limit its functionality.
 
-However, using a secure connection requires installing a self-signed 
-root certificate authority (CA) to the browser; otherwise browser 
-forbids connection to Projector. When one runs a secure configuration, 
-projector-installer proposes to install a root CA and displays a path 
-to the file with the certificate. Please note that you should install CA 
-in each browser only once. Next sections describe this procedure for 
-Chrome/Firefox on Linux and Windows. 
-
-<a name="cert_file"></a>
-### CA certificate file 
-Projector keeps CA certificate in [configuration directory](#config_dir), in file ssl/ca.crt. 
-Before configuring browser make sure that this file is available. 
-
-*Note:* projector-installer generates this file during configuration of first secure run config.
-
-### Chromium on Linux
-
-To install certificate to Chromium browser do the following:
-1. In Chromium settings choose Privacy and Security > More > Manage certificates > Authorities.
-2. Click "Import" and select [certificate file](#cert_file)
-3. In the opened dialog mark "Trust this certificate for identifying websites" and confirm your choice. 
-
-### Chrome on Windows
-1. go to Settings > Privacy and Security > Security > Manage certificates   
-2. go to "Trusted Root Certificate Authorities"
-3. click "Import" and select [certificate file](#cert_file)
-4. click next and confirm that you wanted to install new certificate 
-
-### Firefox 
-1. go to Preferences > Privacy & Security 
-2. scroll to "Certificates"
-3. click "View Certificates"
-4. select "Authorities"
-5. click "Import" and select [certificate file](#cert_file)
-6. select "Trust this CA to identify websites."
-7. confirm your choice
-
-When user first time connect to Projector via https, browser will warn you on 
-insecure connection. The reason of this is described here: 
-https://support.mozilla.org/en-US/kb/error-codes-secure-websites#w_self-signed-certificate    
-Please confirm that you trust to the new certificate.   
+However, using a secure connection requires telling the browser that it should trust the certificate. One of the ways to do it is to do it forcefully. Open the page, see the warning about unknown certificate, find a button like "trust it anyway", and click it. After it, you will probably get a message like "can't connect to wss://host:port". Please change wss to https, open it in a new tab, and click the "trust" button too. After performing these two actions, the browser should remember this connection and you won't have to perform these actions again. Just open the initial web page and use all functionality of Projector.
 
 ## FAQ
 <a name="config_dir"></a>
