@@ -38,7 +38,9 @@ def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
     """
 
     global_config.config_dir = realpath(expandvars(expanduser(config_directory)))
-    global_config.cache_dir = realpath(expandvars(expanduser(cache_directory)))
+
+    if cache_directory:
+        global_config.cache_dir = realpath(expandvars(expanduser(cache_directory)))
 
     if is_first_start():
         display_license()
