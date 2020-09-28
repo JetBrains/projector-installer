@@ -12,10 +12,10 @@ from typing import Optional
 from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
-    unpack_app
+    unpack_app, get_java_path
 from .secure_config import get_ca_crt_file, is_secure
 
-from .utils import download_file
+from .utils import download_file, get_java_version
 
 from .dialogs import select_compatible_app, select_new_config_name, list_configs, \
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
@@ -79,6 +79,13 @@ def get_access_url(run_config: RunConfig) -> str:
     return f'http://{run_config.http_address}:{run_config.http_port}/'
 
 
+def is_compatible_java(app_path: str) -> bool:
+    """Checks bundled java version compatibility."""
+    java_path = get_java_path(app_path)
+    version = get_java_version(java_path)
+    return version.startswith('11')
+
+
 # noinspection PyShadowingNames
 def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
     """Executes specified config. If given name does not specify
@@ -124,6 +131,10 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
         print('Refer to: ')
         print('https://github.com/JetBrains/projector-installer/blob/master/'
               'README.md#Secure-connection')
+
+    if not is_compatible_java(run_config.path_to_app):
+        print('Bundled JVM is incompatible with Projector.')
+        print('Current config may be nonfunctional.')
 
     print('Exit IDE or press Ctrl+C to stop Projector.')
 

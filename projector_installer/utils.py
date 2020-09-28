@@ -6,14 +6,15 @@
 """
 Misc utility functions.
 """
-
+import io
 import tarfile
 import zipfile
+import subprocess
 from os import listdir, remove, makedirs
 from os.path import join, isfile, getsize, basename, isdir
 from shutil import copy
 from urllib.request import urlopen
-from typing import Optional
+from typing import Optional, BinaryIO, cast
 
 from click import progressbar, echo
 
@@ -131,3 +132,15 @@ def unpack_zip_file(file_path: str, destination: str) -> str:
                 progress_bar.update(1)
 
     return dir_name
+
+
+def get_java_version(java_path: str) -> str:
+    """Returns java version for given java binary path"""
+    proc = subprocess.Popen([java_path, '-version'],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+
+    line = io.TextIOWrapper(cast(BinaryIO, proc.stderr), encoding='utf-8').readline()
+    values = line.split(' ')
+    version = values[2]
+    return version.strip('"')

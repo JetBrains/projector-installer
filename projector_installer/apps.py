@@ -149,7 +149,7 @@ def get_product_info(app_path: str) -> ProductInfo:
     prod_info_path = join(app_path, PRODUCT_INFO)
     with open(prod_info_path, "r") as file:
         data = json.load(file)
-        java_exec_path = 'jbr/bin/java'
+        java_exec_path = 'jre/bin/java'
 
         if 'javaExecutablePath' in data['launch'][0]:
             java_exec_path = data['launch'][0]['javaExecutablePath']
@@ -212,3 +212,14 @@ def get_plugin_dir(app_path: str) -> str:
         return join(PLUGIN_2020_PREFIX, product_info.data_dir)
 
     return join(get_config_dir(app_path), "plugins")
+
+
+def is_android_studio(product_info: ProductInfo) -> bool:
+    """Returns True if given product info corresponds to is from AS"""
+    return product_info.product_code == 'AI'
+
+
+def get_java_path(app_path: str) -> str:
+    """Returns full path to bundled java."""
+    product_info = get_product_info(app_path)
+    return join(app_path, product_info.java_exec_path)
