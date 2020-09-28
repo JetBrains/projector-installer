@@ -145,12 +145,16 @@ def get_product_info(app_path: str) -> ProductInfo:
     prod_info_path = join(app_path, PRODUCT_INFO)
     with open(prod_info_path, "r") as file:
         data = json.load(file)
+        java_exec_path = 'jbr/bin/java'
+
+        if 'javaExecutablePath' in data['launch'][0]:
+            java_exec_path = data['launch'][0]['javaExecutablePath']
 
         product_info = ProductInfo(data['name'], data['version'], data['buildNumber'],
                                    data['productCode'], '', data['svgIconPath'],
                                    data['launch'][0]['os'],
                                    data['launch'][0]['launcherPath'],
-                                   data['launch'][0]['javaExecutablePath'],
+                                   java_exec_path,
                                    data['launch'][0]['vmOptionsFilePath'],
                                    data['launch'][0]['startupWmClass'])
 
