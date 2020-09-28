@@ -10,7 +10,7 @@ from typing import Any, Optional
 import click
 
 from . import global_config
-from .global_config import init_config_dir, init_compatible_apps
+from .global_config import init_config_dir, init_compatible_apps, init_cache_dir
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
@@ -29,12 +29,16 @@ def is_first_start() -> bool:
 @click.option('--config-directory', type=click.Path(),
               default=global_config.config_dir,
               help='Path to configuration directory')
-def projector(ctx: Any, config_directory: str) -> None:
+@click.option('--cache-directory', type=click.Path(),
+              default='',
+              help='Path to download cache directory')
+def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
     """
     This script helps to install, manage, and run JetBrains IDEs with Projector.
     """
 
     global_config.config_dir = realpath(expandvars(expanduser(config_directory)))
+    global_config.cache_dir = realpath(expandvars(expanduser(cache_directory)))
 
     if is_first_start():
         display_license()
@@ -44,6 +48,7 @@ def projector(ctx: Any, config_directory: str) -> None:
     elif not ctx.invoked_subcommand:
         click.echo(ctx.get_help())
     else:
+        init_cache_dir()
         init_compatible_apps()
 
 

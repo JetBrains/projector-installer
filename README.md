@@ -172,6 +172,12 @@ runs the configuration with name 'goland'
 `projector config update-markdown-plugin` - updates projector markdown plugin in existing configuration 
 with bundled version. Can be useful after update projector-installer package.
 
+### Configuration options
+Projector installer script has the following configuration options:
+
+--config-directory=path_to_dir - specifies path to [configuration directory](#config_dir). Default - ~/.projector
+--cache-directory=path_to_dir - specifies path to download cache directory. 
+
 ## Build python wheel file
 ```bash
 pip3 install wheel

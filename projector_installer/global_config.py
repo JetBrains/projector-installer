@@ -28,6 +28,7 @@ SERVER_DIR: str = 'server'
 CLIENT_DIR: str = 'client'
 PLUGIN_DIR: str = 'projector-markdown-plugin'
 config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
+cache_dir: str = ''
 
 
 def get_path_to_license() -> str:
@@ -52,6 +53,10 @@ def get_run_configs_dir() -> str:
 
 def get_download_cache_dir() -> str:
     """Returns full path to download cache directory."""
+
+    if cache_dir:
+        return cache_dir
+
     return join(config_dir, 'cache')
 
 
@@ -157,6 +162,11 @@ def get_projector_markdown_plugin_dir() -> str:
     return join(INSTALL_DIR, BUNDLED_DIR, PLUGIN_DIR)
 
 
+def init_cache_dir() -> None:
+    """Initialize download cache dir"""
+    create_dir_if_not_exist(get_download_cache_dir())
+
+
 def init_config_dir() -> None:
     """Initializes global config directory."""
     # pylint: disable=W0703
@@ -164,7 +174,7 @@ def init_config_dir() -> None:
         create_dir_if_not_exist(config_dir)
         create_dir_if_not_exist(get_apps_dir())
         create_dir_if_not_exist(get_run_configs_dir())
-        create_dir_if_not_exist(get_download_cache_dir())
+        init_cache_dir()
         init_compatible_apps()
     except Exception as exception:
         print(f'Error during initialization: {str(exception)}, cleanup ...')
