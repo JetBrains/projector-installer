@@ -187,12 +187,16 @@ def get_bin_dir(app_path: str) -> str:
 
 CONFIG_PREFIX = expanduser('~/')
 VER_2020_CONFIG_PREFIX = expanduser('~/.config/JetBrains')
+ANDROID_STUDIO_CONFIG_PREFIX = expanduser('~/.config/Google')
 
 
 def get_config_dir(app_path: str) -> str:
     """Returns ide config directory."""
     product_info = get_product_info(app_path)
     version = parse_version(product_info.version)
+
+    if is_android_studio(product_info):
+        return join(ANDROID_STUDIO_CONFIG_PREFIX, product_info.data_dir)
 
     if version.year >= 2020:
         return join(VER_2020_CONFIG_PREFIX, product_info.data_dir)
@@ -201,12 +205,16 @@ def get_config_dir(app_path: str) -> str:
 
 
 PLUGIN_2020_PREFIX: str = expanduser('~/.local/share/JetBrains')
+ANDROID_STUDIO_PLUGIN_PREFIX = expanduser('~/.local/share/Google')
 
 
 def get_plugin_dir(app_path: str) -> str:
     """Returns full path to application plugin directory."""
     product_info = get_product_info(app_path)
     version = parse_version(product_info.version)
+
+    if is_android_studio(product_info):
+        return join(ANDROID_STUDIO_PLUGIN_PREFIX, product_info.data_dir)
 
     if version.year >= 2020:
         return join(PLUGIN_2020_PREFIX, product_info.data_dir)
