@@ -176,6 +176,7 @@ with bundled version. Can be useful after update projector-installer package.
 Projector installer script has the following configuration options:
 
 --config-directory=path_to_dir - specifies path to [configuration directory](#config_dir). Default - ~/.projector
+
 --cache-directory=path_to_dir - specifies path to download cache directory. 
 
 ## Build python wheel file
