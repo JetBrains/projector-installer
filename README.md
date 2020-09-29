@@ -215,6 +215,32 @@ configuration directory is ~/.projector. But the user can specify
 another location for it, using option --config-directory, for example: 
 `projector --config-directory=config run`
 
+
+## Android Studio support
+Projector installer can't support automatic Android Studio installation due to 
+legal issues. However installer can help you to configure existing Android Studio 
+installation to use with Projector. To  make new run config for Android Studio 
+use `projector config add` command.
+
+
+_NOTE:_ Please take into account, that Projector uses JVM, bundled with IDE and supports Java 11 only.
+Most of Android Studio IDE shipped with Java 1.8, so they are incompatible with Projector. 
+However, starting from version 4.2 (still in EAP), Google ships Java 11 with Android Studio. 
+So Android Studio ver. 4.2 and later can be run with projector.  
+
+
+Example:
+```bash
+$projector config add
+Enter a new configuration name: AndroidStudio
+Do you want to choose a Projector-installed IDE? [y/n]: n
+Enter the path to IDE: /path/to/your/android-studio
+Enter HTTP listening address (press ENTER for default) [localhost]: 
+Enter a desired HTTP port (press ENTER for default) [8895]: 
+Enter a desired Projector port (press ENTER for default) [10005]: 
+Use secure connection (this option requires installing a projector's certificate to browser)? [y/n]: y
+```
+
 ## Troubleshooting
 - `projector` command is unavailable after installation.
 
