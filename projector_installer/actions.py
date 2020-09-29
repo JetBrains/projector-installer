@@ -83,7 +83,7 @@ def is_compatible_java(app_path: str) -> bool:
     """Checks bundled java version compatibility."""
     java_path = get_java_path(app_path)
     version = get_java_version(java_path)
-    return version.startswith('11')
+    return version.startswith('11.')
 
 
 # noinspection PyShadowingNames
