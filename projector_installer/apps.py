@@ -6,7 +6,7 @@
 """Application management functions."""
 
 from os.path import join, expanduser, dirname
-from os import listdir, chmod, stat
+from os import listdir, chmod, stat, rename
 from typing import Optional, List
 import json
 
@@ -19,11 +19,6 @@ IDEA_RUN_CLASS = 'com.intellij.idea.Main'
 PROJECTOR_RUN_CLASS = 'org.jetbrains.projector.server.ProjectorLauncher'
 IDEA_PLATFORM_PREFIX = 'idea.platform.prefix'
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
-
-
-def unpack_app(file_path: str) -> str:
-    """Unpacks specified file to app directory."""
-    return unpack_tar_file(file_path, get_apps_dir())
 
 
 def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
@@ -231,3 +226,20 @@ def get_java_path(app_path: str) -> str:
     """Returns full path to bundled java."""
     product_info = get_product_info(app_path)
     return join(app_path, product_info.java_exec_path)
+
+
+def unpack_app(file_path: str) -> str:
+    """Unpacks specified file to app directory."""
+    app_name = unpack_tar_file(file_path, get_apps_dir())
+
+    # For android studio - ensure that app directory has unique name
+    app_path = get_app_path(app_name)
+    product_info = get_product_info(app_path)
+
+    if is_android_studio(product_info):
+        versioned_name = app_name + "_" + product_info.version.replace(' ', '_')
+        new_path = get_app_path(versioned_name)
+        rename(app_path, new_path)
+        app_name = versioned_name
+
+    return app_name
