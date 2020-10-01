@@ -15,7 +15,7 @@ from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_pro
     unpack_app, get_java_path
 from .secure_config import get_ca_crt_file, is_secure
 
-from .utils import download_file, get_java_version
+from .utils import download_file, get_java_version, get_local_addresses
 
 from .dialogs import select_compatible_app, select_new_config_name, list_configs, \
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
@@ -71,12 +71,27 @@ def wsl_warning() -> None:
           'https://github.com/JetBrains/projector-installer#resolving-wsl-issues')
 
 
-def get_access_url(run_config: RunConfig) -> str:
-    """Returns access URL for given config"""
-    if is_secure(run_config):
-        return f'https://{run_config.http_address}:{run_config.http_port}/'
+def get_access_urls(run_config: RunConfig) -> str:
+    """Returns access URLs for given config"""
 
-    return f'http://{run_config.http_address}:{run_config.http_port}/'
+    schema = 'http'
+
+    if is_secure(run_config):
+        schema = 'https'
+
+    if run_config.http_address == '0.0.0.0':
+        result = []
+        addresses = get_local_addresses()
+
+        if '127.0.0.1' in addresses:
+            addresses = ['localhost'] + addresses
+
+        for address in addresses:
+            result.append(f'{schema}://{address}:{run_config.http_port}/')
+
+        return '\n'.join(result)
+
+    return f'{schema}://{run_config.http_address}:{run_config.http_port}/'
 
 
 def is_compatible_java(app_path: str) -> bool:
@@ -121,9 +136,9 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     signal.signal(signal.SIGINT, signal_handler)
 
     http_process.start()
-    access_url = get_access_url(run_config)
+    access_urls = get_access_urls(run_config)
     print(f'HTTP process PID={http_process.pid}')
-    print(f'To access your IDE, open {access_url} in your browser')
+    print(f'To access IDE, open in browser \n{access_urls}\n')
 
     if is_secure(run_config):
         print('If browser warns on unsecure connection, install projector certificate:')
@@ -141,7 +156,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     if run_browser:
         if is_wsl():
             wsl_warning()
-            do_run_browser(access_url)
+            do_run_browser(access_urls)
 
     projector_process.wait()
 

@@ -10,7 +10,6 @@ from os.path import expanduser
 from typing import Optional, Dict, List, Tuple
 
 import click
-import netifaces  # type: ignore
 
 from .apps import get_installed_apps, get_app_path, get_compatible_app_names
 from .run_config import get_run_configs, RunConfig, get_run_config_names, \
@@ -18,6 +17,7 @@ from .run_config import get_run_configs, RunConfig, get_run_config_names, \
 
 from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
 from .secure_config import generate_token
+from .utils import get_local_addresses
 
 
 def display_run_configs_names(config_names: List[str]) -> None:
@@ -257,29 +257,15 @@ def get_def_projector_port() -> int:
     return get_def_port(ports, DEF_PROJECTOR_PORT)
 
 
-def get_local_addresses() -> List[str]:
-    """Returns list of local ip addresses."""
-    interfaces = netifaces.interfaces()
-    res = []
 
-    for ifs in interfaces:
-        addresses = netifaces.ifaddresses(ifs)
-
-        if netifaces.AF_INET in addresses:
-            ipv4 = addresses[netifaces.AF_INET]
-
-            for ips in ipv4:
-                res.append(ips['addr'])
-
-    return res
+def get_all_addresses() -> List[str]:
+    """Returns list of acceptable ip addresses."""
+    return ['localhost', '0.0.0.0'] + get_local_addresses()
 
 
 def check_listening_address(address: str) -> bool:
     """Check entered ip address for validity."""
-    if address == 'localhost':
-        return True
-
-    return address in get_local_addresses()
+    return address in get_all_addresses()
 
 
 def select_http_address(default: str) -> str:
@@ -288,13 +274,16 @@ def select_http_address(default: str) -> str:
         res: str = click.prompt('Enter HTTP listening address (press ENTER for default)',
                                 default=default)
 
+        if res == '*':
+            res = '0.0.0.0'
+
         if check_listening_address(res):
             return res
 
         click.echo('You entered incorrect address, please try again.')
         click.echo('You can try to use one of these addresses:')
-        local_addresses = ['localhost'] + get_local_addresses()
-        for addr in local_addresses:
+
+        for addr in ['*'] + get_all_addresses():
             click.echo(addr)
 
 

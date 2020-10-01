@@ -14,8 +14,9 @@ from os import listdir, remove, makedirs
 from os.path import join, isfile, getsize, basename, isdir
 from shutil import copy
 from urllib.request import urlopen
-from typing import Optional, BinaryIO, cast
+from typing import Optional, BinaryIO, cast, List
 
+import netifaces  # type: ignore
 from click import progressbar, echo
 
 CHUNK_SIZE = 4 * 1024 * 1024
@@ -144,3 +145,20 @@ def get_java_version(java_path: str) -> str:
     values = line.split(' ')
     version = values[2]
     return version.strip('"')
+
+
+def get_local_addresses() -> List[str]:
+    """Returns list of local ip addresses."""
+    interfaces = netifaces.interfaces()
+    res = []
+
+    for ifs in interfaces:
+        addresses = netifaces.ifaddresses(ifs)
+
+        if netifaces.AF_INET in addresses:
+            ipv4 = addresses[netifaces.AF_INET]
+
+            for ips in ipv4:
+                res.append(ips['addr'])
+
+    return res
