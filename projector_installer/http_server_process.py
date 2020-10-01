@@ -20,10 +20,7 @@ from .secure_config import get_http_crt_file, get_http_key_file, is_secure
 
 class NoLogServer(SimpleHTTPRequestHandler):
     """Custom http server class to serve static projector client files."""
-    address: str = ''
-    port: str = ''
     projector_port: str = ''
-    token: str = ''
 
     def log_message(self, *args: Any) -> None:
         pass
@@ -42,21 +39,12 @@ class NoLogServer(SimpleHTTPRequestHandler):
     @classmethod
     def init_with(cls, run_config: RunConfig) -> None:
         """Initializes server with run config params"""
-        cls.address = run_config.http_address
-        cls.port = str(run_config.http_port)
         cls.projector_port = str(run_config.projector_port)
-        cls.token = run_config.token
 
     @classmethod
     def redirect_url(cls) -> str:
         """Constructs redirect url."""
-
-        if len(cls.token) > 0:  # secure connection
-            return f'https://{cls.address}:{cls.port}/index.html?' \
-                   f'port={cls.projector_port}'
-
-        return f'http://{cls.address}:{cls.port}/index.html?' \
-               f'port={cls.projector_port}'
+        return f'/index.html?port={cls.projector_port}'
 
     def is_empty_path(self) -> bool:
         """Checks if current path is empty."""
