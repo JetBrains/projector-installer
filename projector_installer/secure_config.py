@@ -5,7 +5,7 @@
 """Secure config related stuff"""
 import socket
 from os.path import join, isfile
-from typing import List
+from typing import List, Tuple
 
 import re
 import subprocess
@@ -13,7 +13,7 @@ import secrets
 import string
 
 from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir
-from .utils import create_dir_if_not_exist, remove_file_if_exist
+from .utils import create_dir_if_not_exist, remove_file_if_exist, get_local_addresses
 
 SSL_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_SSL_PROPERTIES_PATH'
 TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
@@ -44,7 +44,7 @@ def get_http_key_file(config_name: str) -> str:
 
 
 def get_http_csr_file(config_name: str) -> str:
-    """Returns full path to projector server crt file"""
+    """Returns full path to projector server csr file"""
     return join(get_run_configs_dir(), config_name, f'{HTTP_SERVER}.csr')
 
 
@@ -202,12 +202,36 @@ def is_ip_address(address: str) -> bool:
         address) is not None
 
 
+def get_san_alt_names(address: str) -> Tuple[List[str], List[str]]:
+    """Return pair of lists - ip addresses and host names for SAN certificate"""
+    ip_addresses = []
+    names = []
+
+    if address == '0.0.0.0':
+        ip_addresses = get_local_addresses()
+    else:
+        if is_ip_address(address):
+            ip_addresses.append(address)
+        else:
+            names.append(address)
+
+    if '127.0.0.1' in ip_addresses and 'localhost' not in names:
+        names.append('localhost')
+
+    if 'localhost' in names and '127.0.0.1' not in ip_addresses:
+        ip_addresses.append('127.0.0.1')
+
+    return ip_addresses, names
+
+
 def get_projector_san(address: str) -> str:
     """Returns san"""
-    if is_ip_address(address):
-        return "IP:" + address
+    addresses, names = get_san_alt_names(address)
+    addresses = list(map(lambda s: "IP:" + s, addresses))
+    names = list(map(lambda s: "DNS:" + s, names))
+    res = addresses + names
 
-    return "DNS:" + address
+    return ",".join(res)
 
 
 def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
@@ -284,6 +308,85 @@ def get_http_gen_args(run_config: RunConfig) -> List[str]:
     ]
 
 
+OPENSSL_REQ_CNF = 'server-san-req.cnf'
+
+
+def get_openssl_req_cnf_file(config_name: str) -> str:
+    """Returns full path to openssl config file for SAN req"""
+    return join(get_run_configs_dir(), config_name, f'{OPENSSL_REQ_CNF}')
+
+
+REQ_CNF_CONTENT = """
+[ req ]
+v3_extensions = v3_req
+distinguished_name = req_distinguished_name
+prompt = no
+
+[ req_distinguished_name ]
+countryName                 = RU
+countryName_default         = RU
+stateOrProvinceName         = SPB
+stateOrProvinceName_default = SPB
+localityName                = SPB
+localityName_default        = SPB
+organizationName            = Projector
+organizationName_default    = Projector
+commonName                  = localhost
+commonName_default          = localhost
+commonName_max              = 64
+
+
+[ v3_req ]
+subjectAltName =  @alt_names
+
+[ alt_names ]
+"""
+
+
+def generate_req_cnf(config_name: str, addresses: List[str], names: List[str]) -> None:
+    """Generate OpenSSL config for sign request"""
+    res = REQ_CNF_CONTENT
+
+    for i, address in enumerate(addresses):
+        res += f'IP.{i + 1} = {address}\n'
+
+    for i, name in enumerate(names):
+        res += f'DNS.{i + 1} = {name}\n'
+
+    with open(get_openssl_req_cnf_file(config_name), 'w') as file:
+        file.write(res)
+
+
+OPENSSL_SIGN_CNF = 'server-san-sign.cnf'
+
+
+def get_openssl_sign_cnf_file(config_name: str) -> str:
+    """Returns full path to openssl config file for SAN sign cert"""
+    return join(get_run_configs_dir(), config_name, f'{OPENSSL_SIGN_CNF}')
+
+
+SIGN_CNF_CONTENT = """
+[ v3_sign ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+"""
+
+
+def generate_sign_cnf(config_name: str, addresses: List[str], names: List[str]) -> None:
+    """Generate OpenSSL config for signing certificate"""
+    res = SIGN_CNF_CONTENT
+
+    for i, address in enumerate(addresses):
+        res += f'IP.{i + 1} = {address}\n'
+
+    for i, name in enumerate(names):
+        res += f'DNS.{i + 1} = {name}\n'
+
+    with open(get_openssl_sign_cnf_file(config_name), 'w') as file:
+        file.write(res)
+
+
 def get_openssl_generate_key_args(run_config: RunConfig) -> List[str]:
     """Get openssl generate keys arg"""
     return ['genrsa',
@@ -292,17 +395,16 @@ def get_openssl_generate_key_args(run_config: RunConfig) -> List[str]:
             ]
 
 
-def get_openssl_subj(http_address: str) -> str:
-    """Returns subject string for http server cert request"""
-    return "/C=RU/ST=SPB/L=SPB/O=Projector/OU=projector-installer/CN=" + http_address
+DN = "/C=RU/ST=SPB/L=SPB/O=Projector/OU=projector-installer/CN=localhost"
 
 
 def get_openssl_generate_cert_req(run_config: RunConfig) -> List[str]:
-    """Returns openssl args to genetrate cert sign request"""
+    """Returns openssl args to generate cert sign request"""
     return ['req', '-new',
             '-key', get_http_key_file(run_config.name),
             '-out', get_http_csr_file(run_config.name),
-            '-subj', get_openssl_subj(run_config.http_address)
+            '-config', get_openssl_req_cnf_file(run_config.name),
+            '-subj', DN
             ]
 
 
@@ -311,10 +413,12 @@ def get_openssl_sign_args(run_config: RunConfig) -> List[str]:
     return [
         'x509', '-req',
         '-in', get_http_csr_file(run_config.name),
+        '-out', get_http_crt_file(run_config.name),
+        '-extfile', get_openssl_sign_cnf_file(run_config.name),
+        '-extensions', 'v3_sign',
         '-CA', get_ca_crt_file(),
         '-CAkey', get_ca_key_file(),
         '-CAcreateserial',
-        '-out', get_http_crt_file(run_config.name),
         '-days', '4500'
     ]
 
@@ -324,9 +428,13 @@ def generate_http_cert(run_config: RunConfig) -> None:
     cmd = ['openssl'] + get_openssl_generate_key_args(run_config)
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+    (ip_addresses, names) = get_san_alt_names(run_config.http_address)
+
+    generate_req_cnf(run_config.name, ip_addresses, names)
     cmd = ['openssl'] + get_openssl_generate_cert_req(run_config)
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+    generate_sign_cnf(run_config.name, ip_addresses, names)
     cmd = ['openssl'] + get_openssl_sign_args(run_config)
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
