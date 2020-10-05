@@ -350,7 +350,10 @@ def edit_config(config: RunConfig) -> RunConfig:
         ro_password = password
 
         if password:
-            ro_password = select_password("Choose read-only password", password)
+            if config.password == config.ro_password:
+                ro_password = select_password("Choose read-only password", password)
+            else:
+                ro_password = select_password("Choose read-only password", config.ro_password)
 
         config.password = password
         config.ro_password = ro_password
