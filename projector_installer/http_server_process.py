@@ -13,6 +13,7 @@ from multiprocessing import Process
 import socketserver
 import socket
 import ssl
+from urllib.parse import urlparse, urlunparse
 
 from .global_config import RunConfig
 from .secure_config import get_http_crt_file, get_http_key_file, is_secure
@@ -29,7 +30,7 @@ class NoLogServer(SimpleHTTPRequestHandler):
         try:
             if self.need_redirect():
                 self.send_response(301)
-                self.send_header('Location', NoLogServer.redirect_url())
+                self.send_header('Location', NoLogServer.redirect_url(self.path))
                 self.end_headers()
             else:
                 super().do_GET()
@@ -42,9 +43,19 @@ class NoLogServer(SimpleHTTPRequestHandler):
         cls.projector_port = str(run_config.projector_port)
 
     @classmethod
-    def redirect_url(cls) -> str:
-        """Constructs redirect url."""
-        return f'/index.html?port={cls.projector_port}'
+    def redirect_url(cls, path: str) -> str:
+        """Constructs redirect url. Add port if needed."""
+        # return f'/index.html?port={cls.projector_port}'
+        parse_result = list(urlparse(path))
+        query = parse_result[4]
+
+        if query:
+            query += '&'
+
+        query += f'port={cls.projector_port}'
+        parse_result[4] = query
+
+        return urlunparse(parse_result)
 
     def is_empty_path(self) -> bool:
         """Checks if current path is empty."""
