@@ -9,7 +9,7 @@ import signal
 import subprocess
 import sys
 from typing import Optional
-from os import path, system, uname
+from os import path, system, uname, environ
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path
@@ -27,7 +27,7 @@ from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    update_markdown_plugin
+    update_markdown_plugin, is_password_protected, TOKEN_ENV_NAME, RO_TOKEN_ENV_NAME
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -40,8 +40,8 @@ def do_show_config(pattern: Optional[str] = None) -> None:
     If given config name does not match unique config, runs interactive
      procedure to select it.
     """
-    config_name, run_config = select_run_config(pattern)
-    print(f'Configuration: {config_name}')
+    run_config = select_run_config(pattern)
+    print(f'Configuration: {run_config.name}')
     print(f'IDE path: {run_config.path_to_app}')
     print(f'HTTP address: {run_config.http_address}')
     print(f'HTTP port: {run_config.http_port}')
@@ -79,19 +79,28 @@ def get_access_urls(run_config: RunConfig) -> str:
     if is_secure(run_config):
         schema = 'https'
 
+    urls = []
+
     if run_config.http_address == '0.0.0.0':
-        result = []
         addresses = get_local_addresses()
 
         if '127.0.0.1' in addresses:
             addresses = ['localhost'] + addresses
 
         for address in addresses:
-            result.append(f'{schema}://{address}:{run_config.http_port}/')
+            urls.append(f'{schema}://{address}:{run_config.http_port}/index.html')
+    else:
+        urls = [f'{schema}://{run_config.http_address}:{run_config.http_port}/index.html']
 
-        return '\n'.join(result)
+    if run_config.password:
+        res = list(map(lambda x: x + "?token=" + run_config.password,urls))
 
-    return f'{schema}://{run_config.http_address}:{run_config.http_port}/'
+        if run_config.password != run_config.ro_password:
+            res += list(map(lambda x: x + "?token=" + run_config.ro_password, urls))
+
+        urls = res
+
+    return '\n'.join(urls)
 
 
 def is_compatible_java(app_path: str) -> bool:
@@ -101,21 +110,24 @@ def is_compatible_java(app_path: str) -> bool:
     return version.startswith('11.')
 
 
-# noinspection PyShadowingNames
 def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
     """Executes specified config. If given name does not specify
     config, runs interactive selection procedure."""
-    config_name, run_config = select_run_config(config_name)
+    run_config = select_run_config(config_name)
 
-    print(f'Configuration name: {config_name}')
-    run_script_name = get_run_script_path(config_name)
+    print(f'Configuration name: {run_config.name}')
+    run_script_name = get_run_script_path(run_config.name)
 
     if not path.isfile(run_script_name):
         print(f'Cannot find file {run_script_name}')
-        print(f'To fix, try: projector config edit {config_name}')
+        print(f'To fix, try: projector config edit {run_config.name}')
         sys.exit(1)
 
     projector_log = open(get_path_to_projector_log(), 'a')
+
+    if is_password_protected(run_config):
+        environ[TOKEN_ENV_NAME] = run_config.password  # type: ignore
+        environ[RO_TOKEN_ENV_NAME] = run_config.ro_password  # type: ignore
 
     projector_process = subprocess.Popen([f'{run_script_name}'],
                                          stdout=projector_log,
@@ -137,7 +149,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
 
     http_process.start()
     access_urls = get_access_urls(run_config)
-    print(f'HTTP process PID={http_process.pid}')
+    print(f'HTTP process PID={http_process.pid}\n')
     print(f'To access IDE, open in browser \n{access_urls}\n')
 
     if is_secure(run_config):
@@ -156,7 +168,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     if run_browser:
         if is_wsl():
             wsl_warning()
-            do_run_browser(access_urls)
+            do_run_browser(access_urls[0])
 
     projector_process.wait()
 
@@ -196,7 +208,7 @@ def do_add_config(hint: Optional[str], app_path: Optional[str] = None) -> None:
 
 def do_remove_config(config_name: Optional[str] = None) -> None:
     """Selects (if necessary) and removes selected run config."""
-    config_name, _ = select_run_config(config_name)
+    config_name = select_run_config(config_name).name
     print(f'Removing configuration {config_name}')
     delete_config(config_name)
     print('done.')
@@ -204,8 +216,8 @@ def do_remove_config(config_name: Optional[str] = None) -> None:
 
 def do_edit_config(config_name: Optional[str] = None) -> None:
     """Selects (if necessary) and edits selected run config."""
-    config_name, run_config = select_run_config(config_name)
-    print(f'Edit configuration {config_name}')
+    run_config = select_run_config(config_name)
+    print(f'Edit configuration {run_config.name}')
     run_config = edit_config(run_config)
 
     try:
@@ -240,8 +252,8 @@ def do_rename_config(from_name: str, to_name: str) -> None:
 
 def do_update_markdown_plugin(config_name: Optional[str] = None) -> None:
     """Performs markdown plugin update"""
-    config_name, run_config = select_run_config(config_name)
-    print(f'Updating markdown plugin in configuration {config_name}')
+    run_config = select_run_config(config_name)
+    print(f'Updating markdown plugin in configuration {run_config.name}')
 
     update_markdown_plugin(run_config)
 

@@ -90,14 +90,18 @@ COMPATIBLE_APPS: List[CompatibleApp] = []
 class RunConfig:
     """Run config dataclass"""
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, own_name: str, path_to_app: str, projector_port: int,
-                 http_address: str, http_port: int, token: str) -> None:
+                 http_address: str, http_port: int, token: str,
+                 password: str, ro_password: str) -> None:
         self.name: str = own_name
         self.path_to_app: str = path_to_app
         self.projector_port: int = projector_port
         self.http_address: str = http_address
         self.http_port: int = http_port
-        self.token = token
+        self.token: str = token
+        self.password: str = password
+        self.ro_password: str = ro_password
 
 
 def load_compatible_apps_from_file(file_name: str) -> None:

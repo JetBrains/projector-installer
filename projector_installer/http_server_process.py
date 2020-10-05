@@ -45,7 +45,6 @@ class NoLogServer(SimpleHTTPRequestHandler):
     @classmethod
     def redirect_url(cls, path: str) -> str:
         """Constructs redirect url. Add port if needed."""
-        # return f'/index.html?port={cls.projector_port}'
         parse_result = list(urlparse(path))
         query = parse_result[4]
 

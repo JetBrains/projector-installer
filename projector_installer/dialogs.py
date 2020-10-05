@@ -13,7 +13,7 @@ import click
 
 from .apps import get_installed_apps, get_app_path, get_compatible_app_names
 from .run_config import get_run_configs, RunConfig, get_run_config_names, \
-    get_used_projector_ports, get_used_http_ports
+    get_used_projector_ports, get_used_http_ports, is_password_protected
 
 from .global_config import DEF_HTTP_PORT, DEF_PROJECTOR_PORT
 from .secure_config import generate_token
@@ -128,7 +128,7 @@ def select_new_config_name(hint: Optional[str]) -> Optional[str]:
         return name
 
 
-def select_run_config(config_name: Optional[str]) -> Tuple[str, RunConfig]:
+def select_run_config(config_name: Optional[str]) -> RunConfig:
     """Interactively select run config."""
     run_configs: Dict[str, RunConfig] = get_run_configs(config_name)
 
@@ -152,9 +152,9 @@ def select_run_config(config_name: Optional[str]) -> Tuple[str, RunConfig]:
             else:
                 config_names = get_run_config_names(config_name)
                 name = config_names[config_number - 1]
-                return name, run_configs[name]
+                return run_configs[name]
 
-    return list(run_configs.items())[0]
+    return list(run_configs.values())[0]
 
 
 def select_installed_app_path() -> Optional[str]:
@@ -257,7 +257,6 @@ def get_def_projector_port() -> int:
     return get_def_port(ports, DEF_PROJECTOR_PORT)
 
 
-
 def get_all_addresses() -> List[str]:
     """Returns list of acceptable ip addresses."""
     return ['localhost', '0.0.0.0'] + get_local_addresses()
@@ -303,6 +302,35 @@ def select_projector_port() -> int:
     return res
 
 
+def select_password(prompt: str, default: str = '') -> str:
+    """Prompts for password if needed """
+    password: str = click.prompt(text=prompt, default=default, hide_input=True,
+                                           confirmation_prompt=True)
+
+    return password
+
+
+def select_password_pair() -> Tuple[str, str]:
+    """Prompts for pair of access passwords if needed"""
+    password = ''
+    ro_password = ''
+    need_password = click.prompt('Would you like to set password for connection? [y/n]',
+                                 type=bool)
+
+    if need_password:
+        password = select_password('Please specify RW password:')
+
+        need_ro_password = click.prompt('Would you like to set separate read-only password? [y/n]',
+                                        type=bool)
+
+        if need_ro_password:
+            ro_password = select_password('Please specify RO password:')
+        else:
+            ro_password = password
+
+    return password, ro_password
+
+
 def edit_config(config: RunConfig) -> RunConfig:
     """Edits existing config."""
     prompt = 'Enter the path to IDE (press ENTER for default)'
@@ -316,6 +344,16 @@ def edit_config(config: RunConfig) -> RunConfig:
 
     prompt = 'Enter a Projector port (press ENTER for default)'
     config.projector_port = click.prompt(prompt, default=str(config.projector_port))
+
+    if is_password_protected(config):
+        password = select_password("Choose password", config.password)
+        ro_password = password
+
+        if password:
+            ro_password = select_password("Choose read-only password", password)
+
+        config.password = password
+        config.ro_password = ro_password
 
     return config
 
@@ -338,21 +376,27 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
         type=bool)
 
     token = generate_token() if secure_config else ''
+    password, ro_password = select_password_pair()
+
     return RunConfig(config_name, expanduser(app_path), projector_port,
-                     http_address, http_port, token)
+                     http_address, http_port, token, password, ro_password)
 
 
 class UserInstallInput:
     """Represents user answers during install session"""
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, config_name: str, http_address: str, http_port: int,
-                 projector_port: int, do_run: bool, secure_config: bool) -> None:
+                 projector_port: int, do_run: bool, secure_config: bool,
+                 password: str, ro_password: str) -> None:
         self.config_name: str = config_name
         self.http_address: str = http_address
         self.http_port: int = http_port
         self.projector_port: int = projector_port
         self.do_run = do_run
         self.secure_config = secure_config
+        self.password = password
+        self.ro_password = ro_password
 
 
 def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[UserInstallInput]:
@@ -373,12 +417,14 @@ def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[Us
         '(this option requires installing a projector\'s certificate to browser)? [y/n]',
         type=bool)
 
+    password, ro_password = select_password_pair()
+
     return UserInstallInput(config_name, http_address, http_port, projector_port,
-                            do_run, secure_config)
+                            do_run, secure_config, password, ro_password)
 
 
 def make_config_from_input(inp: UserInstallInput) -> RunConfig:
     """Makes run config from user input"""
     token = generate_token() if inp.secure_config else ''
     return RunConfig(inp.config_name, '', inp.projector_port,
-                     inp.http_address, inp.http_port, token)
+                     inp.http_address, inp.http_port, token, inp.password, inp.ro_password)

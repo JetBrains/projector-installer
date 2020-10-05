@@ -19,6 +19,14 @@ from .secure_config import generate_server_secrets, is_secure
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
 
+TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
+RO_TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_RO_HANDSHAKE_TOKEN'
+
+
+def is_password_protected(run_config: RunConfig) -> bool:
+    """Checks if run config is password protected"""
+    return run_config.password != ''
+
 
 def load_config(config_name: str) -> RunConfig:
     """Loads specified config from disk."""
@@ -31,7 +39,9 @@ def load_config(config_name: str) -> RunConfig:
                      config.getint('PROJECTOR', 'PORT'),
                      config.get('HTTP.SERVER', 'ADDRESS'),
                      config.getint('HTTP.SERVER', 'PORT'),
-                     config.get('SSL', 'TOKEN', fallback=''))
+                     config.get('SSL', 'TOKEN', fallback=''),
+                     config.get('PASSWORDS', 'PASSWORD', fallback=''),
+                     config.get('PASSWORDS', 'RO_PASSWORD', fallback=''))
 
 
 def get_run_script_path(config_name: str) -> str:
@@ -61,6 +71,11 @@ def save_config(run_config: RunConfig) -> None:
     if is_secure(run_config):
         config['SSL'] = {}
         config['SSL']['TOKEN'] = run_config.token
+
+    if is_password_protected(run_config):
+        config['PASSWORDS'] = {}
+        config['PASSWORDS']['PASSWORD'] = run_config.password  # type: ignore
+        config['PASSWORDS']['RO_PASSWORD'] = run_config.ro_password  # type: ignore
 
     config_path = join(get_run_configs_dir(), run_config.name)
 
