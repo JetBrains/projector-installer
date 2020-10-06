@@ -11,7 +11,7 @@ from shutil import rmtree
 from typing import Optional, Dict, List
 import configparser
 
-from .apps import get_app_path, make_run_script
+from .apps import get_app_path, make_run_script, check_run_script
 from .global_config import get_run_configs_dir, RunConfig, is_password_protected
 from .ide_configuration import install_own_markdown_plugin
 from .secure_config import generate_server_secrets, is_secure
@@ -169,3 +169,9 @@ def update_markdown_plugin(run_config: RunConfig) -> None:
     Useful after script update.
     """
     install_own_markdown_plugin(run_config.path_to_app)
+
+
+def check_config(run_config: RunConfig) -> bool:
+    """Check if all run config files corresponds to given configuration"""
+    run_script = get_run_script_path(run_config.name)
+    return check_run_script(run_config, run_script)

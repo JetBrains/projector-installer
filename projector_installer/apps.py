@@ -4,10 +4,10 @@
 
 
 """Application management functions."""
-
+import io
 from os.path import join, expanduser, dirname
 from os import listdir, chmod, stat, rename
-from typing import Optional, List
+from typing import Optional, List, TextIO
 import json
 
 from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS, \
@@ -57,33 +57,49 @@ def get_app_path(app_name: str) -> str:
     return join(get_apps_dir(), app_name)
 
 
+def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
+    """Writes run script from src to dst"""
+
+    for line in src:
+        if line.startswith("IDE_BIN_HOME"):
+            line = f'IDE_BIN_HOME={join(run_config.path_to_app, "bin")}\n'
+        elif line.find("classpath") != -1:
+            line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
+        elif line.find(IDEA_RUN_CLASS) != -1:
+            line = f' -Dorg.jetbrains.projector.server.port={run_config.projector_port} \\\n'
+            line += f' -Dorg.jetbrains.projector.server.classToLaunch={IDEA_RUN_CLASS} \\\n'
+
+            if is_secure(run_config):
+                line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
+
+            if is_password_protected(run_config):
+                line += f' -D{TOKEN_ENV_NAME}=\"{run_config.password}\" \\\n'
+                line += f' -D{RO_TOKEN_ENV_NAME}=\"{run_config.ro_password}\" \\\n'
+
+            line += f'  {PROJECTOR_RUN_CLASS}\\\n'
+
+        dst.write(line)
+
+
 def make_run_script(run_config: RunConfig, run_script: str) -> None:
     """Creates run script from ide launch script."""
     idea_script = get_launch_script(run_config.path_to_app)
 
     with open(idea_script, 'r') as src, open(run_script, 'w') as dst:
-        for line in src:
-            if line.startswith("IDE_BIN_HOME"):
-                line = f'IDE_BIN_HOME={join(run_config.path_to_app, "bin")}\n'
-            elif line.find("classpath") != -1:
-                line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
-            elif line.find(IDEA_RUN_CLASS) != -1:
-                line = f' -Dorg.jetbrains.projector.server.port={run_config.projector_port} \\\n'
-                line += f' -Dorg.jetbrains.projector.server.classToLaunch={IDEA_RUN_CLASS} \\\n'
-
-                if is_secure(run_config):
-                    line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
-
-                if is_password_protected(run_config):
-                    line += f' -D{TOKEN_ENV_NAME}=\"{run_config.password}\" \\\n'
-                    line += f' -D{RO_TOKEN_ENV_NAME}=\"{run_config.ro_password}\" \\\n'
-
-                line += f'  {PROJECTOR_RUN_CLASS}\\\n'
-
-            dst.write(line)
+        write_run_script(run_config, src, dst)
 
     stats = stat(run_script)
     chmod(run_script, stats.st_mode | 0o0111)
+
+
+def check_run_script(run_config: RunConfig, run_script_name: str) -> bool:
+    """Check if run script corresponds to given config"""
+    idea_script = get_launch_script(run_config.path_to_app)
+    with open(idea_script, 'r') as src, open(run_script_name, 'r') as run_script:
+        dst = io.StringIO()
+        write_run_script(run_config, src, dst)
+        dst.seek(0)
+        return dst.read() == run_script.read()
 
 
 class ProductInfo:
