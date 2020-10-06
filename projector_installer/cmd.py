@@ -14,7 +14,7 @@ from .global_config import init_config_dir, init_compatible_apps, init_cache_dir
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
-    do_rename_config, do_update_markdown_plugin
+    do_rename_config, do_update_markdown_plugin, do_rebuild_config
 from .license import display_license
 
 
@@ -225,6 +225,16 @@ def update_markdown_plugin(config_name: Optional[str]) -> None:
 
 
 config.add_command(update_markdown_plugin, name='update-markdown-plugin')
+
+
+@config.command(short_help='Regenerate all files related to given config')
+@click.argument('config_name', type=click.STRING, required=False)
+def rebuild(config_name: Optional[str]) -> None:
+    """projector config rebuild [config_name]
+
+    Regenerate all files related to given config.
+    """
+    do_rebuild_config(config_name)
 
 
 # Projector commands shortcuts

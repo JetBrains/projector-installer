@@ -2,6 +2,10 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+## Added
+ - new config subcommand - rebuild 
+
 # 0.1.9
 ## Added 
  - New command line option --cache-directory

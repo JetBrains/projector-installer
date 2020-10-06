@@ -104,6 +104,11 @@ class RunConfig:
         self.ro_password: str = ro_password
 
 
+def is_password_protected(run_config: RunConfig) -> bool:
+    """Checks if run config is password protected"""
+    return run_config.password != ''
+
+
 def load_compatible_apps_from_file(file_name: str) -> None:
     """Loads compatible apps file to memory."""
     with open(file_name, 'r') as file:

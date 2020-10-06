@@ -9,7 +9,7 @@ import signal
 import subprocess
 import sys
 from typing import Optional
-from os import path, system, uname, environ
+from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path
@@ -27,7 +27,7 @@ from .http_server_process import HttpServerProcess
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    update_markdown_plugin, is_password_protected, TOKEN_ENV_NAME, RO_TOKEN_ENV_NAME
+    update_markdown_plugin
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -124,10 +124,6 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
         sys.exit(1)
 
     projector_log = open(get_path_to_projector_log(), 'a')
-
-    if is_password_protected(run_config):
-        environ[TOKEN_ENV_NAME] = run_config.password  # type: ignore
-        environ[RO_TOKEN_ENV_NAME] = run_config.ro_password  # type: ignore
 
     projector_process = subprocess.Popen([f'{run_script_name}'],
                                          stdout=projector_log,
@@ -256,6 +252,14 @@ def do_update_markdown_plugin(config_name: Optional[str] = None) -> None:
     print(f'Updating markdown plugin in configuration {run_config.name}')
 
     update_markdown_plugin(run_config)
+
+
+def do_rebuild_config(config_name: Optional[str] = None) -> None:
+    """Regenerates all run config related files"""
+    run_config = select_run_config(config_name)
+    print(f'Rebuild run config {run_config.name}')
+
+    save_config(run_config)
 
 
 def do_find_app(pattern: Optional[str] = None) -> None:

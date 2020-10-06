@@ -12,20 +12,12 @@ from typing import Optional, Dict, List
 import configparser
 
 from .apps import get_app_path, make_run_script
-from .global_config import get_run_configs_dir, RunConfig
+from .global_config import get_run_configs_dir, RunConfig, is_password_protected
 from .ide_configuration import install_own_markdown_plugin
 from .secure_config import generate_server_secrets, is_secure
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
-
-TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
-RO_TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_RO_HANDSHAKE_TOKEN'
-
-
-def is_password_protected(run_config: RunConfig) -> bool:
-    """Checks if run config is password protected"""
-    return run_config.password != ''
 
 
 def load_config(config_name: str) -> RunConfig:

@@ -11,7 +11,8 @@ from typing import Optional, List
 import json
 
 from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS, \
-    CompatibleApp, RunConfig
+    CompatibleApp, RunConfig, is_password_protected
+
 from .secure_config import is_secure, get_ssl_properties_file, SSL_ENV_NAME
 from .utils import unpack_tar_file
 
@@ -19,6 +20,8 @@ IDEA_RUN_CLASS = 'com.intellij.idea.Main'
 PROJECTOR_RUN_CLASS = 'org.jetbrains.projector.server.ProjectorLauncher'
 IDEA_PLATFORM_PREFIX = 'idea.platform.prefix'
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
+TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
+RO_TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_RO_HANDSHAKE_TOKEN'
 
 
 def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
@@ -70,7 +73,10 @@ def make_run_script(run_config: RunConfig, run_script: str) -> None:
 
                 if is_secure(run_config):
                     line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
-                    # line += f' -D{TOKEN_ENV_NAME}=\"{run_config.token}\" \\\n'
+
+                if is_password_protected(run_config):
+                    line += f' -D{TOKEN_ENV_NAME}=\"{run_config.password}\" \\\n'
+                    line += f' -D{RO_TOKEN_ENV_NAME}=\"{run_config.ro_password}\" \\\n'
 
                 line += f'  {PROJECTOR_RUN_CLASS}\\\n'
 
