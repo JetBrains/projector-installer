@@ -18,14 +18,12 @@ from .utils import create_dir_if_not_exist, download_file, get_file_name_from_ur
 
 USER_HOME: str = expanduser('~')
 INSTALL_DIR: str = dirname(abspath(__file__))
-DEF_HTTP_PORT: int = 8889
 DEF_PROJECTOR_PORT: int = 9999
 COMPATIBLE_IDE_FILE: str = 'compatible_ide.json'
 PROJECTOR_LOG_FILE: str = 'projector.log'
 DEF_CONFIG_DIR: str = '.projector'
 BUNDLED_DIR: str = 'bundled'
 SERVER_DIR: str = 'server'
-CLIENT_DIR: str = 'client'
 PLUGIN_DIR: str = 'projector-markdown-plugin'
 config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
 cache_dir: str = ''
@@ -92,13 +90,10 @@ class RunConfig:
 
     # pylint: disable=too-many-instance-attributes
     def __init__(self, own_name: str, path_to_app: str, projector_port: int,
-                 http_address: str, http_port: int, token: str,
-                 password: str, ro_password: str) -> None:
+                 token: str, password: str, ro_password: str) -> None:
         self.name: str = own_name
         self.path_to_app: str = path_to_app
         self.projector_port: int = projector_port
-        self.http_address: str = http_address
-        self.http_port: int = http_port
         self.token: str = token
         self.password: str = password
         self.ro_password: str = ro_password
@@ -154,11 +149,6 @@ def init_compatible_apps() -> None:
     except IOError as error:
         print(f'Cannot load compatible ide file: {str(error)}. Exiting...')
         sys.exit(2)
-
-
-def get_http_dir() -> str:
-    """Returns dir with client files."""
-    return join(INSTALL_DIR, BUNDLED_DIR, CLIENT_DIR)
 
 
 def get_projector_server_dir() -> str:

@@ -16,7 +16,7 @@ from setuptools import Command
 from projector_installer.utils import create_dir_if_not_exist, download_file, unpack_zip_file, \
     get_file_name_from_url, copy_all_files
 
-from projector_installer.global_config import BUNDLED_DIR, SERVER_DIR, CLIENT_DIR
+from projector_installer.global_config import BUNDLED_DIR, SERVER_DIR
 
 
 def copy_license() -> None:
@@ -31,25 +31,13 @@ with open('requirements.txt') as f:
 PACKAGE_DIR = 'projector_installer'
 bundled_dir = join(PACKAGE_DIR, BUNDLED_DIR)
 server_dir = join(bundled_dir, SERVER_DIR)
-client_dir = join(bundled_dir, CLIENT_DIR)
 plugin_dir = bundled_dir
 
 PROJECTOR_SERVER_URL: str = 'https://github.com/JetBrains/projector-server/releases/' \
-                            'download/v0.46.10/projector-server-v0.46.10.zip'
-
-PROJECTOR_CLIENT_URL: str = 'https://github.com/JetBrains/projector-client/releases/' \
-                            'download/v0.47.11/projector-client-web-distribution-v0.47.11.zip'
+                            'download/v0.47.11/projector-server-v0.47.11.zip'
 
 MARKDOWN_PLUGIN_URL: str = 'https://github.com/JetBrains/projector-markdown-plugin/releases/' \
                            'download/v0.42.2/projector-markdown-plugin-v0.42.2.zip'
-
-
-def download_client(to_directory: str) -> None:
-    """Download and  unpack projector client"""
-    download_file(PROJECTOR_CLIENT_URL, to_directory)
-    file_path = join(to_directory, get_file_name_from_url(PROJECTOR_CLIENT_URL))
-    unpack_zip_file(file_path, to_directory)
-    remove(file_path)
 
 
 def download_server(to_dir: str) -> None:
@@ -78,9 +66,7 @@ def download_bundled_data() -> None:
     if not isdir(bundled_dir):
         create_dir_if_not_exist(bundled_dir)
         create_dir_if_not_exist(server_dir)
-        create_dir_if_not_exist(client_dir)
         create_dir_if_not_exist(plugin_dir)
-        download_client(client_dir)
         download_server(server_dir)
         download_plugin(plugin_dir)
 

@@ -29,8 +29,6 @@ def load_config(config_name: str) -> RunConfig:
     return RunConfig(config_name,
                      config.get('IDE', 'PATH'),
                      config.getint('PROJECTOR', 'PORT'),
-                     config.get('HTTP.SERVER', 'ADDRESS'),
-                     config.getint('HTTP.SERVER', 'PORT'),
                      config.get('SSL', 'TOKEN', fallback=''),
                      config.get('PASSWORDS', 'PASSWORD', fallback=''),
                      config.get('PASSWORDS', 'RO_PASSWORD', fallback=''))
@@ -55,10 +53,6 @@ def save_config(run_config: RunConfig) -> None:
 
     config['PROJECTOR'] = {}
     config['PROJECTOR']['PORT'] = str(run_config.projector_port)
-
-    config['HTTP.SERVER'] = {}
-    config['HTTP.SERVER']['ADDRESS'] = run_config.http_address
-    config['HTTP.SERVER']['PORT'] = str(run_config.http_port)
 
     if is_secure(run_config):
         config['SSL'] = {}
@@ -138,23 +132,10 @@ def validate_run_config(run_config: RunConfig) -> None:
     if not isdir(run_config.path_to_app):
         raise ValueError(f'IDE path does not exist: {run_config.path_to_app}')
 
-    if run_config.http_port == run_config.projector_port:
-        raise ValueError('HTTP port can\'t be equal to projector port.')
-
-
-def get_used_http_ports() -> List[int]:
-    """Returns list of ports, used by http servers in existing configs."""
-    return [rc.http_port for rc in get_run_configs().values()]
-
 
 def get_used_projector_ports() -> List[int]:
     """Returns list of ports, used by projector servers in existing configs."""
     return [rc.projector_port for rc in get_run_configs().values()]
-
-
-def get_used_ports() -> List[int]:
-    """Returns list of ports, used either by projector or http servers in existing configs."""
-    return get_used_http_ports() + get_used_projector_ports()
 
 
 def get_configs_with_app(app_name: str) -> List[str]:

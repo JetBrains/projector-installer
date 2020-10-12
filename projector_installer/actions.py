@@ -5,7 +5,6 @@
 """Real actions performed by projector script."""
 
 import shutil
-import signal
 import subprocess
 import sys
 from typing import Optional
@@ -21,9 +20,8 @@ from .dialogs import select_compatible_app, select_new_config_name, list_configs
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, make_config_from_input
 
-from .global_config import get_http_dir, get_download_cache_dir, get_path_to_projector_log, \
-    RunConfig
-from .http_server_process import HttpServerProcess
+from .global_config import get_download_cache_dir, get_path_to_projector_log, RunConfig
+
 from .ide_configuration import install_projector_markdown_for, forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
@@ -43,8 +41,6 @@ def do_show_config(pattern: Optional[str] = None) -> None:
     run_config = select_run_config(pattern)
     print(f'Configuration: {run_config.name}')
     print(f'IDE path: {run_config.path_to_app}')
-    print(f'HTTP address: {run_config.http_address}')
-    print(f'HTTP port: {run_config.http_port}')
     print(f'Projector port: {run_config.projector_port}')
 
     product_info = get_product_info(run_config.path_to_app)
@@ -81,19 +77,16 @@ def get_access_urls(run_config: RunConfig) -> str:
 
     urls = []
 
-    if run_config.http_address == '0.0.0.0':
-        addresses = get_local_addresses()
+    addresses = get_local_addresses()
 
-        if '127.0.0.1' in addresses:
-            addresses = ['localhost'] + addresses
+    if '127.0.0.1' in addresses:
+        addresses = ['localhost'] + addresses
 
-        for address in addresses:
-            urls.append(f'{schema}://{address}:{run_config.http_port}/index.html')
-    else:
-        urls = [f'{schema}://{run_config.http_address}:{run_config.http_port}/index.html']
+    for address in addresses:
+        urls.append(f'{schema}://{address}:{run_config.projector_port}/index.html')
 
     if run_config.password:
-        res = list(map(lambda x: x + "?token=" + run_config.password,urls))
+        res = list(map(lambda x: x + "?token=" + run_config.password, urls))
 
         if run_config.password != run_config.ro_password:
             res += list(map(lambda x: x + "?token=" + run_config.ro_password, urls))
@@ -133,23 +126,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
                                          stdout=projector_log,
                                          stderr=projector_log)
 
-    http_process = HttpServerProcess(run_config, get_http_dir())
-
-    def signal_handler(*args):  # type: ignore
-        # pylint: disable=unused-argument
-        if http_process and http_process.is_alive():
-            http_process.terminate()
-
-        projector_log.close()
-
-        print('\nExiting...')
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, signal_handler)
-
-    http_process.start()
     access_urls = get_access_urls(run_config)
-    print(f'HTTP process PID={http_process.pid}\n')
     print(f'To access IDE, open in browser \n{access_urls}\n')
 
     if is_secure(run_config):
@@ -173,9 +150,6 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     projector_process.wait()
 
     print('Exiting...')
-
-    if http_process and http_process.is_alive():
-        http_process.terminate()
 
     projector_log.close()
 

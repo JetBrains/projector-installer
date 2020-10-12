@@ -20,7 +20,6 @@ TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
 
 SSL_PROPERTIES_FILE = 'ssl.properties'
 PROJECTOR_JKS_NAME = 'projector'
-HTTP_SERVER = 'http_server'
 
 DEF_TOKEN_LEN = 20
 CA_NAME = 'ca'
@@ -33,26 +32,6 @@ def generate_token(length: int = DEF_TOKEN_LEN) -> str:
     return ''.join(secrets.choice(alphabet) for i in range(length))
 
 
-def get_http_crt_file(config_name: str) -> str:
-    """Returns full path to http server certificate file"""
-    return join(get_run_configs_dir(), config_name, f'{HTTP_SERVER}.crt')
-
-
-def get_http_key_file(config_name: str) -> str:
-    """Returns full path to http server key file"""
-    return join(get_run_configs_dir(), config_name, f'{HTTP_SERVER}.key')
-
-
-def get_http_csr_file(config_name: str) -> str:
-    """Returns full path to projector server csr file"""
-    return join(get_run_configs_dir(), config_name, f'{HTTP_SERVER}.csr')
-
-
-def get_http_jks_file(config_name: str) -> str:
-    """Returns full path to projector server crt file"""
-    return join(get_run_configs_dir(), config_name, f'{HTTP_SERVER}.jks')
-
-
 def get_ssl_properties_file(config_name: str) -> str:
     """Returns full path to ssl.properties file"""
     return join(get_run_configs_dir(), config_name, SSL_PROPERTIES_FILE)
@@ -61,11 +40,6 @@ def get_ssl_properties_file(config_name: str) -> str:
 def get_projector_jks_file(config_name: str) -> str:
     """Returns full path to projector server key file"""
     return join(get_run_configs_dir(), config_name, f'{PROJECTOR_JKS_NAME}.jks')
-
-
-def get_projector_pkcs12_file(config_name: str) -> str:
-    """Returns full path to projector server key file"""
-    return join(get_run_configs_dir(), config_name, f'{PROJECTOR_JKS_NAME}.p12')
 
 
 def get_projector_csr_file(config_name: str) -> str:
@@ -83,19 +57,9 @@ def get_ca_crt_file() -> str:
     return join(get_ssl_dir(), f'{CA_NAME}.crt')
 
 
-def get_ca_key_file() -> str:
-    """Returns full path to ca key file"""
-    return join(get_ssl_dir(), f'{CA_NAME}.key')
-
-
 def get_ca_jks_file() -> str:
     """Returns full path to ca keystore"""
     return join(get_ssl_dir(), f'{CA_NAME}.jks')
-
-
-def get_ca_pkcs12_file() -> str:
-    """Returns full path to ca keystore"""
-    return join(get_ssl_dir(), f'{CA_NAME}.p12')
 
 
 def is_ca_exist() -> bool:
@@ -107,7 +71,6 @@ def is_ca_exist() -> bool:
 
 def get_ca_dist_name() -> str:
     """Returns CA Dist name"""
-
     return f'CN=PROJECTOR-{socket.gethostname()}-{generate_token(5)}-CA, ' \
            f'OU=Development, O=Projector, L=SPB, S=SPB, C=RU'
 
@@ -130,30 +93,6 @@ def get_export_ca_command() -> List[str]:
             '-storepass', CA_PASSWORD, '-keystore', get_ca_jks_file(), '-rfc']
 
 
-def get_convert_ca_to_pkcs12() -> List[str]:
-    """Returns list of args for convert ca to pkcs12 format"""
-    return [
-        '-importkeystore', '-srckeystore', get_ca_jks_file(),
-        '-srcstoretype', 'JKS',
-        '-srcstorepass', CA_PASSWORD,
-        '-destkeystore', get_ca_pkcs12_file(),
-        '-deststoretype', 'pkcs12',
-        '-deststorepass', CA_PASSWORD
-    ]
-
-
-def get_extract_ca_key_args() -> List[str]:
-    """Returns list of openssl args for extract ca key"""
-    return [
-        'pkcs12',
-        '-in', get_ca_pkcs12_file(),
-        '-nodes',
-        '-nocerts',
-        '-out', get_ca_key_file(),
-        '-passin', f'pass:{CA_PASSWORD}'
-    ]
-
-
 def generate_ca(keytool_path: str) -> None:
     """Creates CA"""
     create_dir_if_not_exist(get_ssl_dir())
@@ -162,12 +101,6 @@ def generate_ca(keytool_path: str) -> None:
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     cmd = [keytool_path] + get_export_ca_command()
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    cmd = [keytool_path] + get_convert_ca_to_pkcs12()
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    cmd = ['openssl'] + get_extract_ca_key_args()
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
@@ -246,7 +179,7 @@ def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
         '-outfile', get_projector_crt_file(run_config.name),
         '-ext', 'KeyUsage:critical=digitalSignature,keyEncipherment',
         '-ext', 'EKU=serverAuth',
-        '-ext', f'SAN={get_projector_san(run_config.http_address)}',
+        '-ext', f'SAN={get_projector_san("0.0.0.0")}',
         '-rfc'
     ]
 
@@ -295,150 +228,6 @@ def generate_projector_jks(run_config: RunConfig) -> None:
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
-DIST_HTTP_NAME = 'CN=Http, OU=Development, O=Idea, L=SPB, S=SPB, C=RU'
-
-
-def get_http_gen_args(run_config: RunConfig) -> List[str]:
-    """keytool args for http keypair generation"""
-    return [
-        '-genkeypair', '-alias', HTTP_SERVER, '-dname', DIST_HTTP_NAME,
-        '-keystore', get_http_jks_file(run_config.name),
-        '-keypass', run_config.token, '-storepass', run_config.token,
-        '-keyalg', 'RSA', '-keysize', '4096', '-validity', '4500'
-    ]
-
-
-OPENSSL_REQ_CNF = 'server-san-req.cnf'
-
-
-def get_openssl_req_cnf_file(config_name: str) -> str:
-    """Returns full path to openssl config file for SAN req"""
-    return join(get_run_configs_dir(), config_name, f'{OPENSSL_REQ_CNF}')
-
-
-REQ_CNF_CONTENT = """
-[ req ]
-v3_extensions = v3_req
-distinguished_name = req_distinguished_name
-prompt = no
-
-[ req_distinguished_name ]
-countryName                 = RU
-countryName_default         = RU
-stateOrProvinceName         = SPB
-stateOrProvinceName_default = SPB
-localityName                = SPB
-localityName_default        = SPB
-organizationName            = Projector
-organizationName_default    = Projector
-commonName                  = localhost
-commonName_default          = localhost
-commonName_max              = 64
-
-
-[ v3_req ]
-subjectAltName =  @alt_names
-
-[ alt_names ]
-"""
-
-
-def generate_req_cnf(config_name: str, addresses: List[str], names: List[str]) -> None:
-    """Generate OpenSSL config for sign request"""
-    res = REQ_CNF_CONTENT
-
-    for i, address in enumerate(addresses):
-        res += f'IP.{i + 1} = {address}\n'
-
-    for i, name in enumerate(names):
-        res += f'DNS.{i + 1} = {name}\n'
-
-    with open(get_openssl_req_cnf_file(config_name), 'w') as file:
-        file.write(res)
-
-
-OPENSSL_SIGN_CNF = 'server-san-sign.cnf'
-
-
-def get_openssl_sign_cnf_file(config_name: str) -> str:
-    """Returns full path to openssl config file for SAN sign cert"""
-    return join(get_run_configs_dir(), config_name, f'{OPENSSL_SIGN_CNF}')
-
-
-SIGN_CNF_CONTENT = """
-[ v3_sign ]
-subjectAltName = @alt_names
-
-[ alt_names ]
-"""
-
-
-def generate_sign_cnf(config_name: str, addresses: List[str], names: List[str]) -> None:
-    """Generate OpenSSL config for signing certificate"""
-    res = SIGN_CNF_CONTENT
-
-    for i, address in enumerate(addresses):
-        res += f'IP.{i + 1} = {address}\n'
-
-    for i, name in enumerate(names):
-        res += f'DNS.{i + 1} = {name}\n'
-
-    with open(get_openssl_sign_cnf_file(config_name), 'w') as file:
-        file.write(res)
-
-
-def get_openssl_generate_key_args(run_config: RunConfig) -> List[str]:
-    """Get openssl generate keys arg"""
-    return ['genrsa',
-            '-out', get_http_key_file(run_config.name),
-            '2048'
-            ]
-
-
-DN = "/C=RU/ST=SPB/L=SPB/O=Projector/OU=projector-installer/CN=localhost"
-
-
-def get_openssl_generate_cert_req(run_config: RunConfig) -> List[str]:
-    """Returns openssl args to generate cert sign request"""
-    return ['req', '-new',
-            '-key', get_http_key_file(run_config.name),
-            '-out', get_http_csr_file(run_config.name),
-            '-config', get_openssl_req_cnf_file(run_config.name),
-            '-subj', DN
-            ]
-
-
-def get_openssl_sign_args(run_config: RunConfig) -> List[str]:
-    """Returns openssl list of args for sign cert"""
-    return [
-        'x509', '-req',
-        '-in', get_http_csr_file(run_config.name),
-        '-out', get_http_crt_file(run_config.name),
-        '-extfile', get_openssl_sign_cnf_file(run_config.name),
-        '-extensions', 'v3_sign',
-        '-CA', get_ca_crt_file(),
-        '-CAkey', get_ca_key_file(),
-        '-CAcreateserial',
-        '-days', '4500'
-    ]
-
-
-def generate_http_cert(run_config: RunConfig) -> None:
-    """Generates http certificate and key files"""
-    cmd = ['openssl'] + get_openssl_generate_key_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    (ip_addresses, names) = get_san_alt_names(run_config.http_address)
-
-    generate_req_cnf(run_config.name, ip_addresses, names)
-    cmd = ['openssl'] + get_openssl_generate_cert_req(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    generate_sign_cnf(run_config.name, ip_addresses, names)
-    cmd = ['openssl'] + get_openssl_sign_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-
 def generate_ssl_properties_file(config_name: str, token: str) -> None:
     """Generates ssl.properties file for given config"""
     with open(get_ssl_properties_file(config_name), "w") as file:
@@ -459,9 +248,6 @@ def are_exist_server_secrets(config_name: str) -> bool:
     ret = ret and isfile(get_projector_csr_file(config_name))
     ret = ret and isfile(get_projector_crt_file(config_name))
     ret = ret and isfile(get_ssl_properties_file(config_name))
-    ret = ret and isfile(get_http_csr_file(config_name))
-    ret = ret and isfile(get_http_crt_file(config_name))
-    ret = ret and isfile(get_http_key_file(config_name))
 
     return ret
 
@@ -472,14 +258,12 @@ def remove_server_secrets(config_name: str) -> None:
     remove_file_if_exist(get_projector_csr_file(config_name))
     remove_file_if_exist(get_projector_crt_file(config_name))
     remove_file_if_exist(get_ssl_properties_file(config_name))
-    remove_file_if_exist(get_http_csr_file(config_name))
-    remove_file_if_exist(get_http_crt_file(config_name))
-    remove_file_if_exist(get_http_key_file(config_name))
 
 
 def generate_server_secrets(run_config: RunConfig) -> None:
     """Generate all secret connection related stuff for given config"""
     keytool_path = get_jbr_keytool(run_config.path_to_app)
+
     if not is_ca_exist():
         generate_ca(keytool_path)
 
@@ -487,7 +271,6 @@ def generate_server_secrets(run_config: RunConfig) -> None:
         remove_server_secrets(run_config.name)  # remove existing files
         generate_projector_jks(run_config)
         generate_ssl_properties_file(run_config.name, run_config.token)
-        generate_http_cert(run_config)
 
 
 def is_secure(run_config: RunConfig) -> bool:

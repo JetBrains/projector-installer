@@ -5,6 +5,7 @@ Notable changes to this project are documented in this file.
 # Unreleased
 ## Added
  - new config subcommand - rebuild 
+ - switched to client version bundled in server
 
 # 0.1.9
 ## Added 

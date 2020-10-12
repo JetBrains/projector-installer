@@ -23,12 +23,6 @@ In Debian-based distributive you can install them using the command:
 sudo apt install libxext6 libxrender1 libxtst6 libfreetype6 libxi6  
 ```    
 
-To use [secure connection](#Secure-connection) feature you have to install OpenSSL utility:
-```bash
-sudo apt install openssl
-```
-
-
 ## Installation
 
 ### install from PyPi
@@ -238,8 +232,6 @@ $projector config add
 Enter a new configuration name: AndroidStudio
 Do you want to choose a Projector-installed IDE? [y/n]: n
 Enter the path to IDE: /path/to/your/android-studio
-Enter HTTP listening address (press ENTER for default) [localhost]: 
-Enter a desired HTTP port (press ENTER for default) [8895]: 
 Enter a desired Projector port (press ENTER for default) [10005]: 
 Use secure connection (this option requires installing a projector's certificate to browser)? [y/n]: y
 ```
