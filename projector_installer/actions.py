@@ -7,7 +7,7 @@
 import shutil
 import subprocess
 import sys
-from typing import Optional
+from typing import Optional, List
 from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
@@ -67,7 +67,7 @@ def wsl_warning() -> None:
           'https://github.com/JetBrains/projector-installer#resolving-wsl-issues')
 
 
-def get_access_urls(run_config: RunConfig) -> str:
+def get_access_urls(run_config: RunConfig) -> List[str]:
     """Returns access URLs for given config"""
 
     schema = 'http'
@@ -93,7 +93,7 @@ def get_access_urls(run_config: RunConfig) -> str:
 
         urls = res
 
-    return '\n'.join(urls)
+    return urls
 
 
 def is_compatible_java(app_path: str) -> bool:
@@ -127,7 +127,8 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
                                          stderr=projector_log)
 
     access_urls = get_access_urls(run_config)
-    print(f'To access IDE, open in browser \n{access_urls}\n')
+    urls_string = "\n".join(access_urls)
+    print(f'To access IDE, open in browser \n{urls_string}\n')
 
     if is_secure(run_config):
         print('If browser warns on unsecure connection, install projector certificate:')
@@ -145,6 +146,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     if run_browser:
         if is_wsl():
             wsl_warning()
+
             do_run_browser(access_urls[0])
 
     projector_process.wait()
