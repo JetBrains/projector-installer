@@ -151,6 +151,10 @@ def get_san_alt_names(address: str) -> Tuple[List[str], List[str]]:
     if '127.0.0.1' in ip_addresses and 'localhost' not in names:
         names.append('localhost')
 
+    host_name = socket.gethostname()
+    names.append(host_name)
+    names.append(socket.getfqdn(host_name))
+
     if 'localhost' in names and '127.0.0.1' not in ip_addresses:
         ip_addresses.append('127.0.0.1')
 
