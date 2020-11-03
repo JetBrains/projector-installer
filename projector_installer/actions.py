@@ -4,10 +4,11 @@
 
 """Real actions performed by projector script."""
 
+import io
 import shutil
 import subprocess
 import sys
-from typing import Optional, List
+from typing import Optional, BinaryIO, List, cast
 from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
@@ -123,8 +124,8 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     projector_log = open(get_path_to_projector_log(), 'a')
 
     projector_process = subprocess.Popen([f'{run_script_name}'],
-                                         stdout=projector_log,
-                                         stderr=projector_log)
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE)
 
     access_urls = get_access_urls(run_config)
     urls_string = "\n".join(access_urls)
@@ -150,6 +151,12 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
             do_run_browser(access_urls[0])
 
     projector_process.wait()
+    stdout_lines = io.TextIOWrapper(cast(BinaryIO, projector_process.stdout), encoding='utf-8').readlines()
+    stderr_lines = io.TextIOWrapper(cast(BinaryIO, projector_process.stderr), encoding='utf-8').readlines()
+
+    for lines in [stdout_lines, stderr_lines]:
+        sys.stdout.writelines(lines)
+        projector_log.writelines(lines)
 
     print('Exiting...')
 
