@@ -24,7 +24,6 @@ PROJECTOR_LOG_FILE: str = 'projector.log'
 DEF_CONFIG_DIR: str = '.projector'
 BUNDLED_DIR: str = 'bundled'
 SERVER_DIR: str = 'server'
-PLUGIN_DIR: str = 'projector-markdown-plugin'
 config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
 cache_dir: str = ''
 
@@ -154,11 +153,6 @@ def init_compatible_apps() -> None:
 def get_projector_server_dir() -> str:
     """Returns directory with projector server jar"""
     return join(INSTALL_DIR, BUNDLED_DIR, SERVER_DIR)
-
-
-def get_projector_markdown_plugin_dir() -> str:
-    """Returns directory with projector markdown plugin."""
-    return join(INSTALL_DIR, BUNDLED_DIR, PLUGIN_DIR)
 
 
 def init_cache_dir() -> None:

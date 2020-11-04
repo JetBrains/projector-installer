@@ -36,9 +36,6 @@ plugin_dir = bundled_dir
 PROJECTOR_SERVER_URL: str = 'https://github.com/JetBrains/projector-server/releases/' \
                             'download/v0.48.12/projector-server-v0.48.12.zip'
 
-MARKDOWN_PLUGIN_URL: str = 'https://github.com/JetBrains/projector-markdown-plugin/releases/' \
-                           'download/v0.42.2/projector-markdown-plugin-v0.42.2.zip'
-
 
 def download_server(to_dir: str) -> None:
     """Download and  unpack projector server"""
@@ -52,14 +49,6 @@ def download_server(to_dir: str) -> None:
     remove(file_path)
 
 
-def download_plugin(to_dir: str) -> None:
-    """Downloads and installs projector markdown plugin"""
-    download_file(MARKDOWN_PLUGIN_URL, to_dir)
-    file_path = join(to_dir, get_file_name_from_url(MARKDOWN_PLUGIN_URL))
-    unpack_zip_file(file_path, to_dir)
-    remove(file_path)
-
-
 def download_bundled_data() -> None:
     """Downloads data to bundle in package"""
 
@@ -68,7 +57,6 @@ def download_bundled_data() -> None:
         create_dir_if_not_exist(server_dir)
         create_dir_if_not_exist(plugin_dir)
         download_server(server_dir)
-        download_plugin(plugin_dir)
 
 
 class BundleCommand(Command):

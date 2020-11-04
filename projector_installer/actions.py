@@ -24,10 +24,10 @@ from .dialogs import select_compatible_app, select_new_config_name, list_configs
 
 from .global_config import get_download_cache_dir, get_path_to_projector_log, RunConfig
 
-from .ide_configuration import install_projector_markdown_for, forbid_updates_for
+from .ide_configuration import forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    update_markdown_plugin, check_config
+    check_config
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -247,14 +247,6 @@ def do_rename_config(from_name: str, to_name: str) -> None:
     rename_config(from_name, to_name)
 
 
-def do_update_markdown_plugin(config_name: Optional[str] = None) -> None:
-    """Performs markdown plugin update"""
-    run_config = select_run_config(config_name)
-    print(f'Updating markdown plugin in configuration {run_config.name}')
-
-    update_markdown_plugin(run_config)
-
-
 def do_rebuild_config(config_name: Optional[str] = None) -> None:
     """Regenerates all run config related files"""
     run_config = select_run_config(config_name)
@@ -318,7 +310,6 @@ def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_update
         sys.exit(1)
 
     app_path = get_app_path(app_name)
-    install_projector_markdown_for(app_path)
 
     if not allow_updates:
         forbid_updates_for(app_path)
