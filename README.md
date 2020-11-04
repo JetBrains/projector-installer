@@ -163,9 +163,6 @@ runs the configuration with name 'goland'
 
 `projector config show` - show configuration details
 
-`projector config update-markdown-plugin` - updates projector markdown plugin in existing configuration 
-with bundled version. Can be useful after update projector-installer package.
-
 `projector config rebuild` - regenerates all files, related to run config. 
 Can be useful after manual run config file edit, or incompatible changes in installer. 
 
