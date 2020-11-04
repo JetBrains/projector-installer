@@ -174,7 +174,6 @@ def init_config_dir() -> None:
         create_dir_if_not_exist(get_apps_dir())
         create_dir_if_not_exist(get_run_configs_dir())
         init_cache_dir()
-        init_compatible_apps()
     except Exception as exception:
         print(f'Error during initialization: {str(exception)}, cleanup ...')
         rmtree(config_dir)

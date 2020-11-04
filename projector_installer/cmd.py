@@ -10,7 +10,7 @@ from typing import Any, Optional
 import click
 
 from . import global_config
-from .global_config import init_config_dir, init_compatible_apps, init_cache_dir
+from .global_config import init_config_dir, init_cache_dir
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
@@ -51,7 +51,6 @@ def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
         click.echo(ctx.get_help())
     else:
         init_cache_dir()
-        init_compatible_apps()
 
 
 @projector.group()

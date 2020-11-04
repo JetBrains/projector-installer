@@ -11,7 +11,7 @@ from typing import Optional, List, TextIO
 import json
 
 from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS, \
-    CompatibleApp, RunConfig, is_password_protected
+    CompatibleApp, RunConfig, is_password_protected, init_compatible_apps
 
 from .secure_config import is_secure, get_ssl_properties_file, SSL_ENV_NAME
 from .utils import unpack_tar_file
@@ -34,6 +34,9 @@ def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
 
 def get_compatible_apps(pattern: Optional[str] = None) -> List[CompatibleApp]:
     """Returns list of compatible apps, matched given pattern."""
+    if not COMPATIBLE_APPS:
+        init_compatible_apps()
+
     apps = [app for app in COMPATIBLE_APPS if
             pattern is None or app.name.lower().find(pattern.lower()) != -1]
 
