@@ -2,6 +2,18 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+## Added 
+ - add fqdn of host to SAN certificates
+ - output Projector server stdout to console 
+
+## Fixed
+ - browser autorun in WSL 
+ 
+## Changed
+ - lazy init of compatible app list
+
+
 # 0.1.10
 ## Added
  - new config subcommand - rebuild 
