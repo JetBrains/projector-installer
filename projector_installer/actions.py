@@ -151,8 +151,10 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
             do_run_browser(access_urls[0])
 
     projector_process.wait()
-    stdout_lines = io.TextIOWrapper(cast(BinaryIO, projector_process.stdout), encoding='utf-8').readlines()
-    stderr_lines = io.TextIOWrapper(cast(BinaryIO, projector_process.stderr), encoding='utf-8').readlines()
+    stdout_lines = io.TextIOWrapper(cast(BinaryIO, projector_process.stdout),
+                                    encoding='utf-8').readlines()
+    stderr_lines = io.TextIOWrapper(cast(BinaryIO, projector_process.stderr),
+                                    encoding='utf-8').readlines()
 
     for lines in [stdout_lines, stderr_lines]:
         sys.stdout.writelines(lines)
