@@ -11,6 +11,7 @@ import json
 import sys
 from typing import List
 from shutil import rmtree
+from urllib.error import URLError
 from socket import timeout
 from os.path import dirname, join, expanduser, abspath
 
@@ -129,6 +130,8 @@ def download_compatible_apps() -> str:
 
         return file_name
     except timeout:
+        return ''
+    except URLError:
         return ''
 
 
