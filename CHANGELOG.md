@@ -12,7 +12,7 @@ Notable changes to this project are documented in this file.
  
 ## Changed
  - lazy init of compatible app list
-
+ - Projector server v0.48.12
 
 # 0.1.10
 ## Added
