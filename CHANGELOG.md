@@ -5,7 +5,7 @@ Notable changes to this project are documented in this file.
 # Unreleased
 ## Added 
  - add fqdn of host to SAN certificates
- - output Projector server stdout to console 
+ - output Projector server stdout to console on error
 
 ## Fixed
  - browser autorun in WSL 
@@ -13,6 +13,9 @@ Notable changes to this project are documented in this file.
 ## Changed
  - lazy init of compatible app list
  - Projector server v0.48.12
+ 
+## Removed
+ - projector config update-markdown-plugin command
 
 # 0.1.10
 ## Added
