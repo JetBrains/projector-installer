@@ -8,7 +8,9 @@
 from os import listdir, mkdir, path, rename
 from os.path import join, isdir
 from shutil import rmtree
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, TextIO
+from fcntl import lockf, LOCK_EX, LOCK_NB
+
 import configparser
 
 from .apps import get_app_path, make_run_script, check_run_script
@@ -18,6 +20,7 @@ from .secure_config import generate_server_secrets, is_secure
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
 LOG_FILE_NAME: str = 'projector.log'
+LOCK_FILE_NAME: str = 'run.lock'
 
 
 def load_config(config_name: str) -> RunConfig:
@@ -153,3 +156,26 @@ def check_config(run_config: RunConfig) -> bool:
 def get_path_to_log(config_name: str) -> str:
     """Returns full path to log file"""
     return join(get_run_configs_dir(), config_name, LOG_FILE_NAME)
+
+
+def get_lock_file_name(config_name: str) -> str:
+    """Return full path to lock file for given config name"""
+    return join(get_run_configs_dir(), config_name, LOCK_FILE_NAME)
+
+
+def lock_config(config_name: str) -> Optional[TextIO]:
+    """Create lock file for run config"""
+    file = open(get_lock_file_name(config_name), 'w')
+
+    try:
+        lockf(file, LOCK_EX + LOCK_NB)
+    except OSError:
+        file.close()
+        return None
+
+    return file
+
+
+def release_config(lock: TextIO) -> None:
+    """Release lock file"""
+    lock.close()
