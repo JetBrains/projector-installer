@@ -198,15 +198,31 @@ def do_add_config(hint: Optional[str], app_path: Optional[str] = None) -> None:
 def do_remove_config(config_name: Optional[str] = None) -> None:
     """Selects (if necessary) and removes selected run config."""
     config_name = select_run_config(config_name).name
+
+    lock = lock_config(config_name)
+
+    if not lock:
+        print(f'Configuration {config_name} is already in use. Exiting...')
+        sys.exit(1)
+
     print(f'Removing configuration {config_name}')
     delete_config(config_name)
+    release_config(lock)
     print('done.')
 
 
 def do_edit_config(config_name: Optional[str] = None) -> None:
     """Selects (if necessary) and edits selected run config."""
     run_config = select_run_config(config_name)
+
+    lock = lock_config(run_config.name)
+
+    if not lock:
+        print(f'Configuration {run_config.name} is already in use. Exiting...')
+        sys.exit(1)
+
     print(f'Edit configuration {run_config.name}')
+
     run_config = edit_config(run_config)
 
     try:
@@ -216,7 +232,7 @@ def do_edit_config(config_name: Optional[str] = None) -> None:
         sys.exit(1)
 
     save_config(run_config)
-
+    release_config(lock)
     print('done.')
 
 
@@ -236,15 +252,29 @@ def do_rename_config(from_name: str, to_name: str) -> None:
         print(f'Cannot rename to {to_name} - the configuration already exists, exiting...')
         sys.exit(1)
 
+    lock = lock_config(from_name)
+
+    if not lock:
+        print(f'Configuration {from_name} is already in use. Exiting...')
+        sys.exit(1)
+
     rename_config(from_name, to_name)
+    release_config(lock)
 
 
 def do_rebuild_config(config_name: Optional[str] = None) -> None:
     """Regenerates all run config related files"""
     run_config = select_run_config(config_name)
-    print(f'Rebuild run config {run_config.name}')
 
+    lock = lock_config(run_config.name)
+
+    if not lock:
+        print(f'Configuration {run_config.name} is already in use. Exiting...')
+        sys.exit(1)
+
+    print(f'Rebuild run config {run_config.name}')
     save_config(run_config)
+    release_config(lock)
 
 
 def do_find_app(pattern: Optional[str] = None) -> None:
