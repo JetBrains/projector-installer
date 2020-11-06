@@ -4,16 +4,16 @@
 
 """Real actions performed by projector script."""
 
-import io
 import shutil
 import signal
 import subprocess
 import sys
-from typing import Optional, BinaryIO, List, cast
+from typing import Optional, List
 from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path
+from .log_utils import init_log, shutdown_log
 from .secure_config import get_ca_crt_file, is_secure
 
 from .utils import download_file, get_java_version, get_local_addresses
@@ -27,7 +27,7 @@ from .global_config import get_download_cache_dir, RunConfig
 from .ide_configuration import forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    check_config, get_path_to_log
+    check_config
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -105,29 +105,6 @@ def is_compatible_java(app_path: str) -> bool:
     return version.startswith('11.')
 
 
-def dump_logs(config_name: str, ret_code: int, process: subprocess.Popen) -> None:
-    """Dump stdout and stderr of terminated process to log file and console
-    depending on termination code
-    """
-
-    with open(get_path_to_log(config_name), 'a') as log:
-        stdout_lines = io.TextIOWrapper(cast(BinaryIO, process.stdout),
-                                        encoding='utf-8').readlines()
-        stderr_lines = io.TextIOWrapper(cast(BinaryIO, process.stderr),
-                                        encoding='utf-8').readlines()
-
-        for lines in [stdout_lines, stderr_lines]:
-            log.writelines(lines)
-
-            # do not show logs on normal exits or when Ctrl-C pressed
-            if ret_code not in [0, -2]:
-                sys.stdout.writelines(lines)
-
-
-# def init_log_file(config_name: str) -> TextIO:
-#     pass
-
-
 def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
     """Executes specified config. If given name does not specify
     config, runs interactive selection procedure."""
@@ -151,9 +128,11 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
 
     signal.signal(signal.SIGINT, signal_handler)
 
+    log_file = init_log(run_config.name)
+
     projector_process = subprocess.Popen([f'{run_script_name}'],
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE)
+                                         stdout=log_file,
+                                         stderr=log_file)
 
     access_urls = get_access_urls(run_config)
     urls_string = "\n".join(access_urls)
@@ -178,7 +157,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
             do_run_browser(access_urls[0])
 
     ret_code = projector_process.wait()
-    dump_logs(run_config.name, ret_code, projector_process)
+    shutdown_log(ret_code, log_file)
 
 
 def do_add_config(hint: Optional[str], app_path: Optional[str] = None) -> None:

@@ -26,7 +26,6 @@ SERVER_DIR: str = 'server'
 config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
 cache_dir: str = ''
 
-MAX_LOG_FILE_SIZE = 1024 * 1024
 
 def get_path_to_license() -> str:
     """Returns full path to license file"""

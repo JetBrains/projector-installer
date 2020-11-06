@@ -15,6 +15,7 @@ Notable changes to this project are documented in this file.
 ## Changed
  - lazy init of compatible app list
  - Projector server v0.48.12
+ - projector log is run_config specific now
  
 ## Removed
  - projector config update-markdown-plugin command
