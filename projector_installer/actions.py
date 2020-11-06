@@ -22,12 +22,12 @@ from .dialogs import select_compatible_app, select_new_config_name, list_configs
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, make_config_from_input
 
-from .global_config import get_download_cache_dir, get_path_to_projector_log, RunConfig
+from .global_config import get_download_cache_dir, RunConfig
 
 from .ide_configuration import forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    check_config
+    check_config, get_path_to_log
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -105,12 +105,12 @@ def is_compatible_java(app_path: str) -> bool:
     return version.startswith('11.')
 
 
-def dump_logs(ret_code: int, process: subprocess.Popen) -> None:
+def dump_logs(config_name: str, ret_code: int, process: subprocess.Popen) -> None:
     """Dump stdout and stderr of terminated process to log file and console
     depending on termination code
     """
 
-    with open(get_path_to_projector_log(), 'a') as log:
+    with open(get_path_to_log(config_name), 'a') as log:
         stdout_lines = io.TextIOWrapper(cast(BinaryIO, process.stdout),
                                         encoding='utf-8').readlines()
         stderr_lines = io.TextIOWrapper(cast(BinaryIO, process.stderr),
@@ -122,6 +122,10 @@ def dump_logs(ret_code: int, process: subprocess.Popen) -> None:
             # do not show logs on normal exits or when Ctrl-C pressed
             if ret_code not in [0, -2]:
                 sys.stdout.writelines(lines)
+
+
+# def init_log_file(config_name: str) -> TextIO:
+#     pass
 
 
 def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
@@ -174,7 +178,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
             do_run_browser(access_urls[0])
 
     ret_code = projector_process.wait()
-    dump_logs(ret_code, projector_process)
+    dump_logs(run_config.name, ret_code, projector_process)
 
 
 def do_add_config(hint: Optional[str], app_path: Optional[str] = None) -> None:

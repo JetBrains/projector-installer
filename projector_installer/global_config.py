@@ -20,22 +20,17 @@ USER_HOME: str = expanduser('~')
 INSTALL_DIR: str = dirname(abspath(__file__))
 DEF_PROJECTOR_PORT: int = 9999
 COMPATIBLE_IDE_FILE: str = 'compatible_ide.json'
-PROJECTOR_LOG_FILE: str = 'projector.log'
 DEF_CONFIG_DIR: str = '.projector'
 BUNDLED_DIR: str = 'bundled'
 SERVER_DIR: str = 'server'
 config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
 cache_dir: str = ''
 
+MAX_LOG_FILE_SIZE = 1024 * 1024
 
 def get_path_to_license() -> str:
     """Returns full path to license file"""
     return join(INSTALL_DIR, 'LICENSE.txt')
-
-
-def get_path_to_projector_log() -> str:
-    """Returns full path to projector log file"""
-    return join(config_dir, PROJECTOR_LOG_FILE)
 
 
 def get_apps_dir() -> str:
