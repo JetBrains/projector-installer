@@ -27,7 +27,7 @@ from .global_config import get_download_cache_dir, RunConfig
 from .ide_configuration import forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    check_config
+    check_config, get_path_to_log
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -135,8 +135,10 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
                                          stderr=log_file)
 
     access_urls = get_access_urls(run_config)
-    urls_string = "\n".join(access_urls)
-    print(f'To access IDE, open in browser \n{urls_string}\n')
+    urls_string = "\n\t".join(access_urls)
+    print(f'To access IDE, open in browser \n\t{urls_string}\n')
+    print('To see Projector logs in realtime run\n\t'
+          f'tail -f {get_path_to_log(run_config.name)}\n')
 
     if is_secure(run_config):
         print('If browser warns on unsecure connection, install projector certificate:')

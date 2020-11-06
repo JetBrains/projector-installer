@@ -20,9 +20,13 @@ def restrict_log_size(config_name: str) -> None:
     Ensure that log file does not exceed MAX_LOG_FILE_SIZE
     """
     log_name = get_path_to_log(config_name)
+
+    if not isfile(log_name):
+        return
+
     size = getsize(log_name)
 
-    if isfile(log_name) and size > MAX_LOG_FILE_SIZE:
+    if size > MAX_LOG_FILE_SIZE:
         with open(log_name, 'w+') as log:
             log.seek(size - MAX_LOG_FILE_SIZE)
             content = log.read()
