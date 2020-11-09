@@ -144,7 +144,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     urls_string = "\n\t".join(access_urls)
     print(f'To access IDE, open in browser \n\t{urls_string}\n')
     print('To see Projector logs in realtime run\n\t'
-          f'tail -f {get_path_to_log(run_config.name)}\n')
+          f'tail -f "{get_path_to_log(run_config.name)}"\n')
 
     if is_secure(run_config):
         print('If browser warns on unsecure connection, install projector certificate:')
