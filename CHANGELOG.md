@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 0.1.11
 **Important note**: starting with this version, there is no more custom Markdown plugin required to support Markdown rendering. If you used projector-installer before this version, please manually remove custom Projector Markdown plugin from the IDE and enable bundled Markdown plugin.
 
 ## Added 
