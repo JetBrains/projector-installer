@@ -14,7 +14,7 @@ from os import path, system, uname
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path
 from .log_utils import init_log, shutdown_log
-from .secure_config import get_ca_crt_file, is_secure
+from .secure_config import get_ca_crt_file
 
 from .utils import download_file, get_java_version, get_local_addresses
 
@@ -22,7 +22,7 @@ from .dialogs import select_compatible_app, select_new_config_name, list_configs
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, make_config_from_input
 
-from .global_config import get_download_cache_dir, RunConfig
+from .global_config import get_download_cache_dir, RunConfig, is_secure
 
 from .ide_configuration import forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \

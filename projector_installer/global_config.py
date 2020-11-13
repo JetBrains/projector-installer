@@ -21,6 +21,7 @@ INSTALL_DIR: str = dirname(abspath(__file__))
 DEF_PROJECTOR_PORT: int = 9999
 COMPATIBLE_IDE_FILE: str = 'compatible_ide.json'
 DEF_CONFIG_DIR: str = '.projector'
+SSL_PROPERTIES_FILE = 'ssl.properties'
 BUNDLED_DIR: str = 'bundled'
 SERVER_DIR: str = 'server'
 config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
@@ -40,6 +41,11 @@ def get_apps_dir() -> str:
 def get_run_configs_dir() -> str:
     """Returns full path to run configs directory."""
     return join(config_dir, 'configs')
+
+
+def get_ssl_properties_file(config_name: str) -> str:
+    """Returns full path to ssl.properties file"""
+    return join(get_run_configs_dir(), config_name, SSL_PROPERTIES_FILE)
 
 
 def get_download_cache_dir() -> str:
@@ -90,6 +96,11 @@ class RunConfig:
         self.token: str = token
         self.password: str = password
         self.ro_password: str = ro_password
+
+
+def is_secure(run_config: RunConfig) -> bool:
+    """Checks if secure configuration"""
+    return run_config.token != ''
 
 
 def is_password_protected(run_config: RunConfig) -> bool:

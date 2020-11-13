@@ -11,9 +11,9 @@ from typing import Optional, List, TextIO
 import json
 
 from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS, \
-    CompatibleApp, RunConfig, is_password_protected, init_compatible_apps
+    CompatibleApp, RunConfig, is_password_protected, init_compatible_apps, is_secure, \
+    get_ssl_properties_file
 
-from .secure_config import is_secure, get_ssl_properties_file, SSL_ENV_NAME
 from .utils import unpack_tar_file
 
 IDEA_RUN_CLASS = 'com.intellij.idea.Main'
@@ -22,6 +22,7 @@ IDEA_PLATFORM_PREFIX = 'idea.platform.prefix'
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
 TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
 RO_TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_RO_HANDSHAKE_TOKEN'
+SSL_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_SSL_PROPERTIES_PATH'
 
 
 def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
@@ -268,3 +269,13 @@ def unpack_app(file_path: str) -> str:
         app_name = versioned_name
 
     return app_name
+
+
+def get_jre_dir(path_to_app: str) -> str:
+    """Return path to dir with bundled jre"""
+    product_info = get_product_info(path_to_app)
+
+    if is_android_studio(product_info):
+        return join(path_to_app, 'jre')
+
+    return join(path_to_app, 'jbr')

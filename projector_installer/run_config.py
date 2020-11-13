@@ -14,8 +14,8 @@ from fcntl import lockf, LOCK_EX, LOCK_NB
 import configparser
 
 from .apps import get_app_path, make_run_script, check_run_script
-from .global_config import get_run_configs_dir, RunConfig, is_password_protected
-from .secure_config import generate_server_secrets, is_secure
+from .global_config import get_run_configs_dir, RunConfig, is_password_protected, is_secure
+from .secure_config import generate_server_secrets
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'

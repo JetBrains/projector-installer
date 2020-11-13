@@ -12,15 +12,11 @@ import subprocess
 import secrets
 import string
 
-from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir
+from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir, get_ssl_properties_file
 from .utils import create_dir_if_not_exist, remove_file_if_exist, get_local_addresses
+from .apps import get_jre_dir
 
-SSL_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_SSL_PROPERTIES_PATH'
-TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
-
-SSL_PROPERTIES_FILE = 'ssl.properties'
 PROJECTOR_JKS_NAME = 'projector'
-
 DEF_TOKEN_LEN = 20
 CA_NAME = 'ca'
 CA_PASSWORD = '85TibAyPS3NZX3'
@@ -30,11 +26,6 @@ def generate_token(length: int = DEF_TOKEN_LEN) -> str:
     """Generates token to access server's secrets"""
     alphabet = string.ascii_letters + string.digits
     return ''.join(secrets.choice(alphabet) for i in range(length))
-
-
-def get_ssl_properties_file(config_name: str) -> str:
-    """Returns full path to ssl.properties file"""
-    return join(get_run_configs_dir(), config_name, SSL_PROPERTIES_FILE)
 
 
 def get_projector_jks_file(config_name: str) -> str:
@@ -214,7 +205,7 @@ def get_projector_import_cert_args(run_config: RunConfig) -> List[str]:
 def generate_projector_jks(run_config: RunConfig) -> None:
     """Generates projector jks for given config"""
 
-    keytool_path = get_jbr_keytool(run_config.path_to_app)
+    keytool_path = get_keytool(run_config.path_to_app)
 
     cmd = [keytool_path] + get_projector_gen_jks_args(run_config)
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -241,9 +232,9 @@ def generate_ssl_properties_file(config_name: str, token: str) -> None:
         print(f'KEY_PASSWORD={token}', file=file)
 
 
-def get_jbr_keytool(path_to_app: str) -> str:
+def get_keytool(path_to_app: str) -> str:
     """Returns full path to keytool for given config"""
-    return join(path_to_app, 'jbr', 'bin', 'keytool')
+    return join(get_jre_dir(path_to_app), 'bin', 'keytool')
 
 
 def are_exist_server_secrets(config_name: str) -> bool:
@@ -266,7 +257,7 @@ def remove_server_secrets(config_name: str) -> None:
 
 def generate_server_secrets(run_config: RunConfig) -> None:
     """Generate all secret connection related stuff for given config"""
-    keytool_path = get_jbr_keytool(run_config.path_to_app)
+    keytool_path = get_keytool(run_config.path_to_app)
 
     if not is_ca_exist():
         generate_ca(keytool_path)
@@ -275,8 +266,3 @@ def generate_server_secrets(run_config: RunConfig) -> None:
         remove_server_secrets(run_config.name)  # remove existing files
         generate_projector_jks(run_config)
         generate_ssl_properties_file(run_config.name, run_config.token)
-
-
-def is_secure(run_config: RunConfig) -> bool:
-    """Checks if secure configuration"""
-    return run_config.token != ''
