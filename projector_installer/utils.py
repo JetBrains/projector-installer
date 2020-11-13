@@ -7,6 +7,7 @@
 Misc utility functions.
 """
 import io
+import json
 import tarfile
 import zipfile
 import subprocess
@@ -14,7 +15,7 @@ from os import listdir, remove, makedirs
 from os.path import join, isfile, getsize, basename, isdir
 from shutil import copy
 from urllib.request import urlopen
-from typing import Optional, BinaryIO, cast, List
+from typing import Optional, BinaryIO, cast, List, Any
 
 import netifaces  # type: ignore
 from click import progressbar, echo
@@ -162,3 +163,14 @@ def get_local_addresses() -> List[str]:
                 res.append(ips['addr'])
 
     return res
+
+
+def get_json(url: str, timeout: float) -> Any:
+    """Returns dictionary - parsed json, retrieved via given URL"""
+    with urlopen(url, timeout=timeout) as resp:
+        code = resp.getcode()
+
+        if code != 200:
+            raise IOError(f'HTTP error code: {code}')
+
+        return json.loads(resp.read().decode())

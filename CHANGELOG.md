@@ -8,6 +8,7 @@ Notable changes to this project are documented in this file.
 ## Added 
  - add fqdn of host to SAN certificates
  - output Projector server stdout to console on error
+ - check for new projector-installer version on startup
 
 ## Fixed
  - browser autorun in WSL 

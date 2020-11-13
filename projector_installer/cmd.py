@@ -16,11 +16,31 @@ from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app,
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
     do_rename_config, do_rebuild_config
 from .license import display_license
+from .updates import get_latest_installer_version, SHORT_NETWORK_TIMEOUT, LONG_NETWORK_TIMEOUT, \
+    is_newer_than_current
 
 
 def is_first_start() -> bool:
     """Detects first app start."""
     return not path.isdir(global_config.config_dir)
+
+
+def check_for_updates() -> None:
+    """Check if new projector version is available"""
+    pypi_version = get_latest_installer_version(timeout=SHORT_NETWORK_TIMEOUT)
+
+    if pypi_version is None:
+        click.echo('Checking for updates ... ', nl=False)
+        pypi_version = get_latest_installer_version(timeout=LONG_NETWORK_TIMEOUT)
+        click.echo('done.')
+
+        if pypi_version is None:
+            return
+
+    if is_newer_than_current(pypi_version):
+        msg = f'\nNew version {pypi_version} of projector-installer is available.\n' \
+              f'To update use command: pip3 install projector-installer --upgrade\n'
+        click.echo(click.style(msg, bold=True))
 
 
 @click.group(invoke_without_command=True)
@@ -36,6 +56,8 @@ def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
     """
     This script helps to install, manage, and run JetBrains IDEs with Projector.
     """
+
+    check_for_updates()
 
     global_config.config_dir = realpath(expandvars(expanduser(config_directory)))
 
