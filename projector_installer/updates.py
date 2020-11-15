@@ -5,6 +5,7 @@
 """Check updates module"""
 
 from distutils.version import LooseVersion
+import socket
 from typing import Optional, Any
 from urllib.error import URLError
 
@@ -22,7 +23,7 @@ def get_latest_installer_version(timeout: float) -> Optional[Any]:
     try:
         res = get_json(PYPI_PRODUCT_URL, timeout=timeout)
         return res['info']['version']
-    except URLError:
+    except (URLError, socket.timeout):
         return None
 
 

@@ -8,6 +8,7 @@ Global configuration constants, variables and functions.
 """
 
 import json
+import socket
 import sys
 from typing import List
 from shutil import rmtree
@@ -132,7 +133,7 @@ def download_compatible_apps() -> str:
         file_name = join(get_download_cache_dir(), name)
 
         return file_name
-    except URLError:
+    except (URLError, socket.timeout):
         return ''
 
 
