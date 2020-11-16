@@ -13,7 +13,7 @@ Install, configure and run JetBrains IDEs with [Projector Server](https://github
 
 # Table of Contents
 1. [Installation](#Installation)
-2. [Quick start](#Quick_start)
+2. [Quick start](#Quick-start)
 3. [FAQ](#FAQ)
 
 ## Installation
