@@ -1,6 +1,3 @@
-
-# projector-installer developer README. 
-
 This file contains information useful only for persons 
 who are trying to install projector-installer from sources and/or 
 to build own wheel file.  
