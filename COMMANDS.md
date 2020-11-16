@@ -4,10 +4,10 @@
 # Table of Contents
 1. [Help](#Help)
 2. [Commands](#Commands)
-    1. [IDE commands](#IDE commands)
-    2. [Config commands](#Config commands)
-    3. [Shortcut commands](#Shortcut commands)
-4. [Configuration options](#Configuration options)
+    1. [IDE commands](#IDE-commands)
+    2. [Config commands](#Config-commands)
+    3. [Shortcut commands](#Shortcut-commands)
+4. [Configuration options](#Configuration-options)
 
 
 ## Help 
