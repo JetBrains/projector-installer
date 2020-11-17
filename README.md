@@ -6,8 +6,8 @@
 
 Install, configure and run JetBrains IDEs with [Projector Server](https://github.com/JetBrains/projector-server/blob/master/docs/Projector.md) on Linux or in [WSL](https://docs.microsoft.com/windows/wsl/).
 
-[Latest release](https://pypi.org/project/projector-installer/)
-[Sources](https://github.com/JetBrains/projector-installer)
+[Latest release](https://pypi.org/project/projector-installer/) | 
+[Sources](https://github.com/JetBrains/projector-installer) | 
 [Changelog](https://github.com/JetBrains/projector-installer/blob/master/CHANGELOG.md)
 
 
@@ -47,6 +47,10 @@ pip3 install projector-installer
 After that the command `projector` should be available. 
 
 _NOTE:_ If it is not so, please refer to the [appropriate section](#no_projector) in the [FAQ](#FAQ).
+
+_NOTE:_ projector script checks for updates on start. 
+If new version is available you can install update using command 
+`pip3 install projector-installer --upgrade`   
 
 ## Quick start 
 First time you run projector, it will automatically download, install, configure 
