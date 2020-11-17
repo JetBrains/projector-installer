@@ -6,7 +6,7 @@
 """projector-installer setup file."""
 
 from shutil import copyfile, rmtree
-from os.path import isfile, join, isdir
+from os.path import isfile, join
 from os import remove
 from typing import List
 from setuptools import setup  # type: ignore
@@ -31,7 +31,6 @@ with open('requirements.txt') as f:
 PACKAGE_DIR = 'projector_installer'
 bundled_dir = join(PACKAGE_DIR, BUNDLED_DIR)
 server_dir = join(bundled_dir, SERVER_DIR)
-plugin_dir = bundled_dir
 
 PROJECTOR_SERVER_URL: str = 'https://github.com/JetBrains/projector-server/releases/' \
                             'download/v0.48.12/projector-server-v0.48.12.zip'
@@ -52,11 +51,10 @@ def download_server(to_dir: str) -> None:
 def download_bundled_data() -> None:
     """Downloads data to bundle in package"""
 
-    if not isdir(bundled_dir):
-        create_dir_if_not_exist(bundled_dir)
-        create_dir_if_not_exist(server_dir)
-        create_dir_if_not_exist(plugin_dir)
-        download_server(server_dir)
+    rmtree(bundled_dir)
+    create_dir_if_not_exist(bundled_dir)
+    create_dir_if_not_exist(server_dir)
+    download_server(server_dir)
 
 
 class BundleCommand(Command):
