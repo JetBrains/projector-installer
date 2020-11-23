@@ -24,7 +24,7 @@ pip3 install .
 ## Build python wheel file
 ```shell script
 pip3 install wheel
-rm -r projector_installer/bundled dist build  # Remove old build files
+rm -r dist build  # Remove old build files
 python3 setup.py bundle bdist_wheel
 ```
 
@@ -35,7 +35,7 @@ pip3 install projector_installer-VERSION-py3-none-any.whl
 
 ## Publish
 ```shell script
-rm -r projector_installer/bundled dist build  # Remove old build files
+rm -r dist build  # Remove old build files
 python3 setup.py bundle sdist bdist_wheel  # Build required files
 python3 -m twine upload --repository testpypi --verbose dist/*  # Upload to https://test.pypi.org/project/projector-installer/
 python3 -m twine upload dist/*  # Upload to https://pypi.org/project/projector-installer/
