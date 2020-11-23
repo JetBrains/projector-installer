@@ -27,6 +27,13 @@ BUNDLED_DIR: str = 'bundled'
 SERVER_DIR: str = 'server'
 config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
 cache_dir: str = ''
+CHANGELOG_URL = 'https://github.com/JetBrains/projector-installer/blob/master/CHANGELOG.md'
+
+
+def get_changelog_url(ver: str) -> str:
+    """Returns URL to changelog for specified version"""
+    ver_ref = ver.replace('.', '')
+    return f'{CHANGELOG_URL}#{ver_ref}'
 
 
 def get_path_to_license() -> str:

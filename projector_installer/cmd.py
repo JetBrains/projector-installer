@@ -10,7 +10,7 @@ from typing import Any, Optional
 import click
 
 from . import global_config
-from .global_config import init_config_dir, init_cache_dir
+from .global_config import init_config_dir, init_cache_dir, get_changelog_url
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
@@ -18,6 +18,7 @@ from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app,
 from .license import display_license
 from .updates import get_latest_installer_version, SHORT_NETWORK_TIMEOUT, LONG_NETWORK_TIMEOUT, \
     is_newer_than_current
+from .version import __version__
 
 
 def is_first_start() -> bool:
@@ -38,7 +39,9 @@ def check_for_updates() -> None:
             return
 
     if is_newer_than_current(pypi_version):
-        msg = f'\nNew version {pypi_version} of projector-installer is available.\n' \
+        msg = f'\nNew version {pypi_version} of projector-installer is available ' \
+              f'(ver. {__version__} is installed)!\n' \
+              f'Changelog: {get_changelog_url(pypi_version)}\n' \
               f'To update use command: pip3 install projector-installer --upgrade\n'
         click.echo(click.style(msg, bold=True))
 
