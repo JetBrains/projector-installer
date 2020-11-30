@@ -1,0 +1,41 @@
+name: Upload Release Asset
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+
+      - name: Install Requirements
+        run: pip install -r requirements.txt
+
+      - name: Build project
+        run: |
+          python setup.py bundle bdist_wheel
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          body: Changelog is available in [CHANGELOG.md](https://github.com/JetBrains/projector-installer/blob/master/CHANGELOG.md).
+      - name: Upload Release Assets
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/uploadReleaseAssets.js`);
+            script({github, context, releaseId: '${{ steps.create_release.outputs.id }}'});
