@@ -23,8 +23,9 @@ pip3 install .
 
 ## Build python wheel file
 ```shell script
-pip3 install wheel
-rm -r dist build  # Remove old build files
+pip3 install wheel 
+pip3 install -r requirements.txt 
+rm -r dist build  # Remove old build files if necessary
 python3 setup.py bundle bdist_wheel
 ```
 
