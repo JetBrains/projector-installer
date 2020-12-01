@@ -28,7 +28,7 @@ To leave virtual environment use command
 deactivate
 ``` 
 
-### Install from source 
+## Install from source 
 ```shell script
 git clone https://github.com/JetBrains/projector-installer.git
 cd projector-installer
@@ -44,7 +44,7 @@ rm -r dist build  # Remove old build files if necessary
 python3 setup.py bundle bdist_wheel
 ```
 
-### Install from wheel file 
+## Install from wheel file 
 ```shell script
 pip3 install projector_installer-VERSION-py3-none-any.whl
 ```
