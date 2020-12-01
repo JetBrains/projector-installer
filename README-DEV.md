@@ -30,28 +30,40 @@ deactivate
 
 ## Install from source 
 ```shell script
+# clone project-installer repository  
 git clone https://github.com/JetBrains/projector-installer.git
+# go to source directory
 cd projector-installer
-pip3 install -r requirements.txt 
+# install dependencies  
+pip3 install -r requirements.txt
+# get bundled files 
 python3 setup.py bundle
+# do install 
 pip3 install .
 ```
 
 ## Create python wheel file
+From projector-installer source directory execute:
 ```shell script
-pip3 install -r requirements.txt 
-rm -r dist build  # Remove old build files if necessary
+# install dependencies
+pip3 install -r requirements.txt
+# Remove old files if necessary 
+rm -rf dist build
+# get bundled files and create wheel   
 python3 setup.py bundle bdist_wheel
 ```
 
 ## Install from wheel file 
+To install projector-installer from wheel file use command:
 ```shell script
 pip3 install projector_installer-VERSION-py3-none-any.whl
 ```
 
 ## Publish
+
 ```shell script
-rm -r dist build  # Remove old build files
+rm -rf dist build  # Remove old build files if necessary
+pip3 install -r requirements.txt # install requirements if necessary
 python3 setup.py bundle sdist bdist_wheel  # Build required files
 python3 -m twine upload --repository testpypi --verbose dist/*  # Upload to https://test.pypi.org/project/projector-installer/
 python3 -m twine upload dist/*  # Upload to https://pypi.org/project/projector-installer/
