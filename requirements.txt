@@ -1,3 +1,4 @@
+wheel
 click
 netifaces
 setuptools
