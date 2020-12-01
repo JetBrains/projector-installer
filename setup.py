@@ -51,7 +51,7 @@ def download_server(to_dir: str) -> None:
 def download_bundled_data() -> None:
     """Downloads data to bundle in package"""
 
-    rmtree(bundled_dir)
+    rmtree(bundled_dir, ignore_errors=True)
     create_dir_if_not_exist(bundled_dir)
     create_dir_if_not_exist(server_dir)
     download_server(server_dir)
