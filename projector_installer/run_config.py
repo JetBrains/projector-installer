@@ -19,7 +19,6 @@ from .secure_config import generate_server_secrets
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
-LOG_FILE_NAME: str = 'projector.log'
 LOCK_FILE_NAME: str = 'run.lock'
 
 
@@ -151,11 +150,6 @@ def check_config(run_config: RunConfig) -> bool:
     """Check if all run config files corresponds to given configuration"""
     run_script = get_run_script_path(run_config.name)
     return check_run_script(run_config, run_script)
-
-
-def get_path_to_log(config_name: str) -> str:
-    """Returns full path to log file"""
-    return join(get_run_configs_dir(), config_name, LOG_FILE_NAME)
 
 
 def get_lock_file_name(config_name: str) -> str:

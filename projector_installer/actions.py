@@ -13,7 +13,7 @@ from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path
-from .log_utils import init_log, shutdown_log
+from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file
 
 from .utils import download_file, get_java_version, get_local_addresses
@@ -27,7 +27,7 @@ from .global_config import get_download_cache_dir, RunConfig, is_secure
 from .ide_configuration import forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
     save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    check_config, get_path_to_log, lock_config, release_config
+    check_config, lock_config, release_config
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:

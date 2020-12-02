@@ -5,7 +5,7 @@
 """Secure config related stuff"""
 import socket
 from os.path import join, isfile
-from typing import List, Tuple
+from typing import List, Tuple, Optional, TextIO
 
 import re
 import subprocess
@@ -13,6 +13,7 @@ import secrets
 import string
 
 from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir, get_ssl_properties_file
+from .log_utils import init_log, shutdown_log
 from .utils import create_dir_if_not_exist, remove_file_if_exist, get_local_addresses
 from .apps import get_jre_dir
 
@@ -82,17 +83,6 @@ def get_export_ca_command() -> List[str]:
     """Returns list of args for export ca.crt"""
     return ['-export', '-alias', CA_NAME, '-file', get_ca_crt_file(), '-keypass', CA_PASSWORD,
             '-storepass', CA_PASSWORD, '-keystore', get_ca_jks_file(), '-rfc']
-
-
-def generate_ca(keytool_path: str) -> None:
-    """Creates CA"""
-    create_dir_if_not_exist(get_ssl_dir())
-
-    cmd = [keytool_path] + get_generate_ca_command()
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    cmd = [keytool_path] + get_export_ca_command()
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 DIST_PROJECTOR_NAME = 'CN=Idea, OU=Development, O=Idea, L=SPB, S=SPB, C=RU'
@@ -167,7 +157,6 @@ def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
     return [
         '-gencert',
         '-alias', CA_NAME,
-        '-keypass', run_config.token,
         '-storepass', CA_PASSWORD,
         '-keystore', get_ca_jks_file(),
         '-infile', get_projector_csr_file(run_config.name),
@@ -202,27 +191,6 @@ def get_projector_import_cert_args(run_config: RunConfig) -> List[str]:
     ]
 
 
-def generate_projector_jks(run_config: RunConfig) -> None:
-    """Generates projector jks for given config"""
-
-    keytool_path = get_keytool(run_config.path_to_app)
-
-    cmd = [keytool_path] + get_projector_gen_jks_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    cmd = [keytool_path] + get_projector_cert_sign_request_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    cmd = [keytool_path] + get_projector_cert_sign_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    cmd = [keytool_path] + get_projector_import_ca_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    cmd = [keytool_path] + get_projector_import_cert_args(run_config)
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-
 def generate_ssl_properties_file(config_name: str, token: str) -> None:
     """Generates ssl.properties file for given config"""
     with open(get_ssl_properties_file(config_name), "w") as file:
@@ -255,14 +223,54 @@ def remove_server_secrets(config_name: str) -> None:
     remove_file_if_exist(get_ssl_properties_file(config_name))
 
 
+class SecureConfigGenerator:
+    """Generate all secret config related stuff for given run config"""
+
+    def __init__(self, run_config: RunConfig):
+        self.run_config = run_config
+        self.keytool_path = get_keytool(run_config.path_to_app)
+        self.log: Optional[TextIO] = None
+
+    def generate_server_secrets(self) -> None:
+        """Generate all secret connection related stuff for given config"""
+        self.log = init_log(self.run_config.name)
+
+        if not is_ca_exist():
+            self._generate_ca()
+
+        if not are_exist_server_secrets(self.run_config.name):  # if not all files exist
+            remove_server_secrets(self.run_config.name)  # remove existing files
+            self._generate_projector_jks()
+            generate_ssl_properties_file(self.run_config.name, self.run_config.token)
+
+        shutdown_log(0, self.log)
+
+    def _run_subprocess(self, program: str, args: List[str]) -> None:
+        """Checked run subprocess"""
+        cmd = [program] + args
+        subprocess.check_call(cmd, stdout=self.log, stderr=self.log)
+
+    def _run_keytool_with(self, args: List[str]) -> None:
+        """Checked run keytool with specified arguments"""
+        self._run_subprocess(self.keytool_path, args)
+
+    def _generate_ca(self) -> None:
+        """Creates CA"""
+        create_dir_if_not_exist(get_ssl_dir())
+        self._run_keytool_with(get_generate_ca_command())
+        self._run_keytool_with(get_export_ca_command())
+
+    def _generate_projector_jks(self) -> None:
+        """Generates projector jks for given config"""
+
+        self._run_keytool_with(get_projector_gen_jks_args(self.run_config))
+        self._run_keytool_with(get_projector_cert_sign_request_args(self.run_config))
+        self._run_keytool_with(get_projector_cert_sign_args(self.run_config))
+        self._run_keytool_with(get_projector_import_ca_args(self.run_config))
+        self._run_keytool_with(get_projector_import_cert_args(self.run_config))
+
+
 def generate_server_secrets(run_config: RunConfig) -> None:
     """Generate all secret connection related stuff for given config"""
-    keytool_path = get_keytool(run_config.path_to_app)
-
-    if not is_ca_exist():
-        generate_ca(keytool_path)
-
-    if not are_exist_server_secrets(run_config.name):  # if not all files exist
-        remove_server_secrets(run_config.name)  # remove existing files
-        generate_projector_jks(run_config)
-        generate_ssl_properties_file(run_config.name, run_config.token)
+    generator = SecureConfigGenerator(run_config)
+    generator.generate_server_secrets()

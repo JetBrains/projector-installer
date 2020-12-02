@@ -5,14 +5,20 @@
 """Log files management functions"""
 
 from datetime import datetime
-from os.path import isfile, getsize
+from os.path import isfile, getsize, join
 from sys import stdout
 from typing import TextIO
 
-from projector_installer.run_config import get_path_to_log
+from .global_config import get_run_configs_dir
 
-MAX_LOG_FILE_SIZE = 5*1024 * 1024
+LOG_FILE_NAME: str = 'projector.log'
+MAX_LOG_FILE_SIZE = 5 * 1024 * 1024
 START_SESSION_MARK = '--------------------- Projector log session start.'
+
+
+def get_path_to_log(config_name: str) -> str:
+    """Returns full path to log file"""
+    return join(get_run_configs_dir(), config_name, LOG_FILE_NAME)
 
 
 def restrict_log_size(config_name: str) -> None:
