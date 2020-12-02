@@ -11,7 +11,7 @@ from typing import TextIO
 
 from projector_installer.run_config import get_path_to_log
 
-MAX_LOG_FILE_SIZE = 1024 * 1024
+MAX_LOG_FILE_SIZE = 5*1024 * 1024
 START_SESSION_MARK = '--------------------- Projector log session start.'
 
 
