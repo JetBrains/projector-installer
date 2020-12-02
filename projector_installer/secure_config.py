@@ -129,7 +129,7 @@ def is_ip_address(address: str) -> bool:
 def get_san_alt_names(address: str) -> Tuple[List[str], List[str]]:
     """Return pair of lists - ip addresses and host names for SAN certificate"""
     ip_addresses = []
-    names = []
+    names = set()
 
     if address == '0.0.0.0':
         ip_addresses = get_local_addresses()
@@ -137,19 +137,19 @@ def get_san_alt_names(address: str) -> Tuple[List[str], List[str]]:
         if is_ip_address(address):
             ip_addresses.append(address)
         else:
-            names.append(address)
+            names.add(address)
 
     if '127.0.0.1' in ip_addresses and 'localhost' not in names:
-        names.append('localhost')
+        names.add('localhost')
 
     host_name = socket.gethostname()
-    names.append(host_name)
-    names.append(socket.getfqdn(host_name))
+    names.add(host_name)
+    names.add(socket.getfqdn(host_name))
 
     if 'localhost' in names and '127.0.0.1' not in ip_addresses:
         ip_addresses.append('127.0.0.1')
 
-    return ip_addresses, names
+    return ip_addresses, list(names)
 
 
 def get_projector_san(address: str) -> str:
