@@ -53,11 +53,15 @@ rm -rf dist build
 python3 setup.py bundle bdist_wheel
 ```
 
+A `whl` file will be created in the `dist` dir.
+
 ## Install from wheel file 
 To install projector-installer from wheel file use command:
 ```shell script
 pip3 install projector_installer-VERSION-py3-none-any.whl
 ```
+
+You can download a built `whl` file from [Releases](https://github.com/JetBrains/projector-installer/releases) or build it yourself.
 
 ## Publish
 
