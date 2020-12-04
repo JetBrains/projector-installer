@@ -39,3 +39,10 @@ jobs:
           script: |
             const script = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/uploadReleaseAssets.js`);
             script({github, context, releaseId: '${{ steps.create_release.outputs.id }}'});
+
+      - name: Upload to PyPI
+        run: |
+          pip install twine
+          python setup.py bundle sdist bdist_wheel
+          python -m twine upload --username ${{secrets.TEST_PYPI_USER}} --password ${{secrets.TEST_PYPI_TOKEN}} --repository testpypi --verbose dist/*  # Upload to https://test.pypi.org/project/projector-installer/
+          python -m twine upload --username ${{secrets.PYPI_USER}} --password ${{secrets.PYPI_TOKEN}} dist/*  # Upload to https://pypi.org/project/projector-installer/
