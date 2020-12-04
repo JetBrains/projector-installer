@@ -2,6 +2,10 @@
 
 Notable changes to this project are documented in this file.
 
+# 0.1.13
+## Added
+ - Logging for keytool errors.
+
 # 0.1.12
 ## Changed
  - Reworked documentation
