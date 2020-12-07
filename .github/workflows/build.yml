@@ -14,10 +14,6 @@ jobs:
       - name: Install Requirements
         run: pip install -r requirements.txt
 
-  build:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
       - name: Remove old dirs
         run: rm -rf dist build
 
