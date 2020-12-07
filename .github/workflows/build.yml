@@ -3,7 +3,7 @@ name: Test build
 on: [push]
 
 jobs:
-  setup:
+  wheel:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,3 +19,20 @@ jobs:
 
       - name: Create wheel file
         run: python3 setup.py bundle bdist_wheel
+
+  src-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+
+      - name: Install Requirements
+        run: pip install -r requirements.txt
+
+      - name: Prepare bundled data
+        run: python3 setup.py bundle
+
+      - name: Install projector-installer
+        run: pip3 install .
