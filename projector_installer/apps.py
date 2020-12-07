@@ -5,7 +5,7 @@
 
 """Application management functions."""
 import io
-from os.path import join, expanduser, dirname
+from os.path import join, expanduser, dirname, isfile
 from os import listdir, chmod, stat, rename
 from typing import Optional, List, TextIO
 import json
@@ -163,6 +163,17 @@ def get_data_dir_from_script(run_script: str) -> str:
                 return parts[1].split(' ')[0]
 
     raise Exception('Unable to find data directory in the launch script.')
+
+
+def is_path_to_app(app_path: str) -> bool:
+    """Checks app path validity"""
+    prod_info_path = join(app_path, PRODUCT_INFO)
+    return isfile(prod_info_path)
+
+
+def is_toolbox_path(app_path: str) -> bool:
+    """Checks if given path is toolbox channel path"""
+    return app_path.find('JetBrains/Toolbox/apps') > 0
 
 
 def get_product_info(app_path: str) -> ProductInfo:

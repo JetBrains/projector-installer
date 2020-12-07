@@ -11,7 +11,8 @@ from typing import Optional, Dict, List, Tuple
 
 import click
 
-from .apps import get_installed_apps, get_app_path, get_compatible_app_names
+from .apps import get_installed_apps, get_app_path, get_compatible_app_names, \
+    is_path_to_app, is_toolbox_path
 from .run_config import get_run_configs, RunConfig, get_run_config_names, \
     get_used_projector_ports, is_password_protected
 
@@ -176,9 +177,19 @@ def select_installed_app_path() -> Optional[str]:
         return get_app_path(apps[app_number - 1])
 
 
+def is_valid_app_path(app_path: str) -> bool:
+    """Checks if entered app path is valid"""
+    return is_path_to_app(app_path) or is_toolbox_path(app_path)
+
+
 def select_manual_app_path() -> str:
     """Prompts for path to ide."""
     path: str = click.prompt('Enter the path to IDE', type=str)
+
+    while len(path) > 0 and not is_valid_app_path(path):
+        click.echo(f'Path {path} does not looks as valid path.')
+        path = click.prompt('Enter the path to IDE', type=str)
+
     return path
 
 
@@ -327,9 +338,11 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
     if app_path is None:
         app_path = select_app_path()
 
-    if app_path is None:
+    if not app_path:
         print('IDE was not selected, exiting...')
         sys.exit(1)
+
+    # if
 
     projector_port = select_projector_port()
     secure_config = click.prompt(

@@ -4,6 +4,7 @@
 
 """Real actions performed by projector script."""
 
+
 import shutil
 import signal
 import subprocess
