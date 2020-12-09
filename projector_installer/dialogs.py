@@ -342,7 +342,13 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
         print('IDE was not selected, exiting...')
         sys.exit(1)
 
-    # if
+    is_toolbox = False
+
+    if is_toolbox_path(app_path):
+        is_toolbox = click.prompt(
+            'App path looks like path to ToolBox managed app. '
+            'Would you like to use latest app from this channel? [y/n]',
+            type=bool)
 
     projector_port = select_projector_port()
     secure_config = click.prompt(
@@ -354,7 +360,7 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
     password, ro_password = select_password_pair()
 
     return RunConfig(config_name, expanduser(app_path), projector_port,
-                     token, password, ro_password)
+                     token, password, ro_password, is_toolbox)
 
 
 class UserInstallInput:
@@ -397,4 +403,4 @@ def make_config_from_input(inp: UserInstallInput) -> RunConfig:
     """Makes run config from user input"""
     token = generate_token() if inp.secure_config else ''
     return RunConfig(inp.config_name, '', inp.projector_port,
-                     token, inp.password, inp.ro_password)
+                     token, inp.password, inp.ro_password, False)

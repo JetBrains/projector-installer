@@ -97,13 +97,14 @@ class RunConfig:
 
     # pylint: disable=too-many-instance-attributes
     def __init__(self, own_name: str, path_to_app: str, projector_port: int,
-                 token: str, password: str, ro_password: str) -> None:
+                 token: str, password: str, ro_password: str, toolbox: bool) -> None:
         self.name: str = own_name
         self.path_to_app: str = path_to_app
         self.projector_port: int = projector_port
         self.token: str = token
         self.password: str = password
         self.ro_password: str = ro_password
+        self.toolbox = toolbox
 
 
 def is_secure(run_config: RunConfig) -> bool:

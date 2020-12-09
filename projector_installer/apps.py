@@ -5,8 +5,9 @@
 
 """Application management functions."""
 import io
-from os.path import join, expanduser, dirname, isfile
 from os import listdir, chmod, stat, rename
+from os.path import join, expanduser, dirname, isfile, isdir
+from distutils.version import LooseVersion
 from typing import Optional, List, TextIO
 import json
 
@@ -165,17 +166,6 @@ def get_data_dir_from_script(run_script: str) -> str:
     raise Exception('Unable to find data directory in the launch script.')
 
 
-def is_path_to_app(app_path: str) -> bool:
-    """Checks app path validity"""
-    prod_info_path = join(app_path, PRODUCT_INFO)
-    return isfile(prod_info_path)
-
-
-def is_toolbox_path(app_path: str) -> bool:
-    """Checks if given path is toolbox channel path"""
-    return app_path.find('JetBrains/Toolbox/apps') > 0
-
-
 def get_product_info(app_path: str) -> ProductInfo:
     """Parses product info file to ProductInfo class."""
     prod_info_path = join(app_path, PRODUCT_INFO)
@@ -290,3 +280,57 @@ def get_jre_dir(path_to_app: str) -> str:
         return join(path_to_app, 'jre')
 
     return join(path_to_app, 'jbr')
+
+
+def is_path_to_app(app_path: str) -> bool:
+    """Checks app path validity"""
+    prod_info_path = join(app_path, PRODUCT_INFO)
+    return isfile(prod_info_path)
+
+
+# ~/.local/share/JetBrains/Toolbox/apps/AndroidStudio/ch-0
+def get_path_to_toolbox_channel(path: str) -> Optional[str]:
+    """"Returns path to toolbox channel"""
+    pos = path.find('JetBrains/Toolbox/apps')
+
+    if pos >= 0:
+        ch_path = path.rstrip('/')
+        ch_pos = ch_path.find('ch-')
+
+        if ch_pos > pos:
+            sep_pos = ch_path.find('/', ch_pos + 1)
+
+            if sep_pos < 0:
+                return ch_path
+
+            return ch_path[:sep_pos]
+
+    return None
+
+
+def is_toolbox_path(app_path: str) -> bool:
+    """Checks if given path is toolbox channel path"""
+    return get_path_to_toolbox_channel(app_path) is not None
+
+
+def get_path_to_latest_app(path: str) -> Optional[str]:
+    """Returns path to the app with latest version in channel"""
+    channel_path = get_path_to_toolbox_channel(path)
+
+    if channel_path is None:
+        return None
+
+    app_path = None
+    app_ver = None
+
+    for sub_dir in listdir(channel_path):
+        app_dir = join(channel_path, sub_dir)
+
+        if isdir(app_dir) and is_path_to_app(app_dir):
+            ver = LooseVersion(get_product_info(app_dir).version)
+
+            if app_path is None or app_ver < ver:
+                app_path = app_dir
+                app_ver = ver
+
+    return app_path

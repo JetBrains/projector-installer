@@ -33,7 +33,8 @@ def load_config(config_name: str) -> RunConfig:
                      config.getint('PROJECTOR', 'PORT'),
                      config.get('SSL', 'TOKEN', fallback=''),
                      config.get('PASSWORDS', 'PASSWORD', fallback=''),
-                     config.get('PASSWORDS', 'RO_PASSWORD', fallback=''))
+                     config.get('PASSWORDS', 'RO_PASSWORD', fallback=''),
+                     config.getboolean('TOOLBOX', 'TOOLBOX', fallback=False))
 
 
 def get_run_script_path(config_name: str) -> str:
@@ -64,6 +65,10 @@ def save_config(run_config: RunConfig) -> None:
         config['PASSWORDS'] = {}
         config['PASSWORDS']['PASSWORD'] = run_config.password  # type: ignore
         config['PASSWORDS']['RO_PASSWORD'] = run_config.ro_password  # type: ignore
+
+    if run_config.toolbox:
+        config['TOOLBOX'] = {}
+        config['TOOLBOX']['TOOLBOX'] = 'True'  # type: ignore
 
     config_path = join(get_run_configs_dir(), run_config.name)
 

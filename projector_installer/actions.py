@@ -4,7 +4,6 @@
 
 """Real actions performed by projector script."""
 
-
 import shutil
 import signal
 import subprocess
@@ -13,7 +12,7 @@ from typing import Optional, List
 from os import path, system, uname
 
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
-    unpack_app, get_java_path
+    unpack_app, get_java_path, get_path_to_latest_app
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file
 
@@ -23,7 +22,7 @@ from .dialogs import select_compatible_app, select_new_config_name, list_configs
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, make_config_from_input
 
-from .global_config import get_download_cache_dir, RunConfig, is_secure
+from .global_config import get_download_cache_dir, RunConfig, is_secure, is_password_protected
 
 from .ide_configuration import forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
@@ -50,6 +49,16 @@ def do_show_config(pattern: Optional[str] = None) -> None:
     print(f'Product info: {product_info.name}, '
           f'version={product_info.version}, '
           f'build={product_info.build_number}')
+
+    if run_config.toolbox:
+        print('Toolbox config = yes')
+
+    if is_secure(run_config):
+        print('Secure config = yes')
+
+    if is_password_protected(run_config):
+        print(f'RW Password: = {run_config.password}')
+        print(f'RO Password: = {run_config.ro_password}')
 
 
 def is_wsl() -> bool:
@@ -106,12 +115,26 @@ def is_compatible_java(app_path: str) -> bool:
     return version.startswith('11.')
 
 
+def regenerate_config_if_toolbox(run_config: RunConfig) -> RunConfig:
+    """Regenerates toolbox run config to run latest available IDE in channel """
+
+    if run_config.toolbox:
+        path_to_app = get_path_to_latest_app(run_config.path_to_app)
+
+        if path_to_app:
+            run_config.path_to_app = path_to_app
+            save_config(run_config)
+
+    return run_config
+
+
 def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
     """Executes specified config. If given name does not specify
     config, runs interactive selection procedure."""
     run_config = select_run_config(config_name)
 
     print(f'Configuration name: {run_config.name}')
+    run_config = regenerate_config_if_toolbox(run_config)
     run_script_name = get_run_script_path(run_config.name)
 
     if not path.isfile(run_script_name):
@@ -153,7 +176,6 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
         print('Refer to: ')
         print('https://github.com/JetBrains/projector-installer/blob/master/'
               'README.md#what-is-secure-connection')
-
 
     if not is_compatible_java(run_config.path_to_app):
         print('Bundled JVM is incompatible with Projector.')
