@@ -15,5 +15,7 @@
     {"name": "PyCharm Community 2019.3.4", "url": "https://download.jetbrains.com/python/pycharm-community-2019.3.4.tar.gz"},
     {"name": "PyCharm Community 2020.2", "url": "https://download.jetbrains.com/python/pycharm-community-2020.2.tar.gz"},
     {"name": "PyCharm Professional 2019.3.4", "url": "https://download.jetbrains.com/python/pycharm-professional-2019.3.4.tar.gz"},
-    {"name": "PyCharm Professional 2020.2", "url": "https://download.jetbrains.com/python/pycharm-professional-2020.2.tar.gz"}
+    {"name": "PyCharm Professional 2020.2", "url": "https://download.jetbrains.com/python/pycharm-professional-2020.2.tar.gz"},
+    {"name": "RubyMine 2019.3.5", "url": "https://download.jetbrains.com/ruby/RubyMine-2019.3.5.dmg"},
+    {"name": "RubyMine 2020.3", "url": "https://download.jetbrains.com/ruby/RubyMine-2020.3.dmg"}
 ]
