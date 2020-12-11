@@ -2,13 +2,13 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 0.1.14
 ## Added
- - Toolbox support
+ - Support IDEs installed and managed via JetBrains Toolbox
 
 # 0.1.13
 ## Added
- - Logging for keytool errors.
+ - Logging for keytool errors
 
 # 0.1.12
 ## Changed
