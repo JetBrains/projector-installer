@@ -34,7 +34,8 @@ def load_config(config_name: str) -> RunConfig:
                      config.get('SSL', 'TOKEN', fallback=''),
                      config.get('PASSWORDS', 'PASSWORD', fallback=''),
                      config.get('PASSWORDS', 'RO_PASSWORD', fallback=''),
-                     config.getboolean('TOOLBOX', 'TOOLBOX', fallback=False))
+                     config.getboolean('TOOLBOX', 'TOOLBOX', fallback=False),
+                     config.get('FQDNS', 'FQDNS', fallback=''))
 
 
 def get_run_script_path(config_name: str) -> str:
@@ -69,6 +70,10 @@ def save_config(run_config: RunConfig) -> None:
     if run_config.toolbox:
         config['TOOLBOX'] = {}
         config['TOOLBOX']['TOOLBOX'] = 'True'  # type: ignore
+
+    if run_config.fqdns:
+        config['FQDNS'] = {}
+        config['FQDNS']['FQDNS'] = run_config.fqdns  # type: ignore
 
     config_path = join(get_run_configs_dir(), run_config.name)
 
