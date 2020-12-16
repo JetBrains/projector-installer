@@ -1,6 +1,6 @@
 name: PyLint/MyPy Runner
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
