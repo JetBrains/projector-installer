@@ -4,26 +4,18 @@
 
 
 """Application management functions."""
-import io
-from os import listdir, chmod, stat, rename
+from os import listdir, rename
 from os.path import join, expanduser, dirname, isfile, isdir
 from distutils.version import LooseVersion
-from typing import Optional, List, TextIO
+from typing import Optional, List
 import json
 
 from . import global_config
-from .global_config import get_apps_dir, get_projector_server_dir, \
-    InstallableApp, RunConfig, init_compatible_apps, get_ssl_properties_file
-
+from .global_config import get_apps_dir, init_compatible_apps
+from .installable_app import InstallableApp
 from .utils import unpack_tar_file
 
-IDEA_RUN_CLASS = 'com.intellij.idea.Main'
-PROJECTOR_RUN_CLASS = 'org.jetbrains.projector.server.ProjectorLauncher'
-IDEA_PLATFORM_PREFIX = 'idea.platform.prefix'
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
-TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
-RO_TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_RO_HANDSHAKE_TOKEN'
-SSL_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_SSL_PROPERTIES_PATH'
 
 
 def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
@@ -60,51 +52,6 @@ def get_compatible_app_names(pattern: Optional[str] = None) -> List[str]:
 def get_app_path(app_name: str) -> str:
     """Returns full path to given app."""
     return join(get_apps_dir(), app_name)
-
-
-def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
-    """Writes run script from src to dst"""
-
-    for line in src:
-        if line.startswith("IDE_BIN_HOME"):
-            line = f'IDE_BIN_HOME={join(run_config.path_to_app, "bin")}\n'
-        elif line.find("classpath") != -1:
-            line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
-        elif line.find(IDEA_RUN_CLASS) != -1:
-            line = f' -Dorg.jetbrains.projector.server.port={run_config.projector_port} \\\n'
-            line += f' -Dorg.jetbrains.projector.server.classToLaunch={IDEA_RUN_CLASS} \\\n'
-
-            if run_config.is_secure():
-                line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
-
-            if run_config.is_password_protected():
-                line += f' -D{TOKEN_ENV_NAME}=\"{run_config.password}\" \\\n'
-                line += f' -D{RO_TOKEN_ENV_NAME}=\"{run_config.ro_password}\" \\\n'
-
-            line += f'  {PROJECTOR_RUN_CLASS}\\\n'
-
-        dst.write(line)
-
-
-def make_run_script(run_config: RunConfig, run_script: str) -> None:
-    """Creates run script from ide launch script."""
-    idea_script = get_launch_script(run_config.path_to_app)
-
-    with open(idea_script, 'r') as src, open(run_script, 'w') as dst:
-        write_run_script(run_config, src, dst)
-
-    stats = stat(run_script)
-    chmod(run_script, stats.st_mode | 0o0111)
-
-
-def check_run_script(run_config: RunConfig, run_script_name: str) -> bool:
-    """Check if run script corresponds to given config"""
-    idea_script = get_launch_script(run_config.path_to_app)
-    with open(idea_script, 'r') as src, open(run_script_name, 'r') as run_script:
-        dst = io.StringIO()
-        write_run_script(run_config, src, dst)
-        dst.seek(0)
-        return dst.read() == run_script.read()
 
 
 class ProductInfo:

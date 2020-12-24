@@ -12,10 +12,11 @@ import subprocess
 import secrets
 import string
 
-from .global_config import get_ssl_dir, RunConfig, get_run_configs_dir, get_ssl_properties_file
+from .global_config import get_ssl_dir, get_run_configs_dir, get_ssl_properties_file
 from .log_utils import init_log, shutdown_log
 from .utils import create_dir_if_not_exist, remove_file_if_exist, get_local_addresses
 from .apps import get_jre_dir
+from .run_config import RunConfig
 
 PROJECTOR_JKS_NAME = 'projector'
 DEF_TOKEN_LEN = 20

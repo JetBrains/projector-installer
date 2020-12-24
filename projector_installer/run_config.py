@@ -5,7 +5,7 @@
 
 """Run configurations related functions"""
 
-from os import listdir, mkdir, path, rename
+from os import listdir, rename
 from os.path import join, isdir
 from shutil import rmtree
 from typing import Optional, Dict, List, TextIO
@@ -13,13 +13,37 @@ from fcntl import lockf, LOCK_EX, LOCK_NB
 
 import configparser
 
-from .apps import get_app_path, make_run_script, check_run_script
-from .global_config import get_run_configs_dir, RunConfig
-from .secure_config import generate_server_secrets
+from .apps import get_app_path
+from .global_config import get_run_configs_dir
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
 LOCK_FILE_NAME: str = 'run.lock'
+
+
+class RunConfig:
+    """Run config dataclass"""
+
+    # pylint: disable=too-many-instance-attributes
+    def __init__(self, own_name: str, path_to_app: str, projector_port: int,
+                 token: str, password: str, ro_password: str, toolbox: bool,
+                 custom_fqdns: str) -> None:
+        self.name: str = own_name
+        self.path_to_app: str = path_to_app
+        self.projector_port: int = projector_port
+        self.token: str = token
+        self.password: str = password
+        self.ro_password: str = ro_password
+        self.toolbox = toolbox
+        self.fqdns = custom_fqdns
+
+    def is_secure(self) -> bool:
+        """Checks if secure configuration"""
+        return self.token != ''
+
+    def is_password_protected(self) -> bool:
+        """Checks if run config is password protected"""
+        return self.password != ''
 
 
 def load_config(config_name: str) -> RunConfig:
@@ -41,54 +65,6 @@ def load_config(config_name: str) -> RunConfig:
 def get_run_script_path(config_name: str) -> str:
     """Returns full path to projector run script"""
     return join(get_run_configs_dir(), config_name, RUN_SCRIPT_NAME)
-
-
-def generate_run_script(run_config: RunConfig) -> None:
-    """Generates projector run script"""
-    run_script = get_run_script_path(run_config.name)
-    make_run_script(run_config, run_script)
-
-
-def save_config(run_config: RunConfig) -> None:
-    """Saves given run config."""
-    config = configparser.ConfigParser()
-    config['IDE'] = {}
-    config['IDE']['PATH'] = run_config.path_to_app
-
-    config['PROJECTOR'] = {}
-    config['PROJECTOR']['PORT'] = str(run_config.projector_port)
-
-    if run_config.is_secure():
-        config['SSL'] = {}
-        config['SSL']['TOKEN'] = run_config.token
-
-    if run_config.is_password_protected():
-        config['PASSWORDS'] = {}
-        config['PASSWORDS']['PASSWORD'] = run_config.password  # type: ignore
-        config['PASSWORDS']['RO_PASSWORD'] = run_config.ro_password  # type: ignore
-
-    if run_config.toolbox:
-        config['TOOLBOX'] = {}
-        config['TOOLBOX']['TOOLBOX'] = 'True'  # type: ignore
-
-    if run_config.fqdns:
-        config['FQDNS'] = {}
-        config['FQDNS']['FQDNS'] = run_config.fqdns  # type: ignore
-
-    config_path = join(get_run_configs_dir(), run_config.name)
-
-    if not path.isdir(config_path):
-        mkdir(config_path)
-
-    config_path = join(config_path, CONFIG_INI_NAME)
-
-    with open(config_path, 'w') as configfile:
-        config.write(configfile)
-
-    generate_run_script(run_config)
-
-    if run_config.is_secure():
-        generate_server_secrets(run_config)
 
 
 def get_run_configs(pattern: Optional[str] = None) -> Dict[str, RunConfig]:
@@ -154,12 +130,6 @@ def get_configs_with_app(app_name: str) -> List[str]:
     """Returns list of configs which referees to given app name."""
     app_path = get_app_path(app_name)
     return [k for k, v in get_run_configs().items() if v.path_to_app == app_path]
-
-
-def check_config(run_config: RunConfig) -> bool:
-    """Check if all run config files corresponds to given configuration"""
-    run_script = get_run_script_path(run_config.name)
-    return check_run_script(run_config, run_script)
 
 
 def get_lock_file_name(config_name: str) -> str:

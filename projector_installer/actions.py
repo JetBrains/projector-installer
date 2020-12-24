@@ -22,12 +22,14 @@ from .dialogs import select_compatible_app, select_new_config_name, list_configs
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, make_config_from_input
 
-from .global_config import get_download_cache_dir, RunConfig
+from .global_config import get_download_cache_dir
 
 from .ide_configuration import forbid_updates_for
-from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
-    save_config, delete_config, rename_config, make_config_name, get_configs_with_app, \
-    check_config, lock_config, release_config
+from .run_config import RunConfig, get_run_configs, get_run_script_path, validate_run_config, \
+    delete_config, rename_config, make_config_name, get_configs_with_app, \
+    lock_config, release_config
+
+from .config_generator import save_config, check_config
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
