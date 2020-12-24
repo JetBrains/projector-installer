@@ -7,20 +7,18 @@
 Global configuration constants, variables and functions.
 """
 
-import socket
 import sys
 from typing import List
 from shutil import rmtree
-from urllib.error import URLError
 from os.path import dirname, join, expanduser, abspath
 
-from .installable_app import InstallableApp, load_installable_apps
-from .utils import create_dir_if_not_exist, download_file, get_file_name_from_url
+from .installable_app import InstallableApp, load_compatible_apps
+from .utils import create_dir_if_not_exist
 
 USER_HOME: str = expanduser('~')
 INSTALL_DIR: str = dirname(abspath(__file__))
 DEF_PROJECTOR_PORT: int = 9999
-COMPATIBLE_IDE_FILE: str = 'compatible_ide.json'
+COMPATIBLE_IDE_FILE: str = join(INSTALL_DIR, 'compatible_ide.json')
 DEF_CONFIG_DIR: str = '.projector'
 SSL_PROPERTIES_FILE = 'ssl.properties'
 BUNDLED_DIR: str = 'bundled'
@@ -70,11 +68,6 @@ def get_ssl_dir() -> str:
     return join(config_dir, 'ssl')
 
 
-def get_compatible_ide_file() -> str:
-    """Returns full path to compatible ide file."""
-    return join(INSTALL_DIR, COMPATIBLE_IDE_FILE)
-
-
 COMPATIBLE_APPS: List[InstallableApp] = []
 
 
@@ -94,50 +87,19 @@ class RunConfig:
         self.toolbox = toolbox
         self.fqdns = custom_fqdns
 
+    def is_secure(self) -> bool:
+        """Checks if secure configuration"""
+        return self.token != ''
 
-def is_secure(run_config: RunConfig) -> bool:
-    """Checks if secure configuration"""
-    return run_config.token != ''
-
-
-def is_password_protected(run_config: RunConfig) -> bool:
-    """Checks if run config is password protected"""
-    return run_config.password != ''
-
-
-COMPATIBLE_IDE_FILE_URL: str = \
-    'https://raw.githubusercontent.com/JetBrains/projector-installer/master/' \
-    'projector_installer/compatible_ide.json'
-
-
-def download_compatible_apps() -> str:
-    """Downloads compatible ide json file from github repository."""
-    try:
-        download_file(COMPATIBLE_IDE_FILE_URL, get_download_cache_dir(), timeout=3, silent=True)
-        name = get_file_name_from_url(COMPATIBLE_IDE_FILE_URL)
-        file_name = join(get_download_cache_dir(), name)
-
-        return file_name
-    except (URLError, socket.timeout):
-        return ''
-
-
-def load_compatible_apps() -> List[InstallableApp]:
-    """Loads compatible apps dictionary from bundled file and github-stored Json"""
-    file_name = get_compatible_ide_file()
-    local_list = load_installable_apps(file_name)
-    github_file = download_compatible_apps()
-
-    if github_file:
-        github_list = load_installable_apps(github_file)
-
-    return list(set(local_list) | set(github_list))
+    def is_password_protected(self) -> bool:
+        """Checks if run config is password protected"""
+        return self.password != ''
 
 
 def init_compatible_apps() -> List[InstallableApp]:
     """Initializes compatible apps list."""
     try:
-        return load_compatible_apps()
+        return load_compatible_apps(COMPATIBLE_IDE_FILE)
     except IOError as error:
         print(f'Cannot load compatible ide file: {str(error)}. Exiting...')
         sys.exit(2)

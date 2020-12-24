@@ -13,8 +13,7 @@ import json
 
 from . import global_config
 from .global_config import get_apps_dir, get_projector_server_dir, \
-    InstallableApp, RunConfig, is_password_protected, init_compatible_apps, is_secure, \
-    get_ssl_properties_file
+    InstallableApp, RunConfig, init_compatible_apps, get_ssl_properties_file
 
 from .utils import unpack_tar_file
 
@@ -75,10 +74,10 @@ def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
             line = f' -Dorg.jetbrains.projector.server.port={run_config.projector_port} \\\n'
             line += f' -Dorg.jetbrains.projector.server.classToLaunch={IDEA_RUN_CLASS} \\\n'
 
-            if is_secure(run_config):
+            if run_config.is_secure():
                 line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
 
-            if is_password_protected(run_config):
+            if run_config.is_password_protected():
                 line += f' -D{TOKEN_ENV_NAME}=\"{run_config.password}\" \\\n'
                 line += f' -D{RO_TOKEN_ENV_NAME}=\"{run_config.ro_password}\" \\\n'
 

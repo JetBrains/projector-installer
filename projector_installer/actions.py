@@ -22,7 +22,7 @@ from .dialogs import select_compatible_app, select_new_config_name, list_configs
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, make_config_from_input
 
-from .global_config import get_download_cache_dir, RunConfig, is_secure, is_password_protected
+from .global_config import get_download_cache_dir, RunConfig
 
 from .ide_configuration import forbid_updates_for
 from .run_config import get_run_configs, get_run_script_path, validate_run_config, \
@@ -53,10 +53,10 @@ def do_show_config(pattern: Optional[str] = None) -> None:
     if run_config.toolbox:
         print('Toolbox config = yes')
 
-    if is_secure(run_config):
+    if run_config.is_secure():
         print('Secure config = yes')
 
-    if is_password_protected(run_config):
+    if run_config.is_password_protected():
         print(f'RW Password: = {run_config.password}')
         print(f'RO Password: = {run_config.ro_password}')
 
@@ -84,7 +84,7 @@ def get_access_urls(run_config: RunConfig) -> List[str]:
 
     schema = 'http'
 
-    if is_secure(run_config):
+    if run_config.is_secure():
         schema = 'https'
 
     urls = []
@@ -170,7 +170,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     print('To see Projector logs in realtime run\n\t'
           f'tail -f "{get_path_to_log(run_config.name)}"\n')
 
-    if is_secure(run_config):
+    if run_config.is_secure():
         print('If browser warns on unsecure connection, install projector certificate:')
         print(get_ca_crt_file())
         print('Refer to: ')

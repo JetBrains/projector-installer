@@ -11,10 +11,9 @@ from typing import Optional, Dict, List, Tuple
 
 import click
 
+from .run_config import get_run_configs, RunConfig, get_run_config_names, get_used_projector_ports
 from .apps import get_installed_apps, get_app_path, get_compatible_app_names, \
     is_path_to_app, is_toolbox_path
-from .run_config import get_run_configs, RunConfig, get_run_config_names, \
-    get_used_projector_ports, is_password_protected
 
 from .global_config import DEF_PROJECTOR_PORT
 from .secure_config import generate_token
@@ -315,7 +314,7 @@ def select_custom_fqdns() -> str:
                              type=bool)
 
     fqdns: str = click.prompt('Please specify the comma-separated list of custom fqdns',
-                        type=str) if need_fqdn else ''
+                              type=str) if need_fqdn else ''
 
     return fqdns
 
@@ -328,7 +327,7 @@ def edit_config(config: RunConfig) -> RunConfig:
     prompt = 'Enter a Projector port (press ENTER for default)'
     config.projector_port = click.prompt(prompt, default=str(config.projector_port))
 
-    if is_password_protected(config):
+    if config.is_password_protected():
         password = select_password("Choose password", config.password)
         ro_password = password
 

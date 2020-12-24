@@ -14,7 +14,7 @@ from fcntl import lockf, LOCK_EX, LOCK_NB
 import configparser
 
 from .apps import get_app_path, make_run_script, check_run_script
-from .global_config import get_run_configs_dir, RunConfig, is_password_protected, is_secure
+from .global_config import get_run_configs_dir, RunConfig
 from .secure_config import generate_server_secrets
 
 CONFIG_INI_NAME = 'config.ini'
@@ -58,11 +58,11 @@ def save_config(run_config: RunConfig) -> None:
     config['PROJECTOR'] = {}
     config['PROJECTOR']['PORT'] = str(run_config.projector_port)
 
-    if is_secure(run_config):
+    if run_config.is_secure():
         config['SSL'] = {}
         config['SSL']['TOKEN'] = run_config.token
 
-    if is_password_protected(run_config):
+    if run_config.is_password_protected():
         config['PASSWORDS'] = {}
         config['PASSWORDS']['PASSWORD'] = run_config.password  # type: ignore
         config['PASSWORDS']['RO_PASSWORD'] = run_config.ro_password  # type: ignore
@@ -87,7 +87,7 @@ def save_config(run_config: RunConfig) -> None:
 
     generate_run_script(run_config)
 
-    if is_secure(run_config):
+    if run_config.is_secure():
         generate_server_secrets(run_config)
 
 
