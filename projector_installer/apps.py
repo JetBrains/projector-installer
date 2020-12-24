@@ -289,7 +289,6 @@ def is_path_to_app(app_path: str) -> bool:
     return isfile(prod_info_path)
 
 
-# ~/.local/share/JetBrains/Toolbox/apps/AndroidStudio/ch-0
 def get_path_to_toolbox_channel(path: str) -> Optional[str]:
     """"Returns path to toolbox channel"""
     pos = path.find('JetBrains/Toolbox/apps')
