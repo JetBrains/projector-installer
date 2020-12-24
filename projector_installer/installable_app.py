@@ -31,8 +31,8 @@ class InstallableApp:
         self.url: str = url
         self.kind = kind
 
-    def __key__(self) -> Tuple[str, str, IDEKind]:
-        return self.name, self.url, self.kind
+    def __key__(self) -> Tuple[str, str]:
+        return self.name, self.url
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, InstallableApp):
