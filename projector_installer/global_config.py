@@ -75,7 +75,7 @@ def get_compatible_ide_file() -> str:
     return join(INSTALL_DIR, COMPATIBLE_IDE_FILE)
 
 
-class CompatibleApp:
+class InstallableApp:
     """Compatible application entry."""
 
     def __init__(self, name: str, url: str) -> None:
@@ -83,13 +83,13 @@ class CompatibleApp:
         self.url: str = url
 
     def __eq__(self, other: object) -> bool:
-        if isinstance(other, CompatibleApp):
+        if isinstance(other, InstallableApp):
             return self.name == other.name and self.url == other.url
 
         return False
 
 
-COMPATIBLE_APPS: List[CompatibleApp] = []
+COMPATIBLE_APPS: List[InstallableApp] = []
 
 
 class RunConfig:
@@ -125,7 +125,7 @@ def load_compatible_apps_from_file(file_name: str) -> None:
         data = json.load(file)
 
     for entry in data:
-        app = CompatibleApp(entry['name'], entry['url'])
+        app = InstallableApp(entry['name'], entry['url'])
         if app not in COMPATIBLE_APPS:
             COMPATIBLE_APPS.append(app)
 

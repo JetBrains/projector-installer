@@ -2,6 +2,10 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+## Added
+ - Support for user-specified DNS names during certificate generation
+
 # 0.1.14
 ## Added
  - Support IDEs installed and managed via JetBrains Toolbox

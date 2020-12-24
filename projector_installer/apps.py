@@ -12,7 +12,7 @@ from typing import Optional, List, TextIO
 import json
 
 from .global_config import get_apps_dir, get_projector_server_dir, COMPATIBLE_APPS, \
-    CompatibleApp, RunConfig, is_password_protected, init_compatible_apps, is_secure, \
+    InstallableApp, RunConfig, is_password_protected, init_compatible_apps, is_secure, \
     get_ssl_properties_file
 
 from .utils import unpack_tar_file
@@ -34,7 +34,7 @@ def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
     return res
 
 
-def get_compatible_apps(pattern: Optional[str] = None) -> List[CompatibleApp]:
+def get_compatible_apps(pattern: Optional[str] = None) -> List[InstallableApp]:
     """Returns list of compatible apps, matched given pattern."""
     if not COMPATIBLE_APPS:
         init_compatible_apps()
