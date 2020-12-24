@@ -7,7 +7,6 @@
 Global configuration constants, variables and functions.
 """
 
-import json
 import socket
 import sys
 from typing import List
@@ -15,6 +14,7 @@ from shutil import rmtree
 from urllib.error import URLError
 from os.path import dirname, join, expanduser, abspath
 
+from .installable_app import InstallableApp, load_installable_apps
 from .utils import create_dir_if_not_exist, download_file, get_file_name_from_url
 
 USER_HOME: str = expanduser('~')
@@ -75,20 +75,6 @@ def get_compatible_ide_file() -> str:
     return join(INSTALL_DIR, COMPATIBLE_IDE_FILE)
 
 
-class InstallableApp:
-    """Compatible application entry."""
-
-    def __init__(self, name: str, url: str) -> None:
-        self.name: str = name
-        self.url: str = url
-
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, InstallableApp):
-            return self.name == other.name and self.url == other.url
-
-        return False
-
-
 COMPATIBLE_APPS: List[InstallableApp] = []
 
 
@@ -119,17 +105,6 @@ def is_password_protected(run_config: RunConfig) -> bool:
     return run_config.password != ''
 
 
-def load_compatible_apps_from_file(file_name: str) -> None:
-    """Loads compatible apps file to memory."""
-    with open(file_name, 'r') as file:
-        data = json.load(file)
-
-    for entry in data:
-        app = InstallableApp(entry['name'], entry['url'])
-        if app not in COMPATIBLE_APPS:
-            COMPATIBLE_APPS.append(app)
-
-
 COMPATIBLE_IDE_FILE_URL: str = \
     'https://raw.githubusercontent.com/JetBrains/projector-installer/master/' \
     'projector_installer/compatible_ide.json'
@@ -147,20 +122,22 @@ def download_compatible_apps() -> str:
         return ''
 
 
-def load_compatible_apps() -> None:
+def load_compatible_apps() -> List[InstallableApp]:
     """Loads compatible apps dictionary from bundled file and github-stored Json"""
     file_name = get_compatible_ide_file()
-    load_compatible_apps_from_file(file_name)
+    local_list = load_installable_apps(file_name)
     github_file = download_compatible_apps()
 
     if github_file:
-        load_compatible_apps_from_file(github_file)
+        github_list = load_installable_apps(github_file)
+
+    return list(set(local_list) | set(github_list))
 
 
-def init_compatible_apps() -> None:
+def init_compatible_apps() -> List[InstallableApp]:
     """Initializes compatible apps list."""
     try:
-        load_compatible_apps()
+        return load_compatible_apps()
     except IOError as error:
         print(f'Cannot load compatible ide file: {str(error)}. Exiting...')
         sys.exit(2)
