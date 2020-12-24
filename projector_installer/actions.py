@@ -14,7 +14,7 @@ from os import path, system, uname
 from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path, get_path_to_latest_app
 from .log_utils import init_log, shutdown_log, get_path_to_log
-from .secure_config import get_ca_crt_file
+from .secure_config import get_ca_crt_file, parse_custom_fqdns
 
 from .utils import download_file, get_java_version, get_local_addresses
 
@@ -89,7 +89,7 @@ def get_access_urls(run_config: RunConfig) -> List[str]:
 
     urls = []
 
-    addresses = get_local_addresses()
+    addresses = parse_custom_fqdns(run_config.fqdns) + get_local_addresses()
 
     if '127.0.0.1' in addresses:
         addresses = ['localhost'] + addresses
