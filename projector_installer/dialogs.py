@@ -12,12 +12,18 @@ from typing import Optional, Dict, List, Tuple
 import click
 
 from .run_config import get_run_configs, RunConfig, get_run_config_names, get_used_projector_ports
-from .apps import get_installed_apps, get_app_path, get_compatible_app_names, \
-    is_path_to_app, is_toolbox_path
-
-from .global_config import DEF_PROJECTOR_PORT
+from .apps import get_installed_apps, get_app_path, is_path_to_app, is_toolbox_path
 from .secure_config import generate_token
 from .utils import get_local_addresses
+from .products import get_compatible_apps, IDEKind, Product
+
+DEF_PROJECTOR_PORT: int = 9999
+
+
+def get_compatible_app_names(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
+    """Get sorted list of projector-compatible applications, matches given pattern."""
+    res = get_compatible_apps(kind, pattern)
+    return sorted(res, key=lambda x: x.name)
 
 
 def display_run_configs_names(config_names: List[str]) -> None:
@@ -39,17 +45,26 @@ def display_run_configs(run_configs: Dict[str, RunConfig]) -> None:
     display_run_configs_names(config_names)
 
 
+def print_selection_list(names: List[str]) -> None:
+    """Pretty list for selection."""
+    for i, name in enumerate(names):
+        print(f'\t{i + 1:4}. {name}')
+
+
 def find_apps(pattern: Optional[str] = None) -> None:
     """Pretty-print projector-compatible applications, matched to given pattern."""
-    app_names = get_compatible_app_names(pattern)
-    for i, app_name in enumerate(app_names):
-        print(f'\t{i + 1:4}. {app_name}')
+    apps: List[Product] = []
+
+    for kind in IDEKind:
+        apps = apps + get_compatible_app_names(kind, pattern)
+
+    print_selection_list(list(map(lambda x: x.name, apps)))
 
 
-def list_apps(pattern: Optional[str] = None) -> None:
-    """Pretty print the list of installed ide."""
-    for i, app in enumerate(get_installed_apps(pattern)):
-        print(f'\t{i + 1:4}. {app}')
+def list_apps(pattern: Optional[str]) -> None:
+    """Print list of installed apps"""
+    apps = get_installed_apps(pattern)
+    print_selection_list(apps)
 
 
 def select_installed_app(pattern: Optional[str] = None) -> Optional[str]:
@@ -57,7 +72,7 @@ def select_installed_app(pattern: Optional[str] = None) -> Optional[str]:
     apps: List[str] = get_installed_apps(pattern)
 
     while True:
-        list_apps(pattern)
+        print_selection_list(apps)
         prompt = f'Choose an IDE number to uninstall or 0 to exit: [0-{len(apps)}]'
         app_number: int = click.prompt(prompt, type=int)
 
@@ -71,13 +86,39 @@ def select_installed_app(pattern: Optional[str] = None) -> Optional[str]:
         return apps[app_number - 1]
 
 
-def select_compatible_app(pattern: Optional[str] = None) -> Optional[str]:
-    """Interactively selects app name from list of projector-compatible applications."""
-    app_names: List[str] = get_compatible_app_names(pattern)
+def select_ide_kind() -> Optional[IDEKind]:
+    """Interactively selects desired IDE kind"""
+    kinds = [k for k in IDEKind if k != IDEKind.Unknown]
+    kind_names = list(map(lambda x: x.name, kinds))
+    prompt = f'Choose IDE type to install or 0 to exit: [0-{len(kind_names)}]'
 
     while True:
-        find_apps(pattern)
-        prompt = f'Choose IDE number to install or 0 to exit: [0-{len(app_names)}]'
+        print_selection_list(kind_names)
+        pos: int = click.prompt(prompt, type=int)
+
+        if pos < 0 or pos > len(kinds):
+            print('Invalid number.')
+            continue
+
+        if pos == 0:
+            return None
+
+        return kinds[pos - 1]
+
+
+def select_compatible_app(pattern: Optional[str] = None) -> Optional[Product]:
+    """Interactively selects app name from list of projector-compatible applications."""
+    kind = select_ide_kind()
+
+    if kind is None:
+        return None
+
+    apps = get_compatible_app_names(kind, pattern)
+    app_names: List[str] = list(map(lambda x: x.name, apps))
+    prompt = f'Choose IDE number to install or 0 to exit: [0-{len(app_names)}]'
+
+    while True:
+        print_selection_list(app_names)
         app_number: int = click.prompt(prompt, type=int)
 
         if app_number < 0 or app_number > len(app_names):
@@ -87,7 +128,7 @@ def select_compatible_app(pattern: Optional[str] = None) -> Optional[str]:
         if app_number == 0:
             return None
 
-        return app_names[app_number - 1]
+        return apps[app_number - 1]
 
 
 def select_unused_config_name(hint: str) -> str:
@@ -162,7 +203,7 @@ def select_installed_app_path() -> Optional[str]:
     apps = get_installed_apps()
 
     while True:
-        list_apps()
+        print_selection_list(apps)
         prompt = f'Choose IDE number to install or 0 to exit: [0-{len(apps)}]'
         app_number = click.prompt(prompt, type=int)
 

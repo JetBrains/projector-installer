@@ -11,7 +11,7 @@ import sys
 from typing import Optional, List
 from os import path, system, uname
 
-from .apps import get_compatible_apps, get_app_path, get_installed_apps, get_product_info, \
+from .apps import get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path, get_path_to_latest_app
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file, parse_custom_fqdns
@@ -316,26 +316,12 @@ def do_list_app(pattern: Optional[str] = None) -> None:
 def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_updates: bool = False,
                    run_browser: bool = True) -> None:
     """Installs specified app."""
-    apps = get_compatible_apps(app_name)
+    app = select_compatible_app(app_name)
 
-    if len(apps) == 0:
-        print('There are no known IDEs matched to the given name.')
-        if app_name is None:
-            print('Try to reinstall Projector.')
-        print('Exiting...')
+    if app is None:
+        print('IDE was not selected, exiting...')
         sys.exit(1)
 
-    if len(apps) > 1:
-        app_name = select_compatible_app(app_name)
-
-        if app_name is None:
-            print('IDE was not selected, exiting...')
-            sys.exit(1)
-    else:
-        app_name = apps[0].name
-
-    apps = get_compatible_apps(app_name)
-    app = apps[0]
     config_name_hint = make_config_name(app.name)
     user_input = get_user_install_input(config_name_hint, auto_run)
 

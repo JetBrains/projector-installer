@@ -8,17 +8,13 @@ Global configuration constants, variables and functions.
 """
 
 import sys
-from typing import List
 from shutil import rmtree
 from os.path import dirname, join, expanduser, abspath
 
-from .installable_app import InstallableApp, load_compatible_apps
 from .utils import create_dir_if_not_exist
 
 USER_HOME: str = expanduser('~')
 INSTALL_DIR: str = dirname(abspath(__file__))
-DEF_PROJECTOR_PORT: int = 9999
-COMPATIBLE_IDE_FILE: str = join(INSTALL_DIR, 'compatible_ide.json')
 DEF_CONFIG_DIR: str = '.projector'
 SSL_PROPERTIES_FILE = 'ssl.properties'
 BUNDLED_DIR: str = 'bundled'
@@ -66,18 +62,6 @@ def get_download_cache_dir() -> str:
 def get_ssl_dir() -> str:
     """Returns full path to ssl directory."""
     return join(config_dir, 'ssl')
-
-
-COMPATIBLE_APPS: List[InstallableApp] = []
-
-
-def init_compatible_apps() -> List[InstallableApp]:
-    """Initializes compatible apps list."""
-    try:
-        return load_compatible_apps(COMPATIBLE_IDE_FILE)
-    except IOError as error:
-        print(f'Cannot load compatible ide file: {str(error)}. Exiting...')
-        sys.exit(2)
 
 
 def get_projector_server_dir() -> str:

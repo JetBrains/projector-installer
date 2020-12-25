@@ -10,9 +10,7 @@ from distutils.version import LooseVersion
 from typing import Optional, List
 import json
 
-from . import global_config
-from .global_config import get_apps_dir, init_compatible_apps
-from .installable_app import InstallableApp
+from .global_config import get_apps_dir
 from .utils import unpack_tar_file
 
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
@@ -22,29 +20,6 @@ def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
     """Returns sorted list of installed apps, matched given pattern."""
     res = [file_name for file_name in listdir(get_apps_dir()) if
            pattern is None or file_name.lower().find(pattern.lower()) != -1]
-    res.sort()
-    return res
-
-
-def get_compatible_apps(pattern: Optional[str] = None) -> List[InstallableApp]:
-    """Returns list of compatible apps, matched given pattern."""
-    if not global_config.COMPATIBLE_APPS:
-        global_config.COMPATIBLE_APPS = init_compatible_apps()
-
-    apps = [app for app in global_config.COMPATIBLE_APPS if
-            pattern is None or app.name.lower().find(pattern.lower()) != -1]
-
-    if pattern:
-        for app in apps:
-            if pattern.lower() == app.name.lower():
-                return [app]
-
-    return apps
-
-
-def get_compatible_app_names(pattern: Optional[str] = None) -> List[str]:
-    """Get sorted list of projector-compatible applications, matches given pattern."""
-    res = [app.name for app in get_compatible_apps(pattern)]
     res.sort()
     return res
 
