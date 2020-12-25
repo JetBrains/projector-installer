@@ -7,7 +7,7 @@
 
 import sys
 from os.path import expanduser
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List, Tuple, TypeVar, Callable
 
 import click
 
@@ -67,43 +67,38 @@ def list_apps(pattern: Optional[str]) -> None:
     print_selection_list(apps)
 
 
-def select_installed_app(pattern: Optional[str] = None) -> Optional[str]:
-    """Interactively selects installed ide."""
-    apps: List[str] = get_installed_apps(pattern)
+T = TypeVar('T', IDEKind, Product, str)  # pylint: disable=C0103
+
+
+def select_from_list(data: List[T], name: Callable[[T], str], prompt: str) -> Optional[T]:
+    """Interactively selects named entity from given list"""
+    names: List[str] = list(map(name, data))
+    prompt = f'{prompt}: [0-{len(names)}]'
 
     while True:
-        print_selection_list(apps)
-        prompt = f'Choose an IDE number to uninstall or 0 to exit: [0-{len(apps)}]'
-        app_number: int = click.prompt(prompt, type=int)
-
-        if app_number < 0 or app_number > len(apps):
-            print('Invalid number.')
-            continue
-
-        if app_number == 0:
-            return None
-
-        return apps[app_number - 1]
-
-
-def select_ide_kind() -> Optional[IDEKind]:
-    """Interactively selects desired IDE kind"""
-    kinds = [k for k in IDEKind if k != IDEKind.Unknown]
-    kind_names = list(map(lambda x: x.name, kinds))
-    prompt = f'Choose IDE type to install or 0 to exit: [0-{len(kind_names)}]'
-
-    while True:
-        print_selection_list(kind_names)
+        print_selection_list(names)
         pos: int = click.prompt(prompt, type=int)
 
-        if pos < 0 or pos > len(kinds):
+        if pos < 0 or pos > len(names):
             print('Invalid number.')
             continue
 
         if pos == 0:
             return None
 
-        return kinds[pos - 1]
+        return data[pos - 1]
+
+
+def select_installed_app(pattern: Optional[str] = None) -> Optional[str]:
+    """Interactively selects installed ide."""
+    return select_from_list(get_installed_apps(pattern), lambda it: it,
+                            'Choose an IDE number to uninstall or 0 to exit')
+
+
+def select_ide_kind() -> Optional[IDEKind]:
+    """Interactively selects desired IDE kind"""
+    kinds = [k for k in IDEKind if k != IDEKind.Unknown]
+    return select_from_list(kinds, lambda it: it.name, 'Choose IDE type to install or 0 to exit')
 
 
 def select_compatible_app(pattern: Optional[str] = None) -> Optional[Product]:
@@ -114,21 +109,7 @@ def select_compatible_app(pattern: Optional[str] = None) -> Optional[Product]:
         return None
 
     apps = get_compatible_app_names(kind, pattern)
-    app_names: List[str] = list(map(lambda x: x.name, apps))
-    prompt = f'Choose IDE number to install or 0 to exit: [0-{len(app_names)}]'
-
-    while True:
-        print_selection_list(app_names)
-        app_number: int = click.prompt(prompt, type=int)
-
-        if app_number < 0 or app_number > len(app_names):
-            print('Invalid number.')
-            continue
-
-        if app_number == 0:
-            return None
-
-        return apps[app_number - 1]
+    return select_from_list(apps, lambda it: it.name, 'Choose IDE number to install or 0 to exit')
 
 
 def select_unused_config_name(hint: str) -> str:
@@ -201,20 +182,8 @@ def select_run_config(config_name: Optional[str]) -> RunConfig:
 def select_installed_app_path() -> Optional[str]:
     """Selects installed app and returns path to it."""
     apps = get_installed_apps()
-
-    while True:
-        print_selection_list(apps)
-        prompt = f'Choose IDE number to install or 0 to exit: [0-{len(apps)}]'
-        app_number = click.prompt(prompt, type=int)
-
-        if app_number < 0 or app_number > len(apps):
-            print('Invalid number selected.')
-            continue
-
-        if app_number == 0:
-            return None
-
-        return get_app_path(apps[app_number - 1])
+    res = select_from_list(apps, lambda it: it, 'Choose IDE number to install or 0 to exit')
+    return res if res is None else get_app_path(res)
 
 
 def is_valid_app_path(app_path: str) -> bool:
