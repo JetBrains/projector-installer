@@ -15,7 +15,7 @@ from .run_config import get_run_configs, RunConfig, get_run_config_names, get_us
 from .apps import get_installed_apps, get_app_path, is_path_to_app, is_toolbox_path
 from .secure_config import generate_token
 from .utils import get_local_addresses
-from .products import get_compatible_apps, IDEKind, Product
+from .products import get_compatible_apps, IDEKind, Product, get_all_apps
 
 DEF_PROJECTOR_PORT: int = 9999
 
@@ -101,14 +101,22 @@ def select_ide_kind() -> Optional[IDEKind]:
     return select_from_list(kinds, lambda it: it.name, 'Choose IDE type to install or 0 to exit')
 
 
-def select_compatible_app(pattern: Optional[str] = None) -> Optional[Product]:
+def get_app_list(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
+    """Returns compatible or full app list, depending on user choice"""
+    compatible = click.prompt('Do you want to choose from Projector-compatible IDE? [y/n]',
+                              type=bool)
+    return get_compatible_app_names(kind, pattern) if compatible else get_all_apps(kind, pattern)
+
+
+def select_app(pattern: Optional[str] = None) -> Optional[Product]:
     """Interactively selects app name from list of projector-compatible applications."""
     kind = select_ide_kind()
 
     if kind is None:
         return None
 
-    apps = get_compatible_app_names(kind, pattern)
+    apps = get_app_list(kind, pattern)
+
     return select_from_list(apps, lambda it: it.name, 'Choose IDE number to install or 0 to exit')
 
 

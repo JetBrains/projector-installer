@@ -171,19 +171,17 @@ def get_product_releases(kind: IDEKind) -> List[Product]:
     return res
 
 
-def get_products(kind: IDEKind) -> List[Product]:
+def get_compatible_products(kind: IDEKind) -> List[Product]:
     """Returns list of all compatible apps with given kind"""
-    global COMPATIBLE_APPS # pylint: disable=W0603
-    if not COMPATIBLE_APPS:
-        COMPATIBLE_APPS = init_compatible_apps()
-
-    return [app for app in COMPATIBLE_APPS if app.kind == kind]
+    apps = init_compatible_apps()
+    return [app for app in apps if app.kind == kind]
 
 
-def get_compatible_apps(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
-    """Returns list of compatible apps, matched given pattern."""
+def filter_app_by_name_pattern(data: List[Product], pattern: Optional[str] = None) -> List[Product]:
+    """Filters given Product list by given name pattern.
+    Returns list with single element on exact match."""
 
-    apps = [app for app in get_products(kind)
+    apps = [app for app in data
             if pattern is None or app.name.lower().find(pattern.lower()) != -1]
 
     if pattern:
@@ -193,7 +191,14 @@ def get_compatible_apps(kind: IDEKind, pattern: Optional[str] = None) -> List[Pr
 
     return apps
 
-# class ProductProvider:
-#
-#     def get_product_list(self) -> List[Product]:
-#         pass
+
+def get_compatible_apps(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
+    """Returns list of compatible apps, matched given kind and pattern."""
+    apps = get_compatible_products(kind)
+    return filter_app_by_name_pattern(apps, pattern)
+
+
+def get_all_apps(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
+    """Returns list of all released apps, matched given kind and pattern."""
+    apps = get_product_releases(kind)
+    return filter_app_by_name_pattern(apps, pattern)

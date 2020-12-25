@@ -18,7 +18,7 @@ from .secure_config import get_ca_crt_file, parse_custom_fqdns
 
 from .utils import download_file, get_java_version, get_local_addresses
 
-from .dialogs import select_compatible_app, select_new_config_name, list_configs, \
+from .dialogs import select_app, select_new_config_name, list_configs, \
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, make_config_from_input
 
@@ -316,7 +316,7 @@ def do_list_app(pattern: Optional[str] = None) -> None:
 def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_updates: bool = False,
                    run_browser: bool = True) -> None:
     """Installs specified app."""
-    app = select_compatible_app(app_name)
+    app = select_app(app_name)
 
     if app is None:
         print('IDE was not selected, exiting...')
