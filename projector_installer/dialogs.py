@@ -51,16 +51,6 @@ def print_selection_list(names: List[str]) -> None:
         print(f'\t{i + 1:4}. {name}')
 
 
-def find_apps(pattern: Optional[str] = None) -> None:
-    """Pretty-print projector-compatible applications, matched to given pattern."""
-    apps: List[Product] = []
-
-    for kind in IDEKind:
-        apps = apps + get_compatible_app_names(kind, pattern)
-
-    print_selection_list(list(map(lambda x: x.name, apps)))
-
-
 def list_apps(pattern: Optional[str]) -> None:
     """Print list of installed apps"""
     apps = get_installed_apps(pattern)
@@ -98,14 +88,26 @@ def select_installed_app(pattern: Optional[str] = None) -> Optional[str]:
 def select_ide_kind() -> Optional[IDEKind]:
     """Interactively selects desired IDE kind"""
     kinds = [k for k in IDEKind if k != IDEKind.Unknown]
-    return select_from_list(kinds, lambda it: it.name, 'Choose IDE type to install or 0 to exit')
+    return select_from_list(kinds, lambda it: it.name, 'Choose IDE type or 0 to exit')
 
 
 def get_app_list(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
     """Returns compatible or full app list, depending on user choice"""
-    compatible = click.prompt('Do you want to choose from Projector-compatible IDE? [y/n]',
+    compatible = click.prompt('Do you want to use Projector-compatible IDE only? [y/n]',
                               type=bool)
     return get_compatible_app_names(kind, pattern) if compatible else get_all_apps(kind, pattern)
+
+
+def find_apps(pattern: Optional[str] = None) -> None:
+    """Pretty-print projector-compatible applications, matched to given pattern."""
+    kind = select_ide_kind()
+
+    if kind is None:
+        print('No app kind selected, exiting...')
+        sys.exit(2)
+
+    apps = get_app_list(kind, pattern)
+    print_selection_list(list(map(lambda x: x.name, apps)))
 
 
 def select_app(pattern: Optional[str] = None) -> Optional[Product]:
