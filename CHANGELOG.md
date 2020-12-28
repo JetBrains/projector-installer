@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 0.1.15
 ## Added
  - Support for user-specified DNS names during certificate generation
 

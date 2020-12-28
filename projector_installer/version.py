@@ -5,4 +5,4 @@
 
 """projector-installer version"""
 
-__version__: str = '0.1.14'
+__version__: str = '0.1.15'
