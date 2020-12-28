@@ -5,6 +5,7 @@ Notable changes to this project are documented in this file.
 # 0.1.15
 ## Added
  - Support for user-specified DNS names during certificate generation
+ - Support finding and installing not tested IDEs (using IDE list from JB release server)
 
 # 0.1.14
 ## Added
