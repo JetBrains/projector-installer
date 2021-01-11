@@ -6,6 +6,7 @@
 """User dialog related procedures."""
 
 import sys
+import readline
 from os.path import expanduser
 from typing import Optional, Dict, List, Tuple, TypeVar, Callable
 
@@ -203,11 +204,13 @@ def is_valid_app_path(app_path: str) -> bool:
 
 def select_manual_app_path() -> str:
     """Prompts for path to ide."""
-    path: str = click.prompt('Enter the path to IDE', type=str)
+    readline.set_completer_delims(' \t\n=')
+    readline.parse_and_bind("tab: complete")
+    path: str = input('Enter the path to IDE (Use <tab> for complete): ')
 
     while len(path) > 0 and not is_valid_app_path(path):
         click.echo(f'Path {path} does not looks as valid path.')
-        path = click.prompt('Enter the path to IDE', type=str)
+        path = input('Enter the path to IDE (Use <tab> for complete): ')
 
     return path
 
