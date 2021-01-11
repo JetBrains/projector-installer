@@ -202,17 +202,29 @@ def is_valid_app_path(app_path: str) -> bool:
     return is_path_to_app(app_path) or is_toolbox_path(app_path)
 
 
-def select_manual_app_path() -> str:
+def select_manual_app_path(default: str = '') -> str:
     """Prompts for path to ide."""
     readline.set_completer_delims(' \t\n=')
     readline.parse_and_bind("tab: complete")
-    path: str = input('Enter the path to IDE (Use <tab> for complete): ')
 
-    while len(path) > 0 and not is_valid_app_path(path):
-        click.echo(f'Path {path} does not looks as valid path.')
-        path = input('Enter the path to IDE (Use <tab> for complete): ')
+    if default:
+        prompt = f'Enter the path to IDE (default: {default}, <tab> for complete): '
+    else:
+        prompt = 'Enter the path to IDE (<tab> for complete): '
 
-    return path
+    while True:
+        path: str = input(prompt)
+
+        if len(path) == 0 and default:
+            path = default
+
+        if len(path) > 0:
+            path = expanduser(path)
+
+        if is_valid_app_path(path):
+            return path
+
+        click.echo(f'Path {path} does not looks like a valid path.')
 
 
 def select_app_path() -> Optional[str]:
@@ -310,7 +322,7 @@ def select_password(prompt: str, default: str = '') -> str:
     return password
 
 
-def select_password_pair() -> Tuple[str, str]:
+def select_password_pair(def_password: str = '', def_ro_password: str = '') -> Tuple[str, str]:
     """Prompts for pair of access passwords if needed"""
     password = ''
     ro_password = ''
@@ -318,25 +330,26 @@ def select_password_pair() -> Tuple[str, str]:
                                  type=bool)
 
     if need_password:
-        password = select_password('Please specify RW password:')
+        password = select_password('Please specify RW password:', default=def_password)
 
         need_ro_password = click.prompt('Would you like to set separate read-only password? [y/n]',
                                         type=bool)
 
         if need_ro_password:
-            ro_password = select_password('Please specify RO password:')
+            ro_password = select_password('Please specify RO password:', default=def_ro_password)
         else:
             ro_password = password
 
     return password, ro_password
 
 
-def select_custom_fqdns() -> str:
+def select_custom_fqdns(default: str = '') -> str:
     """Asks user for custom domains to be added to certificate"""
     need_fqdn = click.prompt('Would you like to specify custom FQDNs for certificate? [y/n]',
                              type=bool)
 
     fqdns: str = click.prompt('Please specify the comma-separated list of custom fqdns',
+                              default=default,
                               type=str) if need_fqdn else ''
 
     return fqdns
@@ -344,24 +357,26 @@ def select_custom_fqdns() -> str:
 
 def edit_config(config: RunConfig) -> RunConfig:
     """Edits existing config."""
-    prompt = 'Enter the path to IDE (press ENTER for default)'
-    config.path_to_app = click.prompt(prompt, default=config.path_to_app)
+    config.path_to_app = select_manual_app_path(default=config.path_to_app)
+    config.toolbox = False
 
-    prompt = 'Enter a Projector port (press ENTER for default)'
-    config.projector_port = click.prompt(prompt, default=str(config.projector_port))
+    if is_toolbox_path(config.path_to_app):
+        config.toolbox = click.prompt(
+            'App path looks like path to ToolBox managed app. '
+            'Would you like to use latest app from this channel? [y/n]',
+            type=bool)
 
-    if config.is_password_protected():
-        password = select_password("Choose password", config.password)
-        ro_password = password
+    config.projector_port = click.prompt('Enter a Projector port (press ENTER for default)',
+                                         default=str(config.projector_port))
 
-        if password:
-            if config.password == config.ro_password:
-                ro_password = select_password("Choose read-only password", password)
-            else:
-                ro_password = select_password("Choose read-only password", config.ro_password)
+    secure_config = click.prompt(
+        'Use secure connection '
+        '(this option requires installing a projector\'s certificate to browser)? [y/n]',
+        type=bool)
 
-        config.password = password
-        config.ro_password = ro_password
+    config.token = generate_token() if secure_config else ''
+    config.fqdns = select_custom_fqdns(config.fqdns)
+    config.password, config.ro_password = select_password_pair(config.password, config.ro_password)
 
     return config
 
@@ -388,10 +403,8 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
         'Use secure connection '
         '(this option requires installing a projector\'s certificate to browser)? [y/n]',
         type=bool)
-
-    fqdns = select_custom_fqdns()
-
     token = generate_token() if secure_config else ''
+    fqdns = select_custom_fqdns()
     password, ro_password = select_password_pair()
 
     return RunConfig(config_name, expanduser(app_path), projector_port,

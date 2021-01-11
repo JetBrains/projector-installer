@@ -244,10 +244,9 @@ class SecureConfigGenerator:
         if not is_ca_exist():
             self._generate_ca()
 
-        if not are_exist_server_secrets(self.run_config.name):  # if not all files exist
-            remove_server_secrets(self.run_config.name)  # remove existing files
-            self._generate_projector_jks()
-            generate_ssl_properties_file(self.run_config.name, self.run_config.token)
+        remove_server_secrets(self.run_config.name)  # remove existing files
+        self._generate_projector_jks()
+        generate_ssl_properties_file(self.run_config.name, self.run_config.token)
 
         shutdown_log(0, self.log)
 
