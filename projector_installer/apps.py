@@ -8,6 +8,7 @@ from os import listdir, rename
 from os.path import join, expanduser, dirname, isfile, isdir
 from distutils.version import LooseVersion
 from typing import Optional, List
+from dataclasses import dataclass
 import json
 
 from .global_config import get_apps_dir
@@ -29,24 +30,22 @@ def get_app_path(app_name: str) -> str:
     return join(get_apps_dir(), app_name)
 
 
+@dataclass
 class ProductInfo:
     """Ide product info"""
 
     # pylint: disable=too-many-instance-attributes
-    def __init__(self, name: str, version: str, build_number: str, product_code: str,
-                 data_dir: str, svg_icon_path: str, os: str, launcher_path: str,
-                 java_exec_path: str, vm_options_path: str, startup_wm_class: str) -> None:
-        self.name: str = name
-        self.version: str = version
-        self.build_number: str = build_number
-        self.product_code: str = product_code
-        self.data_dir: str = data_dir
-        self.svg_icon_path: str = svg_icon_path
-        self.os: str = os
-        self.launcher_path: str = launcher_path
-        self.java_exec_path: str = java_exec_path
-        self.vm_options_path: str = vm_options_path
-        self.startup_wm_class: str = startup_wm_class
+    name: str
+    version: str
+    build_number: str
+    product_code: str
+    data_dir: str
+    svg_icon_path: str
+    os: str
+    launcher_path: str
+    java_exec_path: str
+    vm_options_path: str
+    startup_wm_class: str
 
 
 PRODUCT_INFO = 'product-info.json'

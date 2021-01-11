@@ -14,7 +14,7 @@ from os import path, system, uname
 from .apps import get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path, get_path_to_latest_app
 from .log_utils import init_log, shutdown_log, get_path_to_log
-from .secure_config import get_ca_crt_file, parse_custom_fqdns
+from .secure_config import get_ca_crt_file, parse_custom_names
 
 from .utils import download_file, get_java_version, get_local_addresses
 
@@ -91,8 +91,8 @@ def get_access_urls(run_config: RunConfig) -> List[str]:
 
     urls = []
 
-    if run_config.fqdns:
-        addresses = parse_custom_fqdns(run_config.fqdns)
+    if run_config.custom_names:
+        addresses = parse_custom_names(run_config.custom_names)
     else:
         addresses = get_local_addresses()
 

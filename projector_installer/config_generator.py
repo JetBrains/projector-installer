@@ -97,9 +97,9 @@ def save_config(run_config: RunConfig) -> None:
         config['TOOLBOX'] = {}
         config['TOOLBOX']['TOOLBOX'] = 'True'  # type: ignore
 
-    if run_config.fqdns:
+    if run_config.custom_names:
         config['FQDNS'] = {}
-        config['FQDNS']['FQDNS'] = run_config.fqdns  # type: ignore
+        config['FQDNS']['FQDNS'] = run_config.custom_names  # type: ignore
 
     config_path = join(get_run_configs_dir(), run_config.name)
 

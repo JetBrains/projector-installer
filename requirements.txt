@@ -2,3 +2,4 @@ wheel
 click
 netifaces
 setuptools
+dataclasses

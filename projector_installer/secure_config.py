@@ -117,15 +117,15 @@ def is_ip_address(address: str) -> bool:
         address) is not None
 
 
-def parse_custom_fqdns(fqdns: str) -> List[str]:
+def parse_custom_names(names: str) -> List[str]:
     """Parse comma-separated list of user-provided names"""
-    return list(map(lambda s: s.strip(" "), fqdns.split(','))) if fqdns else []
+    return list(map(lambda s: s.strip(" "), names.split(','))) if names else []
 
 
-def get_san_alt_names(address: str, add_fqdns: str) -> Tuple[List[str], List[str]]:
+def get_san_alt_names(address: str, custom_names: str) -> Tuple[List[str], List[str]]:
     """Return pair of lists - ip addresses and host names for SAN certificate"""
     ip_addresses = []
-    names = set(parse_custom_fqdns(add_fqdns))
+    names = set(parse_custom_names(custom_names))
 
     if address == '0.0.0.0':
         ip_addresses = get_local_addresses()
@@ -148,9 +148,9 @@ def get_san_alt_names(address: str, add_fqdns: str) -> Tuple[List[str], List[str
     return ip_addresses, list(names)
 
 
-def get_projector_san(address: str, add_fqdns: str) -> str:
+def get_projector_san(address: str, custom_names: str) -> str:
     """Returns san"""
-    addresses, names = get_san_alt_names(address, add_fqdns)
+    addresses, names = get_san_alt_names(address, custom_names)
     addresses = list(map(lambda s: "IP:" + s, addresses))
     names = list(map(lambda s: "DNS:" + s, names))
     res = addresses + names
@@ -169,7 +169,7 @@ def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
         '-outfile', get_projector_crt_file(run_config.name),
         '-ext', 'KeyUsage:critical=digitalSignature,keyEncipherment',
         '-ext', 'EKU=serverAuth',
-        '-ext', f'SAN={get_projector_san("0.0.0.0", run_config.fqdns)}',
+        '-ext', f'SAN={get_projector_san("0.0.0.0", run_config.custom_names)}',
         '-rfc'
     ]
 

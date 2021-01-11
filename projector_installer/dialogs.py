@@ -9,6 +9,7 @@ import sys
 import readline
 from os.path import expanduser
 from typing import Optional, Dict, List, Tuple, TypeVar, Callable
+from dataclasses import dataclass
 
 import click
 
@@ -343,16 +344,16 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
     return password, ro_password
 
 
-def select_custom_fqdns(default: str = '') -> str:
+def select_custom_names(default: str = '') -> str:
     """Asks user for custom domains to be added to certificate"""
-    need_fqdn = click.prompt('Would you like to specify custom FQDNs for certificate? [y/n]',
-                             type=bool)
+    use_custom_names = click.prompt('Would you like to specify custom names for certificate? [y/n]',
+                                    type=bool)
 
-    fqdns: str = click.prompt('Please specify the comma-separated list of custom fqdns',
-                              default=default,
-                              type=str) if need_fqdn else ''
+    custom_names: str = click.prompt('Please specify the comma-separated list of custom names',
+                                     default=default,
+                                     type=str) if use_custom_names else ''
 
-    return fqdns
+    return custom_names
 
 
 def edit_config(config: RunConfig) -> RunConfig:
@@ -375,7 +376,7 @@ def edit_config(config: RunConfig) -> RunConfig:
         type=bool)
 
     config.token = generate_token() if secure_config else ''
-    config.fqdns = select_custom_fqdns(config.fqdns)
+    config.custom_names = select_custom_names(config.custom_names)
     config.password, config.ro_password = select_password_pair(config.password, config.ro_password)
 
     return config
@@ -404,26 +405,25 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
         '(this option requires installing a projector\'s certificate to browser)? [y/n]',
         type=bool)
     token = generate_token() if secure_config else ''
-    fqdns = select_custom_fqdns()
+    custom_names = select_custom_names()
     password, ro_password = select_password_pair()
 
     return RunConfig(config_name, expanduser(app_path), projector_port,
-                     token, password, ro_password, is_toolbox, fqdns)
+                     token, password, ro_password, is_toolbox, custom_names)
 
 
+@dataclass
 class UserInstallInput:
     """Represents user answers during install session"""
 
     # pylint: disable=too-many-instance-attributes
-    def __init__(self, config_name: str, projector_port: int, do_run: bool, secure_config: bool,
-                 password: str, ro_password: str, custom_fqdns: str) -> None:
-        self.config_name: str = config_name
-        self.projector_port: int = projector_port
-        self.do_run = do_run
-        self.secure_config = secure_config
-        self.password = password
-        self.ro_password = ro_password
-        self.fqdns = custom_fqdns
+    config_name: str
+    projector_port: int
+    do_run: bool
+    secure_config: bool
+    password: str
+    ro_password: str
+    custom_names: str
 
 
 def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[UserInstallInput]:
@@ -442,16 +442,16 @@ def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[Us
         '(this option requires installing a projector\'s certificate to browser)? [y/n]',
         type=bool)
 
-    fqdns = select_custom_fqdns()
+    custom_names = select_custom_names()
 
     password, ro_password = select_password_pair()
 
     return UserInstallInput(config_name, projector_port,
-                            do_run, secure_config, password, ro_password, fqdns)
+                            do_run, secure_config, password, ro_password, custom_names)
 
 
 def make_config_from_input(inp: UserInstallInput) -> RunConfig:
     """Makes run config from user input"""
     token = generate_token() if inp.secure_config else ''
     return RunConfig(inp.config_name, '', inp.projector_port,
-                     token, inp.password, inp.ro_password, False, inp.fqdns)
+                     token, inp.password, inp.ro_password, False, inp.custom_names)

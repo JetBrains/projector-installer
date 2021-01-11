@@ -13,6 +13,7 @@ from typing import List, Tuple, Any, Optional
 from enum import Enum, auto
 from urllib.error import URLError
 from distutils.version import LooseVersion
+from dataclasses import dataclass
 
 from .utils import download_file, get_file_name_from_url, get_json
 
@@ -38,13 +39,13 @@ class IDEKind(Enum):
     RubyMine = auto()
 
 
+@dataclass
 class Product:
     """Installable application entry."""
 
-    def __init__(self, name: str, url: str, kind: IDEKind) -> None:
-        self.name: str = name
-        self.url: str = url
-        self.kind = kind
+    name: str
+    url: str
+    kind: IDEKind
 
     def __key__(self) -> Tuple[str, str]:
         return self.name, self.url
