@@ -386,7 +386,7 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
         '(this option requires installing a projector\'s certificate to browser)? [y/n]',
         type=bool)
 
-    fqdns = select_custom_fqdns() if secure_config else ''
+    fqdns = select_custom_fqdns()
 
     token = generate_token() if secure_config else ''
     password, ro_password = select_password_pair()
@@ -426,7 +426,7 @@ def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[Us
         '(this option requires installing a projector\'s certificate to browser)? [y/n]',
         type=bool)
 
-    fqdns = select_custom_fqdns() if secure_config else ''
+    fqdns = select_custom_fqdns()
 
     password, ro_password = select_password_pair()
 

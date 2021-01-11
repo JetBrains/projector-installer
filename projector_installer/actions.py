@@ -91,10 +91,13 @@ def get_access_urls(run_config: RunConfig) -> List[str]:
 
     urls = []
 
-    addresses = parse_custom_fqdns(run_config.fqdns) + get_local_addresses()
+    if run_config.fqdns:
+        addresses = parse_custom_fqdns(run_config.fqdns)
+    else:
+        addresses = get_local_addresses()
 
-    if '127.0.0.1' in addresses:
-        addresses = ['localhost'] + addresses
+        if '127.0.0.1' in addresses:
+            addresses = ['localhost'] + addresses
 
     for address in addresses:
         urls.append(f'{schema}://{address}:{run_config.projector_port}/index.html')
