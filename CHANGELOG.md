@@ -2,6 +2,10 @@
 
 Notable changes to this project are documented in this file.
 
+# 0.1.16
+## Changed
+ - Projector server v0.50.14
+
 # 0.1.15
 ## Added
  - Support for user-specified DNS names during certificate generation
