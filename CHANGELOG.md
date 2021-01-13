@@ -5,6 +5,10 @@ Notable changes to this project are documented in this file.
 # 0.1.16
 ## Changed
  - Projector server v0.50.14
+ - user-specified DNS-names added to standard configuration process
+ - Only custom names used in access URLs if specified.   
+ - TAB completion works when user enters path to IDE
+ - _config edit_ command allows change all run config parameters
 
 # 0.1.15
 ## Added
