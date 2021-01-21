@@ -250,13 +250,14 @@ def rebuild(config_name: Optional[str]) -> None:
 
 @config.command(short_help='Install user certificate to given config')
 @click.argument('config_name', type=click.STRING, required=True)
-@click.argument('path_to_certificate', type=click.STRING, required=True)
-def install_certificate(config_name: str, path_to_certificate: str) -> None:
+@click.option('--certificate', type=click.Path(), required=True)
+@click.option('--key', type=click.Path(), required=True)
+def install_certificate(config_name: str, certificate: str, key: str) -> None:
     """projector config rebuild [config_name]
 
     Regenerate all files related to given config.
     """
-    do_install_user_cert(config_name, path_to_certificate)
+    do_install_user_cert(config_name, certificate, key)
 
 
 # Projector commands shortcuts

@@ -4,9 +4,9 @@
 
 
 """Run configurations related functions"""
-
+import shutil
 from os import listdir, rename
-from os.path import join, isdir
+from os.path import join, isdir, basename
 from shutil import rmtree
 from typing import Optional, Dict, List, TextIO
 from fcntl import lockf, LOCK_EX, LOCK_NB
@@ -16,6 +16,7 @@ import configparser
 
 from .apps import get_app_path
 from .global_config import get_run_configs_dir
+from .utils import create_dir_if_not_exist, generate_token
 
 CONFIG_INI_NAME = 'config.ini'
 RUN_SCRIPT_NAME = 'run.sh'
@@ -25,6 +26,11 @@ LOCK_FILE_NAME: str = 'run.lock'
 def get_path_to_config(config_name: str) -> str:
     """Returns path to config dir"""
     return join(get_run_configs_dir(), config_name)
+
+
+def get_path_to_own_certificate_dir(config_name: str) -> str:
+    """Returns full path to directory with own certificate"""
+    return join(get_path_to_config(config_name), 'cert')
 
 
 @dataclass
@@ -40,7 +46,8 @@ class RunConfig:
     ro_password: str
     toolbox: bool
     custom_names: str
-    own_certificate: str
+    own_certificate: str = ''
+    own_certificate_key: str = ''
 
     def is_secure(self) -> bool:
         """Checks if secure configuration"""
@@ -53,6 +60,34 @@ class RunConfig:
     def get_path(self) -> str:
         """Returns path to config dir"""
         return get_path_to_config(self.name)
+
+    def get_path_to_certificate_dir(self) -> str:
+        """Returns full path to directory with own certificate"""
+        return get_path_to_own_certificate_dir(self.name)
+
+    def get_path_to_certificate_file(self) -> str:
+        """Returns full path to own certificate file"""
+        return join(get_path_to_own_certificate_dir(self.name), self.own_certificate)
+
+    def get_path_to_key_file(self) -> str:
+        """Returns full path to own key file"""
+        return join(get_path_to_own_certificate_dir(self.name), self.own_certificate_key)
+
+    def _copy_cert_file(self, path_to_file: str) -> str:
+        """Copy file to cert directory"""
+        cert_directory = get_path_to_own_certificate_dir(self.name)
+        create_dir_if_not_exist(cert_directory)
+        file_name = basename(path_to_file)
+        destination = join(get_path_to_own_certificate_dir(self.name), file_name)
+        shutil.copy(path_to_file, destination)
+
+        return file_name
+
+    def add_own_certificate(self, path_to_certificate: str, path_to_key: str) -> None:
+        """Copies certificate file and key file to run config directory"""
+        self.own_certificate = self._copy_cert_file(path_to_certificate)
+        self.own_certificate_key = self._copy_cert_file(path_to_key)
+        self.token = generate_token()
 
 
 def load_config(config_name: str) -> RunConfig:
@@ -69,7 +104,8 @@ def load_config(config_name: str) -> RunConfig:
                      config.get('PASSWORDS', 'RO_PASSWORD', fallback=''),
                      config.getboolean('TOOLBOX', 'TOOLBOX', fallback=False),
                      config.get('FQDNS', 'FQDNS', fallback=''),
-                     config.get('SSL', 'CERTIFICATE_FILE', fallback=''))
+                     config.get('SSL', 'CERTIFICATE_FILE', fallback=''),
+                     config.get('SSL', 'KEY_FILE', fallback=''))
 
 
 def get_run_script_path(config_name: str) -> str:
