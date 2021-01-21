@@ -22,6 +22,11 @@ RUN_SCRIPT_NAME = 'run.sh'
 LOCK_FILE_NAME: str = 'run.lock'
 
 
+def get_path_to_config(config_name: str) -> str:
+    """Returns path to config dir"""
+    return join(get_run_configs_dir(), config_name)
+
+
 @dataclass
 class RunConfig:
     """Run config dataclass"""
@@ -35,6 +40,7 @@ class RunConfig:
     ro_password: str
     toolbox: bool
     custom_names: str
+    own_certificate: str
 
     def is_secure(self) -> bool:
         """Checks if secure configuration"""
@@ -44,11 +50,15 @@ class RunConfig:
         """Checks if run config is password protected"""
         return self.password != ''
 
+    def get_path(self) -> str:
+        """Returns path to config dir"""
+        return get_path_to_config(self.name)
+
 
 def load_config(config_name: str) -> RunConfig:
     """Loads specified config from disk."""
     config = configparser.ConfigParser()
-    config_path = join(get_run_configs_dir(), config_name, CONFIG_INI_NAME)
+    config_path = join(get_path_to_config(config_name), CONFIG_INI_NAME)
     config.read(config_path)
 
     return RunConfig(config_name,
@@ -58,12 +68,13 @@ def load_config(config_name: str) -> RunConfig:
                      config.get('PASSWORDS', 'PASSWORD', fallback=''),
                      config.get('PASSWORDS', 'RO_PASSWORD', fallback=''),
                      config.getboolean('TOOLBOX', 'TOOLBOX', fallback=False),
-                     config.get('FQDNS', 'FQDNS', fallback=''))
+                     config.get('FQDNS', 'FQDNS', fallback=''),
+                     config.get('SSL', 'CERTIFICATE_FILE', fallback=''))
 
 
 def get_run_script_path(config_name: str) -> str:
     """Returns full path to projector run script"""
-    return join(get_run_configs_dir(), config_name, RUN_SCRIPT_NAME)
+    return join(get_path_to_config(config_name), RUN_SCRIPT_NAME)
 
 
 def get_run_configs(pattern: Optional[str] = None) -> Dict[str, RunConfig]:
@@ -93,14 +104,13 @@ def get_run_config_names(pattern: Optional[str] = None) -> List[str]:
 
 def delete_config(config_name: str) -> None:
     """Removes specified config."""
-    config_path = join(get_run_configs_dir(), config_name)
-    rmtree(config_path, ignore_errors=True)
+    rmtree(get_path_to_config(config_name), ignore_errors=True)
 
 
 def rename_config(from_name: str, to_name: str) -> None:
     """Renames config from_name to to_name."""
-    from_path = join(get_run_configs_dir(), from_name)
-    to_path = join(get_run_configs_dir(), to_name)
+    from_path = get_path_to_config(from_name)
+    to_path = get_path_to_config(to_name)
     rename(from_path, to_path)
 
 
@@ -133,7 +143,7 @@ def get_configs_with_app(app_name: str) -> List[str]:
 
 def get_lock_file_name(config_name: str) -> str:
     """Return full path to lock file for given config name"""
-    return join(get_run_configs_dir(), config_name, LOCK_FILE_NAME)
+    return join(get_path_to_config(config_name), LOCK_FILE_NAME)
 
 
 def lock_config(config_name: str) -> Optional[TextIO]:

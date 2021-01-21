@@ -8,13 +8,15 @@ import shutil
 import signal
 import subprocess
 import sys
-from typing import Optional, List
 from os import path, system, uname
+from os.path import isfile, join, basename
+from typing import Optional, List
+
 
 from .apps import get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path, get_path_to_latest_app
 from .log_utils import init_log, shutdown_log, get_path_to_log
-from .secure_config import get_ca_crt_file, parse_custom_names
+from .secure_config import get_ca_crt_file, parse_custom_names, generate_token
 
 from .utils import download_file, get_java_version, get_local_addresses
 
@@ -303,6 +305,31 @@ def do_rebuild_config(config_name: Optional[str] = None) -> None:
 
     print(f'Rebuild run config {run_config.name}')
     save_config(run_config)
+    release_config(lock)
+
+
+def do_install_user_cert(config_name: str, path_to_certificate: str) -> None:
+    """Installs user-specified certificate"""
+
+    if not isfile(path_to_certificate):
+        print(f'File {path_to_certificate} does not exist. Exiting ...')
+        sys.exit(1)
+
+    run_config = select_run_config(config_name)
+    lock = lock_config(run_config.name)
+
+    if not lock:
+        print(f'Configuration {run_config.name} is already in use. Exiting...')
+        sys.exit(1)
+
+    print(f'Installing certificate {path_to_certificate} to config {run_config.name}')
+    certificate_file = basename(path_to_certificate)
+    destination = join(run_config.get_path(), certificate_file)
+    shutil.copy(path_to_certificate, destination)
+    run_config.token = generate_token()
+    run_config.own_certificate = certificate_file
+    save_config(run_config)
+
     release_config(lock)
 
 

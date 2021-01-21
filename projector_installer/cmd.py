@@ -14,7 +14,7 @@ from .global_config import init_config_dir, init_cache_dir, get_changelog_url
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
-    do_rename_config, do_rebuild_config
+    do_rename_config, do_rebuild_config, do_install_user_cert
 from .license import display_license
 from .updates import get_latest_installer_version, SHORT_NETWORK_TIMEOUT, LONG_NETWORK_TIMEOUT, \
     is_newer_than_current
@@ -246,6 +246,17 @@ def rebuild(config_name: Optional[str]) -> None:
     Regenerate all files related to given config.
     """
     do_rebuild_config(config_name)
+
+
+@config.command(short_help='Install user certificate to given config')
+@click.argument('config_name', type=click.STRING, required=True)
+@click.argument('path_to_certificate', type=click.STRING, required=True)
+def install_certificate(config_name: str, path_to_certificate: str) -> None:
+    """projector config rebuild [config_name]
+
+    Regenerate all files related to given config.
+    """
+    do_install_user_cert(config_name, path_to_certificate)
 
 
 # Projector commands shortcuts

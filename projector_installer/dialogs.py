@@ -370,13 +370,24 @@ def edit_config(config: RunConfig) -> RunConfig:
     config.projector_port = click.prompt('Enter a Projector port (press ENTER for default)',
                                          default=str(config.projector_port))
 
-    secure_config = click.prompt(
-        'Use secure connection '
-        '(this option requires installing a projector\'s certificate to browser)? [y/n]',
-        type=bool)
-
-    config.token = generate_token() if secure_config else ''
     config.custom_names = select_custom_names(config.custom_names)
+
+    keep_cert = False
+
+    if config.own_certificate:
+        keep_cert = click.prompt('This config uses custom certificate. '
+                                 'Would you like to keep it? [y/n]',
+                                 type=bool, default='y')
+
+    if not keep_cert:
+        config.own_certificate = ''
+        secure_config = click.prompt(
+            'Use secure connection '
+            '(this option requires installing a projector\'s certificate to browser)? [y/n]',
+            type=bool)
+
+        config.token = generate_token() if secure_config else ''
+
     config.password, config.ro_password = select_password_pair(config.password, config.ro_password)
 
     return config
@@ -409,7 +420,7 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
     password, ro_password = select_password_pair()
 
     return RunConfig(config_name, expanduser(app_path), projector_port,
-                     token, password, ro_password, is_toolbox, custom_names)
+                     token, password, ro_password, is_toolbox, custom_names, '')
 
 
 @dataclass
@@ -454,4 +465,4 @@ def make_config_from_input(inp: UserInstallInput) -> RunConfig:
     """Makes run config from user input"""
     token = generate_token() if inp.secure_config else ''
     return RunConfig(inp.config_name, '', inp.projector_port,
-                     token, inp.password, inp.ro_password, False, inp.custom_names)
+                     token, inp.password, inp.ro_password, False, inp.custom_names, '')
