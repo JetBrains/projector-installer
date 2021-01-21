@@ -90,6 +90,7 @@ def save_config(run_config: RunConfig) -> None:
 
         if run_config.own_certificate:
             config['SSL']['CERTIFICATE_FILE'] = run_config.own_certificate
+            config['SSL']['KEY_FILE'] = run_config.own_certificate_key
 
     if run_config.is_password_protected():
         config['PASSWORDS'] = {}

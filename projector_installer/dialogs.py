@@ -381,6 +381,7 @@ def edit_config(config: RunConfig) -> RunConfig:
 
     if not keep_cert:
         config.own_certificate = ''
+        config.own_certificate_key = ''
         secure_config = click.prompt(
             'Use secure connection '
             '(this option requires installing a projector\'s certificate to browser)? [y/n]',
@@ -420,7 +421,7 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
     password, ro_password = select_password_pair()
 
     return RunConfig(config_name, expanduser(app_path), projector_port,
-                     token, password, ro_password, is_toolbox, custom_names, '')
+                     token, password, ro_password, is_toolbox, custom_names)
 
 
 @dataclass
@@ -465,4 +466,4 @@ def make_config_from_input(inp: UserInstallInput) -> RunConfig:
     """Makes run config from user input"""
     token = generate_token() if inp.secure_config else ''
     return RunConfig(inp.config_name, '', inp.projector_port,
-                     token, inp.password, inp.ro_password, False, inp.custom_names, '')
+                     token, inp.password, inp.ro_password, False, inp.custom_names)

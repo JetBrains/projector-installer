@@ -11,6 +11,8 @@ import json
 import tarfile
 import zipfile
 import subprocess
+import secrets
+import string
 from os import listdir, remove, makedirs
 from os.path import join, isfile, getsize, basename, isdir
 from shutil import copy
@@ -23,6 +25,7 @@ from click import progressbar, echo
 CHUNK_SIZE = 4 * 1024 * 1024
 PROGRESS_BAR_WIDTH = 50
 PROGRESS_BAR_TEMPLATE = '[%(bar)s]  %(info)s'
+DEF_TOKEN_LEN = 20
 
 
 def create_dir_if_not_exist(dir_name: str) -> None:
@@ -174,3 +177,9 @@ def get_json(url: str, timeout: float) -> Any:
             raise IOError(f'HTTP error code: {code}')
 
         return json.loads(resp.read().decode())
+
+
+def generate_token(length: int = DEF_TOKEN_LEN) -> str:
+    """Generates token to access server's secrets"""
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for i in range(length))
