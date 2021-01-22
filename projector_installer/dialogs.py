@@ -95,7 +95,7 @@ def select_ide_kind() -> Optional[IDEKind]:
 
 def get_app_list(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
     """Returns compatible or full app list, depending on user choice"""
-    compatible = click.prompt('Do you want to use Projector-compatible IDE only? [y/n]',
+    compatible = click.prompt('Do you want to select from Projector-tested IDE only? [y/n]',
                               type=bool)
     return get_compatible_app_names(kind, pattern) if compatible else get_all_apps(kind, pattern)
 
