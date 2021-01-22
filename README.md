@@ -41,7 +41,7 @@ sudo apt install libxext6 libxrender1 libxtst6 libfreetype6 libxi6
 You can install projector-installer script from PyPi, using command: 
 
 ```bash
-pip3 install projector-installer 
+pip3 install projector-installer --user 
 ```
 
 After that the command `projector` should be available. 
@@ -49,8 +49,8 @@ After that the command `projector` should be available.
 _NOTE:_ If it is not so, please refer to the [appropriate section](#no_projector) in the [FAQ](#FAQ).
 
 _NOTE:_ projector script checks for updates on start. 
-If new version is available you can install update using command 
-`pip3 install projector-installer --upgrade`   
+If new version is available you can install an update using command 
+`pip3 install projector-installer --upgrade --user`   
 
 ## Quick start 
 First time you run projector, it will automatically download, install, configure 
@@ -119,7 +119,7 @@ Use secure connection (this option requires installing a projector's certificate
 ### projector command is unavailable after installation
 <a name="no_projector"/>
 
-By default pip3 installs `projector` script in directory `~/.local/bin`.
+Default instruction installs `projector` script in directory `~/.local/bin`.
 If system can't find the script after installation it means that the directory 
 `~/.local/bin` was not included in the _PATH_ environment variable. Try the following:
  - Restart the terminal. If `projector` was the first executable installed in `~/.local/bin`, 
