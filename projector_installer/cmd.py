@@ -248,18 +248,6 @@ def rebuild(config_name: Optional[str]) -> None:
     do_rebuild_config(config_name)
 
 
-@config.command(short_help='Install user certificate to given config')
-@click.argument('config_name', type=click.STRING, required=True)
-@click.option('--certificate', type=click.Path(), required=True)
-@click.option('--key', type=click.Path(), required=True)
-def install_certificate(config_name: str, certificate: str, key: str) -> None:
-    """projector config rebuild [config_name]
-
-    Regenerate all files related to given config.
-    """
-    do_install_user_cert(config_name, certificate, key)
-
-
 # Projector commands shortcuts
 
 @projector.command(short_help='Run selected configuration')
@@ -299,3 +287,18 @@ def find(pattern: Optional[str]) -> None:
     Shortcut for projector ide find [pattern]
     """
     do_find_app(pattern)
+
+
+@projector.command(short_help='Install user certificate to given config')
+@click.argument('config_name', type=click.STRING, required=False)
+@click.option('--certificate', type=click.Path(), required=True)
+@click.option('--key', type=click.Path(), required=True)
+@click.option('--chain', type=click.Path(), required=False)
+def install_certificate(config_name: Optional[str], certificate: str,
+                        key: str, chain: Optional[str]) -> None:
+    """projector install-certificate config_name --certificate cert-file
+    --key key-file [--chain cert-chain-file]
+
+    Adds user-specified certificate to given config
+    """
+    do_install_user_cert(config_name, certificate, key, chain)

@@ -8,12 +8,13 @@ import shutil
 import signal
 import subprocess
 import sys
-from os import path, system, uname
+from os import path, system, uname, remove
 from os.path import isfile
 from typing import Optional, List
 
 from .apps import get_app_path, get_installed_apps, get_product_info, \
     unpack_app, get_java_path, get_path_to_latest_app
+from .certificate_chain import get_certificate_chain
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file, parse_custom_names
 
@@ -307,11 +308,16 @@ def do_rebuild_config(config_name: Optional[str] = None) -> None:
     release_config(lock)
 
 
-def do_install_user_cert(config_name: str, path_to_certificate: str, path_to_key: str) -> None:
+def do_install_user_cert(config_name: Optional[str], path_to_certificate: str,
+                         path_to_key: str, path_to_chain: Optional[str]) -> None:
     """Installs user-specified certificate"""
 
     if not isfile(path_to_certificate):
         print(f'File {path_to_certificate} does not exist. Exiting ...')
+        sys.exit(1)
+
+    if not isfile(path_to_key):
+        print(f'File {path_to_key} does not exist. Exiting ...')
         sys.exit(1)
 
     run_config = select_run_config(config_name)
@@ -322,7 +328,15 @@ def do_install_user_cert(config_name: str, path_to_certificate: str, path_to_key
         sys.exit(1)
 
     print(f'Installing certificate {path_to_certificate} to config {run_config.name}')
-    run_config.add_own_certificate(path_to_certificate, path_to_key)
+
+    if not path_to_chain:
+        path_to_chain = get_certificate_chain(path_to_certificate)
+        need_remove = isfile(path_to_chain)
+
+    run_config.add_certificate(path_to_certificate, path_to_key, path_to_chain)
+
+    if need_remove:
+        remove(path_to_chain)
 
     save_config(run_config)
 
