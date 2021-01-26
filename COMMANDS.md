@@ -7,6 +7,7 @@
     1. [IDE commands](#IDE-commands)
     2. [Config commands](#Config-commands)
     3. [Shortcut commands](#Shortcut-commands)
+    4. [Install user certificate](#Install-user-certificate)
 4. [Configuration options](#Configuration-options)
 
 
@@ -109,6 +110,27 @@ it is enough to use a couple of shortcut commands, such as install and run.
 - install - install IDE (a shortcut for 'ide install')
 
 - run - run IDE (a shortcut for 'config run')
+
+### Install user certificate
+
+Certificate for existing domain can be installed with install-certificate command: 
+
+```
+projector install-certificate [config_name] --certificate server.cert --key server.key 
+```
+(config_name is not required)   
+Don't forget to configure custom names from installed certificate.
+It can be done with 
+```
+projector config edit confid_name 
+```
+command.
+
+In cases when previous form is not enough the extended command: 
+``` 
+projector install-certificate [config_name] --certificate server.cert --key server.key --chain chain.pem 
+```
+allows user to specify the file with certificate chain. 
 
 ## Configuration options
 Projector installer script has the following configuration options:
