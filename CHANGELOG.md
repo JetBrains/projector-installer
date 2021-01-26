@@ -2,6 +2,10 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+## Added
+  - User certificate support (see new install-certificate command)
+
 # 0.1.16
 ## Changed
  - Projector server v0.50.14
