@@ -105,7 +105,7 @@ To simplify usage most useful commands have shortcuts. In simple cases
 (when you have the only IDE installed, or you do not run several IDE instances simultaneously) 
 it is enough to use a couple of shortcut commands, such as install and run.
 
-- find  - find available IDEs (a shortcut for 'ide find')
+- find  - find available IDE (a shortcut for 'ide find')
  
 - install - install IDE (a shortcut for 'ide install')
 
@@ -122,7 +122,7 @@ projector install-certificate [config_name] --certificate server.cert --key serv
 Don't forget to configure custom names from installed certificate.
 It can be done with 
 ```
-projector config edit confid_name 
+projector config edit config_name 
 ```
 command.
 
