@@ -28,7 +28,7 @@ def get_path_to_config(config_name: str) -> str:
     return join(get_run_configs_dir(), config_name)
 
 
-def get_path_to_own_certificate_dir(config_name: str) -> str:
+def get_path_to_certificate_dir(config_name: str) -> str:
     """Returns full path to directory with own certificate"""
     return join(get_path_to_config(config_name), 'cert')
 
@@ -46,8 +46,9 @@ class RunConfig:
     ro_password: str
     toolbox: bool
     custom_names: str
-    own_certificate: str = ''
-    own_certificate_key: str = ''
+    certificate: str = ''
+    certificate_key: str = ''
+    certificate_chain: str = ''
 
     def is_secure(self) -> bool:
         """Checks if secure configuration"""
@@ -63,30 +64,36 @@ class RunConfig:
 
     def get_path_to_certificate_dir(self) -> str:
         """Returns full path to directory with own certificate"""
-        return get_path_to_own_certificate_dir(self.name)
+        return get_path_to_certificate_dir(self.name)
 
     def get_path_to_certificate_file(self) -> str:
-        """Returns full path to own certificate file"""
-        return join(get_path_to_own_certificate_dir(self.name), self.own_certificate)
+        """Returns full path to certificate file"""
+        return join(get_path_to_certificate_dir(self.name), self.certificate)
 
     def get_path_to_key_file(self) -> str:
-        """Returns full path to own key file"""
-        return join(get_path_to_own_certificate_dir(self.name), self.own_certificate_key)
+        """Returns full path to key file"""
+        return join(get_path_to_certificate_dir(self.name), self.certificate_key)
+
+    def get_path_to_chain_file(self) -> str:
+        """Returns full path to certificate chain file"""
+        return join(get_path_to_certificate_dir(self.name), self.certificate_chain)
 
     def _copy_cert_file(self, path_to_file: str) -> str:
         """Copy file to cert directory"""
-        cert_directory = get_path_to_own_certificate_dir(self.name)
+        cert_directory = get_path_to_certificate_dir(self.name)
         create_dir_if_not_exist(cert_directory)
         file_name = basename(path_to_file)
-        destination = join(get_path_to_own_certificate_dir(self.name), file_name)
+        destination = join(get_path_to_certificate_dir(self.name), file_name)
         shutil.copy(path_to_file, destination)
 
         return file_name
 
-    def add_own_certificate(self, path_to_certificate: str, path_to_key: str) -> None:
+    def add_certificate(self, path_to_certificate: str,
+                        path_to_key: str, path_to_chain: Optional[str]) -> None:
         """Copies certificate file and key file to run config directory"""
-        self.own_certificate = self._copy_cert_file(path_to_certificate)
-        self.own_certificate_key = self._copy_cert_file(path_to_key)
+        self.certificate = self._copy_cert_file(path_to_certificate)
+        self.certificate_key = self._copy_cert_file(path_to_key)
+        self.certificate_chain = self._copy_cert_file(path_to_chain) if path_to_chain else ''
         self.token = generate_token()
 
 
@@ -105,7 +112,8 @@ def load_config(config_name: str) -> RunConfig:
                      config.getboolean('TOOLBOX', 'TOOLBOX', fallback=False),
                      config.get('FQDNS', 'FQDNS', fallback=''),
                      config.get('SSL', 'CERTIFICATE_FILE', fallback=''),
-                     config.get('SSL', 'KEY_FILE', fallback=''))
+                     config.get('SSL', 'KEY_FILE', fallback=''),
+                     config.get('SSL', 'CHAIN_FILE', fallback=''))
 
 
 def get_run_script_path(config_name: str) -> str:

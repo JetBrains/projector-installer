@@ -224,7 +224,7 @@ class SecureConfigGenerator:
         self.log = init_log(self.run_config.name)
         remove_server_secrets(self.run_config.name)  # remove existing files
 
-        if self.run_config.own_certificate:
+        if self.run_config.certificate:
             self._import_user_certificate()
         else:
             if not is_ca_exist():
@@ -265,21 +265,21 @@ class SecureConfigGenerator:
 
     def _import_user_certificate(self) -> None:
         """Imports user-provided certificate"""
-        self._import_keychain_to_pkcs12()
+        self._export_keychain_to_pkcs12()
         self._import_pkcs12_to_keystore()
 
     def _get_pkcs12_filename(self) -> str:
         """Full path to temporary keystore"""
         return join(self.run_config.get_path_to_certificate_dir(), f'{PROJECTOR_JKS_NAME}.p12')
 
-    def _import_keychain_to_pkcs12(self) -> None:
-        """Import provided cert chain and keyfile to temporary pkcs12 store"""
-        args = ['pkcs12', '-export', '-chain',
+    def _export_keychain_to_pkcs12(self) -> None:
+        """Export provided cert chain and keyfile to temporary pkcs12 store"""
+        args = ['pkcs12', '-export',
                 '-in', f'{self.run_config.get_path_to_certificate_file()}',
-                '-inkey',  f'{self.run_config.get_path_to_key_file()}',
+                '-inkey', f'{self.run_config.get_path_to_key_file()}',
+                '-certfile', f'{self.run_config.get_path_to_chain_file()}',
                 '-out', f'{self._get_pkcs12_filename()}',
-                '-name',  f'{PROJECTOR_JKS_NAME}',
-                '-CAfile',  f'{self.run_config.get_path_to_certificate_file()}',
+                '-name', f'{PROJECTOR_JKS_NAME}',
                 '-password', f'pass:{self.run_config.token}']
 
         self._run_openssl_with(args)
@@ -287,9 +287,9 @@ class SecureConfigGenerator:
     def _import_pkcs12_to_keystore(self) -> None:
         """Import temporary pkcs12 keystore to projector jks"""
         args = ['-importkeystore',
-                '-destkeystore',  f'{get_projector_jks_file(self.run_config.name)}',
+                '-destkeystore', f'{get_projector_jks_file(self.run_config.name)}',
                 '-srckeystore', f'{self._get_pkcs12_filename()}',
-                '-alias',  f'{PROJECTOR_JKS_NAME}',
+                '-alias', f'{PROJECTOR_JKS_NAME}',
                 '-storepass', f'{self.run_config.token}',
                 '-srcstorepass', f'{self.run_config.token}']
 

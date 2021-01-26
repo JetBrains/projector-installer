@@ -88,9 +88,10 @@ def save_config(run_config: RunConfig) -> None:
         config['SSL'] = {}
         config['SSL']['TOKEN'] = run_config.token
 
-        if run_config.own_certificate:
-            config['SSL']['CERTIFICATE_FILE'] = run_config.own_certificate
-            config['SSL']['KEY_FILE'] = run_config.own_certificate_key
+        if run_config.certificate:
+            config['SSL']['CERTIFICATE_FILE'] = run_config.certificate
+            config['SSL']['KEY_FILE'] = run_config.certificate_key
+            config['SSL']['CHAIN_FILE'] = run_config.certificate_chain
 
     if run_config.is_password_protected():
         config['PASSWORDS'] = {}

@@ -345,8 +345,9 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
 
 
 def select_custom_names(default: str = '') -> str:
-    """Asks user for custom domains to be added to certificate"""
-    use_custom_names = click.prompt('Would you like to specify custom names for certificate? [y/n]',
+    """Asks user for custom domain names"""
+    use_custom_names = click.prompt('Would you like to specify custom names '
+                                    'for access to Projector? [y/n]',
                                     type=bool)
 
     custom_names: str = click.prompt('Please specify the comma-separated list of custom names',
@@ -374,14 +375,15 @@ def edit_config(config: RunConfig) -> RunConfig:
 
     keep_cert = False
 
-    if config.own_certificate:
+    if config.certificate:
         keep_cert = click.prompt('This config uses custom certificate. '
                                  'Would you like to keep it? [y/n]',
                                  type=bool, default='y')
 
     if not keep_cert:
-        config.own_certificate = ''
-        config.own_certificate_key = ''
+        config.certificate = ''
+        config.certificate_key = ''
+        config.certificate_chain = ''
         secure_config = click.prompt(
             'Use secure connection '
             '(this option requires installing a projector\'s certificate to browser)? [y/n]',
