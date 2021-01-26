@@ -177,7 +177,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     print('To see Projector logs in realtime run\n\t'
           f'tail -f "{get_path_to_log(run_config.name)}"\n')
 
-    if run_config.is_secure():
+    if run_config.is_secure() and not run_config.certificate:
         print('If browser warns on unsecure connection, install projector certificate:')
         print(get_ca_crt_file())
         print('Refer to: ')
