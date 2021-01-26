@@ -277,10 +277,12 @@ class SecureConfigGenerator:
         args = ['pkcs12', '-export',
                 '-in', f'{self.run_config.get_path_to_certificate_file()}',
                 '-inkey', f'{self.run_config.get_path_to_key_file()}',
-                '-certfile', f'{self.run_config.get_path_to_chain_file()}',
                 '-out', f'{self._get_pkcs12_filename()}',
                 '-name', f'{PROJECTOR_JKS_NAME}',
                 '-password', f'pass:{self.run_config.token}']
+
+        if self.run_config.certificate_chain:
+            args = args + ['-certfile', f'{self.run_config.get_path_to_chain_file()}']
 
         self._run_openssl_with(args)
 
