@@ -19,7 +19,8 @@ Install, configure and run JetBrains IDEs with [Projector Server](https://github
    2. [projector-installer config directory](#projector-installer-config-directory)
    3. [Android Studio support](#Android-Studio-support)
    4. [projector command is unavailable](#projector-command-is-unavailable)
-   5. [projector exits immediately](#projector-exits-immediately)
+   5. [WSL issues](#WSL-issues)   
+   6. [projector exits immediately](#projector-exits-immediately)
 
 ## Installation
 ### Prerequisites
@@ -173,7 +174,7 @@ If system can't find the script after installation it means that the directory
  environment variable. In this case add `export  PATH=${PATH}:~/.local/bin` to your `~/.profile`  
  and run `source ~/.profile`.
 
-### On WSL I can't access URL displayed in projector console from Windows browser
+### WSL issues
 
 WSL is new technology and sometimes there are problems with network interfaces forwarding from 
 Linux to Windows system. For example: https://github.com/microsoft/WSL/issues/4636 .
