@@ -88,13 +88,17 @@ class RunConfig:
 
         return file_name
 
+    def make_secure(self) -> None:
+        """Generate token (make config secure)"""
+        self.token = generate_token()
+
     def add_certificate(self, path_to_certificate: str,
                         path_to_key: str, path_to_chain: Optional[str]) -> None:
         """Copies certificate file and key file to run config directory"""
         self.certificate = self._copy_cert_file(path_to_certificate)
         self.certificate_key = self._copy_cert_file(path_to_key)
         self.certificate_chain = self._copy_cert_file(path_to_chain) if path_to_chain else ''
-        self.token = generate_token()
+        self.make_secure()
 
 
 def load_config(config_name: str) -> RunConfig:

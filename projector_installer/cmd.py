@@ -14,7 +14,7 @@ from .global_config import init_config_dir, init_cache_dir, get_changelog_url
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
-    do_rename_config, do_rebuild_config, do_install_user_cert
+    do_rename_config, do_rebuild_config, do_install_cert
 from .license import display_license
 from .updates import get_latest_installer_version, SHORT_NETWORK_TIMEOUT, LONG_NETWORK_TIMEOUT, \
     is_newer_than_current
@@ -219,17 +219,17 @@ def install_app(ide_name: Optional[str], auto_run: bool, allow_updates: bool,
 
 @click.command(short_help='Install user certificate to given config')
 @click.argument('config_name', type=click.STRING, required=False)
-@click.option('--certificate', type=click.Path(), required=True)
-@click.option('--key', type=click.Path(), required=True)
+@click.option('--certificate', type=click.Path(), required=False)
+@click.option('--key', type=click.Path(), required=False)
 @click.option('--chain', type=click.Path(), required=False)
-def install_certificate(config_name: Optional[str], certificate: str,
-                        key: str, chain: Optional[str]) -> None:
+def install_certificate(config_name: Optional[str], certificate: Optional[str],
+                        key: Optional[str], chain: Optional[str]) -> None:
     """projector install-certificate config_name --certificate cert-file
     --key key-file [--chain cert-chain-file]
 
     Adds user-specified certificate to given config
     """
-    do_install_user_cert(config_name, certificate, key, chain)
+    do_install_cert(config_name, certificate, key, chain)
 
 
 @projector.group()
