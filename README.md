@@ -78,10 +78,10 @@ If you want to know more on projector usage please refer to
 ## FAQ
 ### Secure connection
 
-**SECURITY WARNING:
+__SECURITY WARNING:
 Keep your projector config directory safe when using domain certificate and private key! 
-Do not share its content with anybody! 
-**
+Do not share its content with anybody!__ 
+
 
 Installer is able to make run config use HTTPS for accessing a built-in 
 HTTP server and WSS to communicate with the Projector server. 
