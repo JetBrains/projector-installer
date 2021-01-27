@@ -414,16 +414,13 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
             type=bool)
 
     projector_port = get_def_projector_port()
-    secure_config = click.prompt(
-        'Use secure connection '
-        '(this option requires installing a projector\'s certificate to browser)? [y/n]',
-        type=bool)
-    token = generate_token() if secure_config else ''
+
     custom_names = select_custom_names()
+
     password, ro_password = select_password_pair()
 
     return RunConfig(config_name, expanduser(app_path), projector_port,
-                     token, password, ro_password, is_toolbox, custom_names)
+                     '', password, ro_password, is_toolbox, custom_names)
 
 
 @dataclass
@@ -433,7 +430,6 @@ class UserInstallInput:
     # pylint: disable=too-many-instance-attributes
     config_name: str
     projector_port: int
-    secure_config: bool
     password: str
     ro_password: str
     custom_names: str
@@ -448,21 +444,16 @@ def get_user_install_input(config_name_hint: str) -> Optional[UserInstallInput]:
 
     projector_port = get_def_projector_port()
 
-    secure_config = click.prompt(
-        'Use secure connection '
-        '(this option requires installing a projector\'s certificate to browser)? [y/n]',
-        type=bool)
-
     custom_names = select_custom_names()
 
     password, ro_password = select_password_pair()
 
     return UserInstallInput(config_name, projector_port,
-                            secure_config, password, ro_password, custom_names)
+                            password, ro_password, custom_names)
 
 
 def make_config_from_input(inp: UserInstallInput) -> RunConfig:
     """Makes run config from user input"""
-    token = generate_token() if inp.secure_config else ''
-    return RunConfig(inp.config_name, '', inp.projector_port,
-                     token, inp.password, inp.ro_password, False, inp.custom_names)
+    return RunConfig(inp.config_name, path_to_app='', projector_port=inp.projector_port,
+                     token='', password=inp.password, ro_password=inp.ro_password,
+                     toolbox=False, custom_names=inp.custom_names)
