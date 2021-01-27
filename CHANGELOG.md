@@ -3,8 +3,18 @@
 Notable changes to this project are documented in this file.
 
 # Unreleased
+
+**Important note**: Starting from this version users should use install-certificate command to make run config secure.
+Read more [here](./COMMANDS.md#Install-https-certificate) 
+   
+
+## Added 
+ - install-certificate command without provided certificate autogenerates certificate
+
 ## Changed
- - User is not asked on port number during install and config add 
+ - User is not asked on port number during install and config add. Change default port using config edit if you wish.
+ - Fresh installed IDE autoruns by default. Behaviour can be changed via --no-auto-run option
+ - User is not asked for secure config creation during install and config add commands
  
 
 # 0.1.17
