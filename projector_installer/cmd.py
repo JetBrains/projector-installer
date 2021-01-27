@@ -200,7 +200,7 @@ def run(config_name: Optional[str], run_browser: bool) -> None:
 
 @click.command(short_help='Install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
-@click.option('--auto-run/--no-auto-run', default=False,
+@click.option('--auto-run/--no-auto-run', default=True,
               help='Run installed IDE.')
 @click.option('--allow-updates', default=False, is_flag=True,
               help='Allow updates of installed IDE.')

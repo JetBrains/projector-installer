@@ -353,7 +353,7 @@ def do_list_app(pattern: Optional[str] = None) -> None:
     list_apps(pattern)
 
 
-def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_updates: bool = False,
+def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates: bool = False,
                    run_browser: bool = True) -> None:
     """Installs specified app."""
     app = select_app(app_name)
@@ -363,7 +363,7 @@ def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_update
         sys.exit(1)
 
     config_name_hint = make_config_name(app.name)
-    user_input = get_user_install_input(config_name_hint, auto_run)
+    user_input = get_user_install_input(config_name_hint)
 
     if user_input is None:
         print('Config parameters was not specified, exiting ...')
@@ -399,7 +399,7 @@ def do_install_app(app_name: Optional[str], auto_run: bool = False, allow_update
 
     save_config(run_config)
 
-    if user_input.do_run:
+    if auto_run:
         do_run_config(run_config.name, run_browser)
 
 

@@ -433,14 +433,13 @@ class UserInstallInput:
     # pylint: disable=too-many-instance-attributes
     config_name: str
     projector_port: int
-    do_run: bool
     secure_config: bool
     password: str
     ro_password: str
     custom_names: str
 
 
-def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[UserInstallInput]:
+def get_user_install_input(config_name_hint: str) -> Optional[UserInstallInput]:
     """Interactively creates user input"""
     config_name = select_new_config_name(config_name_hint)
 
@@ -448,8 +447,6 @@ def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[Us
         return None
 
     projector_port = get_def_projector_port()
-    do_run = True if auto_run else click.prompt('Would you like to run installed ide? [y/n]',
-                                                type=bool)
 
     secure_config = click.prompt(
         'Use secure connection '
@@ -461,7 +458,7 @@ def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[Us
     password, ro_password = select_password_pair()
 
     return UserInstallInput(config_name, projector_port,
-                            do_run, secure_config, password, ro_password, custom_names)
+                            secure_config, password, ro_password, custom_names)
 
 
 def make_config_from_input(inp: UserInstallInput) -> RunConfig:
