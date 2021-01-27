@@ -112,8 +112,8 @@ $projector config add
 Enter a new configuration name: AndroidStudio
 Do you want to choose a Projector-installed IDE? [y/n]: n
 Enter the path to IDE: /path/to/your/android-studio
-Enter a desired Projector port (press ENTER for default) [10005]: 
 Use secure connection (this option requires installing a projector's certificate to browser)? [y/n]: y
+...
 ```
 
 ### projector command is unavailable after installation
