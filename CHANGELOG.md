@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+## Changed
+ - User is not asked on port number during install and config add 
+ 
+
 # 0.1.17
 ## Added
   - User certificate support (see new install-certificate command)
