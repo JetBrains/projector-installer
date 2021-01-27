@@ -347,7 +347,7 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
 def select_custom_names(default: str = '') -> str:
     """Asks user for custom domain names"""
     use_custom_names = click.prompt('Would you like to specify custom names '
-                                    'for access to Projector? [y/n]',
+                                    'for Projector access? [y/n]',
                                     type=bool)
 
     custom_names: str = click.prompt('Please specify the comma-separated list of custom names',
@@ -413,7 +413,7 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
             'Would you like to use latest app from this channel? [y/n]',
             type=bool)
 
-    projector_port = select_projector_port()
+    projector_port = get_def_projector_port()
     secure_config = click.prompt(
         'Use secure connection '
         '(this option requires installing a projector\'s certificate to browser)? [y/n]',
@@ -447,7 +447,7 @@ def get_user_install_input(config_name_hint: str, auto_run: bool) -> Optional[Us
     if not config_name:
         return None
 
-    projector_port = select_projector_port()
+    projector_port = get_def_projector_port()
     do_run = True if auto_run else click.prompt('Would you like to run installed ide? [y/n]',
                                                 type=bool)
 
