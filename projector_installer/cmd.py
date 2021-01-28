@@ -206,15 +206,18 @@ def run(config_name: Optional[str], run_browser: bool) -> None:
               help='Allow updates of installed IDE.')
 @click.option('--run-browser/--no-browser', default=True,
               help='Auto run browser in WSL environment.')
-def install_app(ide_name: Optional[str], auto_run: bool, allow_updates: bool,
-                run_browser: bool) -> None:
+@click.option('--quick', default=False, is_flag=True,
+              help='Quick install mode - select IDE only')
+def install_app(ide_name: Optional[str], auto_run: bool,
+                allow_updates: bool,
+                run_browser: bool, quick: bool) -> None:
     """projector ide install [ide_name]
 
     Parameter ide_name is the name of IDE to install.
     If no IDE name is given or the pattern is ambiguous, guides the user through the
     install process.
     """
-    do_install_app(ide_name, auto_run, allow_updates, run_browser)
+    do_install_app(ide_name, auto_run, allow_updates, run_browser, quick)
 
 
 @click.command(short_help='Install user certificate to given config')

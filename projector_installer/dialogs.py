@@ -435,6 +435,11 @@ class UserInstallInput:
     custom_names: str
 
 
+def get_quick_input(config_name: str) -> Optional[UserInstallInput]:
+    """Generates user input in quick mode """
+    return UserInstallInput(config_name, get_def_projector_port(), '', '', '')
+
+
 def get_user_install_input(config_name_hint: str) -> Optional[UserInstallInput]:
     """Interactively creates user input"""
     config_name = select_new_config_name(config_name_hint)

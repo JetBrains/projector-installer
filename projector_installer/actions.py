@@ -22,7 +22,7 @@ from .utils import download_file, get_java_version, get_local_addresses
 
 from .dialogs import select_app, select_new_config_name, list_configs, \
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
-    get_user_install_input, make_config_from_input
+    get_user_install_input, make_config_from_input, get_quick_input
 
 from .global_config import get_download_cache_dir
 
@@ -357,7 +357,7 @@ def do_list_app(pattern: Optional[str] = None) -> None:
 
 
 def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates: bool = False,
-                   run_browser: bool = True) -> None:
+                   run_browser: bool = True, quick: bool = False) -> None:
     """Installs specified app."""
     app = select_app(app_name)
 
@@ -366,7 +366,11 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
         sys.exit(1)
 
     config_name_hint = make_config_name(app.name)
-    user_input = get_user_install_input(config_name_hint)
+
+    if quick:
+        user_input = get_quick_input(config_name_hint)
+    else:
+        user_input = get_user_install_input(config_name_hint)
 
     if user_input is None:
         print('Config parameters was not specified, exiting ...')
