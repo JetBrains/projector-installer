@@ -22,14 +22,14 @@ from .utils import download_file, get_java_version, get_local_addresses
 
 from .dialogs import select_app, select_new_config_name, list_configs, \
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
-    get_user_install_input, get_quick_input
+    get_user_install_input, get_quick_config, select_app_path
 
 from .global_config import get_download_cache_dir
 
 from .ide_configuration import forbid_updates_for
 from .run_config import RunConfig, get_run_configs, get_run_script_path, validate_run_config, \
     delete_config, rename_config, make_config_name, get_configs_with_app, \
-    lock_config, release_config
+    lock_config, release_config, make_config_name_from_path
 
 from .config_generator import save_config, check_config
 
@@ -205,13 +205,25 @@ def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> 
     Adds new run config. If auto_run = True, runs it without questions.
     Asks user otherwise.
     """
-    config_name = select_new_config_name(hint)
 
-    if config_name is None:
-        print('Configuration name was not selected, exiting...')
-        sys.exit(1)
+    if quick:
+        app = select_app_path()
 
-    run_config = make_run_config(config_name, app_path)
+        if app is None:
+            print('IDE was not selected, exiting...')
+            sys.exit(1)
+
+        config_name_hint = make_config_name_from_path(app)
+        run_config = get_quick_config(config_name_hint)
+        run_config.path_to_app = app
+    else:
+        config_name = select_new_config_name(hint)
+
+        if config_name is None:
+            print('Configuration name was not selected, exiting...')
+            sys.exit(1)
+
+        run_config = make_run_config(config_name, app_path)
 
     if run_config.path_to_app is None:
         print('IDE was not selected, exiting...')
@@ -222,6 +234,8 @@ def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> 
     except ValueError as exception:
         print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
         sys.exit(1)
+
+    print(f'Adding new config with name {run_config.name}')
 
     save_config(run_config)
 
@@ -369,7 +383,7 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
     config_name_hint = make_config_name(app.name)
 
     if quick:
-        run_config = get_quick_input(config_name_hint)
+        run_config: Optional[RunConfig] = get_quick_config(config_name_hint)
     else:
         run_config = get_user_install_input(config_name_hint)
 

@@ -422,7 +422,7 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
                      '', password, ro_password, is_toolbox, custom_names)
 
 
-def get_quick_input(config_name: str) -> Optional[RunConfig]:
+def get_quick_config(config_name: str) -> RunConfig:
     """Generates user input in quick mode """
     return RunConfig(select_unused_config_name(config_name), path_to_app='',
                      projector_port=get_def_projector_port(),

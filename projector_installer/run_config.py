@@ -172,6 +172,11 @@ def make_config_name(app_name: str) -> str:
     return app_name
 
 
+def make_config_name_from_path(app_path: str) -> str:
+    """Creates config name from application path."""
+    return basename(app_path)
+
+
 def validate_run_config(run_config: RunConfig) -> None:
     """Checks given config for validity."""
     if not isdir(run_config.path_to_app):
