@@ -137,12 +137,14 @@ def show(config_name: Optional[str]) -> None:
 @click.command(short_help='Add new configuration')
 @click.argument('config_name', type=click.STRING, required=False)
 @click.argument('ide_path', type=click.STRING, required=False)
-def add(config_name: Optional[str], ide_path: Optional[str]) -> None:
+@click.option('--quick', default=False, is_flag=True,
+              help='Quick mode - select IDE only')
+def add(config_name: Optional[str], ide_path: Optional[str], quick: bool) -> None:
     """projector config add [config_name]
 
     Add a new configuration.
     """
-    do_add_config(config_name, ide_path)
+    do_add_config(config_name, ide_path, quick)
 
 
 @click.command(short_help='Remove configuration')

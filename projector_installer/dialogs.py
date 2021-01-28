@@ -9,7 +9,6 @@ import sys
 import readline
 from os.path import expanduser
 from typing import Optional, Dict, List, Tuple, TypeVar, Callable
-from dataclasses import dataclass
 
 import click
 
@@ -423,25 +422,15 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
                      '', password, ro_password, is_toolbox, custom_names)
 
 
-@dataclass
-class UserInstallInput:
-    """Represents user answers during install session"""
-
-    # pylint: disable=too-many-instance-attributes
-    config_name: str
-    projector_port: int
-    password: str
-    ro_password: str
-    custom_names: str
-
-
-def get_quick_input(config_name: str) -> Optional[UserInstallInput]:
+def get_quick_input(config_name: str) -> Optional[RunConfig]:
     """Generates user input in quick mode """
-    return UserInstallInput(select_unused_config_name(config_name),
-                            get_def_projector_port(), '', '', '')
+    return RunConfig(select_unused_config_name(config_name), path_to_app='',
+                     projector_port=get_def_projector_port(),
+                     token='', password='', ro_password='',
+                     toolbox=False, custom_names='')
 
 
-def get_user_install_input(config_name_hint: str) -> Optional[UserInstallInput]:
+def get_user_install_input(config_name_hint: str) -> Optional[RunConfig]:
     """Interactively creates user input"""
     config_name = select_new_config_name(config_name_hint)
 
@@ -454,12 +443,6 @@ def get_user_install_input(config_name_hint: str) -> Optional[UserInstallInput]:
 
     password, ro_password = select_password_pair()
 
-    return UserInstallInput(config_name, projector_port,
-                            password, ro_password, custom_names)
-
-
-def make_config_from_input(inp: UserInstallInput) -> RunConfig:
-    """Makes run config from user input"""
-    return RunConfig(inp.config_name, path_to_app='', projector_port=inp.projector_port,
-                     token='', password=inp.password, ro_password=inp.ro_password,
-                     toolbox=False, custom_names=inp.custom_names)
+    return RunConfig(config_name, path_to_app='', projector_port=projector_port,
+                     token='', password=password, ro_password=ro_password,
+                     toolbox=False, custom_names=custom_names)

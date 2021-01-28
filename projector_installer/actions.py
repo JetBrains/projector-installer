@@ -22,7 +22,7 @@ from .utils import download_file, get_java_version, get_local_addresses
 
 from .dialogs import select_app, select_new_config_name, list_configs, \
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
-    get_user_install_input, make_config_from_input, get_quick_input
+    get_user_install_input, get_quick_input
 
 from .global_config import get_download_cache_dir
 
@@ -200,7 +200,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     release_config(lock)
 
 
-def do_add_config(hint: Optional[str], app_path: Optional[str] = None) -> None:
+def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> None:
     """
     Adds new run config. If auto_run = True, runs it without questions.
     Asks user otherwise.
@@ -369,11 +369,11 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
     config_name_hint = make_config_name(app.name)
 
     if quick:
-        user_input = get_quick_input(config_name_hint)
+        run_config = get_quick_input(config_name_hint)
     else:
-        user_input = get_user_install_input(config_name_hint)
+        run_config = get_user_install_input(config_name_hint)
 
-    if user_input is None:
+    if run_config is None:
         print('Config parameters was not specified, exiting ...')
         sys.exit(1)
 
@@ -396,7 +396,6 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
     if not allow_updates:
         forbid_updates_for(app_path)
 
-    run_config = make_config_from_input(user_input)
     run_config.path_to_app = app_path
 
     try:
