@@ -20,7 +20,7 @@ IDEA_PATH_SELECTOR = 'idea.paths.selector'
 def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
     """Returns sorted list of installed apps, matched given pattern."""
     res = [file_name for file_name in listdir(get_apps_dir()) if
-           pattern is None or file_name.lower().find(pattern.lower()) != -1]
+           not pattern or file_name.lower().find(pattern.lower()) != -1]
     res.sort()
     return res
 

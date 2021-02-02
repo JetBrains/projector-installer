@@ -135,7 +135,7 @@ def regenerate_config_if_toolbox(run_config: RunConfig) -> RunConfig:
     return run_config
 
 
-def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
+def do_run_config(config_name: Optional[str] = None, run_browser: Optional[bool] = True) -> None:
     """Executes specified config. If given name does not specify
     config, runs interactive selection procedure."""
     run_config = select_run_config(config_name)
@@ -200,7 +200,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     release_config(lock)
 
 
-def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> None:
+def do_add_config(hint: Optional[str], app_path: Optional[str], quick: Optional[bool]) -> None:
     """
     Adds new run config. If auto_run = True, runs it without questions.
     Asks user otherwise.
@@ -371,9 +371,13 @@ def do_list_app(pattern: Optional[str] = None) -> None:
     list_apps(pattern)
 
 
-def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates: bool = False,
-                   run_browser: bool = True, quick: bool = False) -> None:
+def do_install_app(app_name: Optional[str],
+                   auto_run: Optional[bool] = True,
+                   allow_updates: Optional[bool] = False,
+                   run_browser: Optional[bool] = True,
+                   quick: Optional[bool] = False) -> None:
     """Installs specified app."""
+    print('Please select IDE to install:')
     app = select_app(app_name)
 
     if app is None:
