@@ -10,11 +10,13 @@ Read more [here](./COMMANDS.md#Install-https-certificate)
 
 ## Added 
  - install-certificate command without provided certificate autogenerates certificate
+ - --expert option for install and config add commands
 
 ## Changed
  - User is not asked on port number during install and config add. Change default port using config edit if you wish.
  - Fresh installed IDE autoruns by default. Behaviour can be changed via --no-auto-run option
  - User is not asked for secure config creation during install and config add commands
+ - install and config add commands asks only for IDE by default. To change behaviour use --expert option. 
  
 
 # 0.1.17

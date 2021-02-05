@@ -137,14 +137,14 @@ def show(config_name: Optional[str]) -> None:
 @click.command(short_help='Add new configuration')
 @click.argument('config_name', type=click.STRING, required=False)
 @click.argument('ide_path', type=click.STRING, required=False)
-@click.option('--quick', default=False, is_flag=True,
-              help='Quick mode - select IDE only')
-def add(config_name: Optional[str], ide_path: Optional[str], quick: bool) -> None:
+@click.option('--expert', default=False, is_flag=True,
+              help='Expert mode - set or config parameters')
+def add(config_name: Optional[str], ide_path: Optional[str], expert: bool) -> None:
     """projector config add [config_name]
 
     Add a new configuration.
     """
-    do_add_config(config_name, ide_path, quick)
+    do_add_config(config_name, ide_path, not expert)
 
 
 @click.command(short_help='Remove configuration')
@@ -208,18 +208,18 @@ def run(config_name: Optional[str], run_browser: bool) -> None:
               help='Allow updates of installed IDE.')
 @click.option('--run-browser/--no-browser', default=True,
               help='Auto run browser in WSL environment.')
-@click.option('--quick', default=False, is_flag=True,
-              help='Quick install mode - select IDE only')
+@click.option('--expert', default=False, is_flag=True,
+              help='Expert mode - set or config parameters')
 def install_app(ide_name: Optional[str], auto_run: bool,
                 allow_updates: bool,
-                run_browser: bool, quick: bool) -> None:
+                run_browser: bool, expert: bool) -> None:
     """projector ide install [ide_name]
 
     Parameter ide_name is the name of IDE to install.
     If no IDE name is given or the pattern is ambiguous, guides the user through the
     install process.
     """
-    do_install_app(ide_name, auto_run, allow_updates, run_browser, quick)
+    do_install_app(ide_name, auto_run, allow_updates, run_browser, not expert)
 
 
 @click.command(short_help='Install user certificate to given config')
