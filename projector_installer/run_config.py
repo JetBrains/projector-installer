@@ -14,7 +14,7 @@ from dataclasses import dataclass
 
 import configparser
 
-from .apps import get_app_path
+from .apps import get_app_path, get_product_info
 from .global_config import get_run_configs_dir
 from .utils import create_dir_if_not_exist, generate_token
 
@@ -174,7 +174,8 @@ def make_config_name(app_name: str) -> str:
 
 def make_config_name_from_path(app_path: str) -> str:
     """Creates config name from application path."""
-    return basename(app_path)
+    info = get_product_info(app_path)
+    return info.name.replace(' ', '_')
 
 
 def validate_run_config(run_config: RunConfig) -> None:

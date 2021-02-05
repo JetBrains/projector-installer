@@ -13,7 +13,7 @@ from os.path import isfile
 from typing import Optional, List
 
 from .apps import get_app_path, get_installed_apps, get_product_info, \
-    unpack_app, get_java_path, get_path_to_latest_app
+    unpack_app, get_java_path, get_path_to_latest_app, is_path_to_app
 from .certificate_chain import get_certificate_chain
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file, parse_custom_names
@@ -206,24 +206,25 @@ def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> 
     Asks user otherwise.
     """
 
+    app = app_path if app_path and is_path_to_app(app_path) else select_app_path()
+
+    if app is None:
+        print('IDE was not selected, exiting...')
+        sys.exit(1)
+
+    config_name_hint = hint if hint else make_config_name_from_path(app)
+
     if quick:
-        app = select_app_path()
-
-        if app is None:
-            print('IDE was not selected, exiting...')
-            sys.exit(1)
-
-        config_name_hint = make_config_name_from_path(app)
         run_config = get_quick_config(config_name_hint)
         run_config.path_to_app = app
     else:
-        config_name = select_new_config_name(hint)
+        config_name = select_new_config_name(config_name_hint)
 
         if config_name is None:
             print('Configuration name was not selected, exiting...')
             sys.exit(1)
 
-        run_config = make_run_config(config_name, app_path)
+        run_config = make_run_config(config_name, app)
 
     if run_config.path_to_app is None:
         print('IDE was not selected, exiting...')
