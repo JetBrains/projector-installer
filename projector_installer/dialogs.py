@@ -13,7 +13,7 @@ from typing import Optional, Dict, List, Tuple, TypeVar, Callable
 import click
 
 from .run_config import get_run_configs, RunConfig, get_run_config_names, get_used_projector_ports
-from .apps import get_installed_apps, get_app_path, is_path_to_app, is_toolbox_path
+from .apps import get_installed_apps, get_app_path, is_toolbox_path, is_valid_app_path
 from .secure_config import generate_token
 from .utils import get_local_addresses
 from .products import get_compatible_apps, IDEKind, Product, get_all_apps
@@ -195,11 +195,6 @@ def select_installed_app_path() -> Optional[str]:
     apps = get_installed_apps()
     res = select_from_list(apps, lambda it: it, 'Choose IDE number to install or 0 to exit')
     return res if res is None else get_app_path(res)
-
-
-def is_valid_app_path(app_path: str) -> bool:
-    """Checks if entered app path is valid"""
-    return is_path_to_app(app_path) or is_toolbox_path(app_path)
 
 
 def select_manual_app_path(default: str = '') -> str:

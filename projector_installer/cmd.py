@@ -138,7 +138,7 @@ def show(config_name: Optional[str]) -> None:
 @click.argument('config_name', type=click.STRING, required=False)
 @click.argument('ide_path', type=click.STRING, required=False)
 @click.option('--expert', default=False, is_flag=True,
-              help='Expert mode - set or config parameters')
+              help='Expert mode - set all config parameters')
 def add(config_name: Optional[str], ide_path: Optional[str], expert: bool) -> None:
     """projector config add [config_name]
 
@@ -209,7 +209,7 @@ def run(config_name: Optional[str], run_browser: bool) -> None:
 @click.option('--run-browser/--no-browser', default=True,
               help='Auto run browser in WSL environment.')
 @click.option('--expert', default=False, is_flag=True,
-              help='Expert mode - set or config parameters')
+              help='Expert mode - set all config parameters')
 def install_app(ide_name: Optional[str], auto_run: bool,
                 allow_updates: bool,
                 run_browser: bool, expert: bool) -> None:

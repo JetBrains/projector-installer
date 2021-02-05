@@ -14,7 +14,8 @@ from dataclasses import dataclass
 
 import configparser
 
-from .apps import get_app_path, get_product_info
+from .apps import get_app_path, get_path_to_toolbox_channel, \
+    get_app_name_from_toolbox_path, get_channel_from_toolbox_path, get_product_name
 from .global_config import get_run_configs_dir
 from .utils import create_dir_if_not_exist, generate_token
 
@@ -172,10 +173,23 @@ def make_config_name(app_name: str) -> str:
     return app_name
 
 
+def get_config_name_from_toolbox_path(toolbox_path: str) -> str:
+    """Creates config name from toolbox path"""
+    name = get_app_name_from_toolbox_path(toolbox_path)
+    channel = get_channel_from_toolbox_path(toolbox_path)
+
+    return f'{name}_Toolbox_{channel}'
+
+
 def make_config_name_from_path(app_path: str) -> str:
     """Creates config name from application path."""
-    info = get_product_info(app_path)
-    return info.name.replace(' ', '_')
+
+    toolbox_path = get_path_to_toolbox_channel(app_path)
+
+    if toolbox_path:
+        return get_config_name_from_toolbox_path(toolbox_path)
+
+    return get_product_name(app_path)
 
 
 def validate_run_config(run_config: RunConfig) -> None:

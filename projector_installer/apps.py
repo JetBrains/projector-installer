@@ -5,7 +5,7 @@
 
 """Application management functions."""
 from os import listdir, rename
-from os.path import join, expanduser, dirname, isfile, isdir
+from os.path import join, expanduser, dirname, isfile, isdir, basename
 from distutils.version import LooseVersion
 from typing import Optional, List
 from dataclasses import dataclass
@@ -233,6 +233,11 @@ def is_toolbox_path(app_path: str) -> bool:
     return get_path_to_toolbox_channel(app_path) is not None
 
 
+def is_valid_app_path(app_path: str) -> bool:
+    """Checks if entered app path is valid"""
+    return is_path_to_app(app_path) or is_toolbox_path(app_path)
+
+
 def get_path_to_latest_app(path: str) -> Optional[str]:
     """Returns path to the app with latest version in channel"""
     channel_path = get_path_to_toolbox_channel(path)
@@ -254,3 +259,24 @@ def get_path_to_latest_app(path: str) -> Optional[str]:
                 app_ver = ver
 
     return app_path
+
+
+def get_product_name(app_path: str) -> str:
+    """Returns name from product info file by app path"""
+    info = get_product_info(app_path)
+    return info.name.replace(' ', '_')
+
+
+def get_app_name_from_toolbox_path(toolbox_path: str) -> str:
+    """Returns app name by toolbox path"""
+    app_path = get_path_to_latest_app(toolbox_path)
+
+    if app_path is None:
+        raise ValueError(f'Invalid path to toolbox app: {toolbox_path}')
+
+    return get_product_name(app_path)
+
+
+def get_channel_from_toolbox_path(toolbox_channel_path: str) -> str:
+    """Returns channel name by toolbox path"""
+    return basename(toolbox_channel_path)
