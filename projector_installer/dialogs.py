@@ -94,8 +94,8 @@ def select_ide_kind() -> Optional[IDEKind]:
 
 def get_app_list(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
     """Returns compatible or full app list, depending on user choice"""
-    compatible = click.prompt('Do you want to select from Projector-tested IDE only? [y/n]',
-                              type=bool)
+    compatible = click.prompt('Do you want to select from Projector-tested IDE only? [y/N]',
+                              type=bool, default=False, show_default=False)
     return get_compatible_app_names(kind, pattern) if compatible else get_all_apps(kind, pattern)
 
 
@@ -232,7 +232,10 @@ def select_app_path() -> Optional[str]:
     apps = get_installed_apps()
 
     if apps:
-        inst = click.prompt('Do you want to choose a Projector-installed IDE? [y/n]', type=bool)
+        inst = click.prompt('Do you want to choose an IDE installed by Projector?'
+                            ' If NO, at the next step you will have to enter a path '
+                            'to a locally installed IDE. [Y/n]',
+                            type=bool, default=True, show_default=False)
 
         if inst:
             return select_installed_app_path()
@@ -240,8 +243,8 @@ def select_app_path() -> Optional[str]:
         return select_manual_app_path()
 
     enter = click.prompt('There are no installed Projector IDEs.\nWould you like to specify '
-                         'a path to IDE manually?',
-                         type=bool)
+                         'a path to IDE manually? [Y/n]',
+                         type=bool, default=True, show_default=False)
     if enter:
         return select_manual_app_path()
 
@@ -326,8 +329,8 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
     """Prompts for pair of access passwords if needed"""
     password = ''
     ro_password = ''
-    need_password = click.prompt('Would you like to set password for connection? [y/n]',
-                                 type=bool)
+    need_password = click.prompt('Would you like to set password for connection? [y/N]',
+                                 type=bool, default=False, show_default=False)
 
     if need_password:
         password = select_password('Please specify RW password:', default=def_password)
@@ -343,11 +346,11 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
     return password, ro_password
 
 
-def select_custom_names(default: str = '') -> str:
+def select_custom_names(default: str = 'localhost') -> str:
     """Asks user for custom domain names"""
-    use_custom_names = click.prompt('Would you like to specify custom names '
-                                    'for Projector access? [y/n]',
-                                    type=bool)
+    use_custom_names = click.prompt('Would you like to specify custom DNS names '
+                                    'for Projector access?[y/N]',
+                                    type=bool, default=False, show_default=False)
 
     custom_names: str = click.prompt('Please specify the comma-separated list of custom names',
                                      default=default,
@@ -363,9 +366,10 @@ def edit_config(config: RunConfig) -> RunConfig:
 
     if is_toolbox_path(config.path_to_app):
         config.toolbox = click.prompt(
-            'App path looks like path to ToolBox managed app. '
-            'Would you like to use latest app from this channel? [y/n]',
-            type=bool)
+            'The path looks like a path to JetBrains Toolbox-managed app. '
+            'Would you like Projector to update the path automatically '
+            'when the app updates? [Y/n]',
+            type=bool, default=True, show_default=False)
 
     config.projector_port = click.prompt('Enter a Projector port (press ENTER for default)',
                                          default=str(config.projector_port))
@@ -376,8 +380,8 @@ def edit_config(config: RunConfig) -> RunConfig:
 
     if config.certificate:
         keep_cert = click.prompt('This config uses custom certificate. '
-                                 'Would you like to keep it? [y/n]',
-                                 type=bool, default='y')
+                                 'Would you like to keep it? [Y/n]',
+                                 type=bool, default=True, show_default=False)
 
     if not keep_cert:
         config.certificate = ''
@@ -385,8 +389,8 @@ def edit_config(config: RunConfig) -> RunConfig:
         config.certificate_chain = ''
         secure_config = click.prompt(
             'Use secure connection '
-            '(this option requires installing a projector\'s certificate to browser)? [y/n]',
-            type=bool)
+            '(this option requires installing a projector\'s certificate to browser)? [y/N]',
+            type=bool, default=False, show_default=False)
 
         config.token = generate_token() if secure_config else ''
 
@@ -408,9 +412,10 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
 
     if is_toolbox_path(app_path):
         is_toolbox = click.prompt(
-            'App path looks like path to ToolBox managed app. '
-            'Would you like to use latest app from this channel? [y/n]',
-            type=bool)
+            'The path looks like a path to JetBrains Toolbox-managed app. '
+            'Would you like Projector to update the path automatically '
+            'when the app updates? [Y/n]',
+            type=bool, default=True, show_default=False)
 
     projector_port = get_def_projector_port()
 
