@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 0.1.17
 
 **Important note**: Starting from this version users can use install-certificate command to make run config secure.
 Read more [here](./COMMANDS.md#Install-https-certificate) 
