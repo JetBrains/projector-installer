@@ -206,6 +206,12 @@ def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> 
     Asks user otherwise.
     """
 
+    if quick:
+        print('Creating config in quick mode; '
+              'for full customization you can rerun this command '
+              'with "--expert" argument or edit this config later '
+              'via "projector config edit" command')
+
     app = app_path if app_path and is_valid_app_path(app_path) else select_app_path()
 
     if app is None:
@@ -384,6 +390,13 @@ def do_list_app(pattern: Optional[str] = None) -> None:
 def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates: bool = False,
                    run_browser: bool = True, quick: bool = False) -> None:
     """Installs specified app."""
+
+    if quick:
+        print('Installing IDE in quick mode; '
+              'for full customization you can rerun this command '
+              'with "--expert" argument or edit this config later '
+              'via "projector config edit" command')
+
     app = select_app(app_name)
 
     if app is None:
