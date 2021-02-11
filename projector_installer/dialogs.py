@@ -15,7 +15,7 @@ import click
 from .run_config import get_run_configs, RunConfig, get_run_config_names, get_used_projector_ports
 from .apps import get_installed_apps, get_app_path, is_toolbox_path, is_valid_app_path
 from .secure_config import generate_token
-from .utils import get_local_addresses
+from .utils import get_local_addresses, get_distributive_name
 from .products import get_compatible_apps, IDEKind, Product, get_all_apps
 
 DEF_PROJECTOR_PORT: int = 9999
@@ -58,6 +58,30 @@ def list_apps(pattern: Optional[str]) -> None:
     print_selection_list(apps)
 
 
+def ask(prompt: str, default: bool) -> bool:
+    """Returns Yes-No result for given prompt.
+    Contains workaround for Linux Mint issue with no-eol-on-default
+    """
+    question = prompt + (' [Y/n]' if default else ' [y/N]')
+    res: bool = click.prompt(question, type=bool, default=default,  # type: ignore
+                             show_default=False)
+
+    if res == default and use_eol_workaround():
+        print()
+
+    return res
+
+
+def prompt_with_default(prompt: str, default: str) -> str:
+    """Asks for user input with default"""
+    res: str = click.prompt(prompt, default=default)
+
+    if res == default and use_eol_workaround():
+        print()
+
+    return res
+
+
 T = TypeVar('T', IDEKind, Product, str)  # pylint: disable=C0103
 
 
@@ -92,10 +116,17 @@ def select_ide_kind() -> Optional[IDEKind]:
     return select_from_list(kinds, lambda it: it.name, 'Choose IDE type or 0 to exit')
 
 
+NO_EOL_DISTRIBUTIVE_LIST = ['LinuxMint']
+
+
+def use_eol_workaround() -> bool:
+    """Checks if need extra eol"""
+    return get_distributive_name() in NO_EOL_DISTRIBUTIVE_LIST
+
+
 def get_app_list(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
     """Returns compatible or full app list, depending on user choice"""
-    compatible = click.prompt('Do you want to select from Projector-tested IDE only? [y/N]',
-                              type=bool, default=False, show_default=False)  # type: ignore
+    compatible = ask('Do you want to select from Projector-tested IDE only?', default=False)
     return get_compatible_app_names(kind, pattern) if compatible else get_all_apps(kind, pattern)
 
 
@@ -147,7 +178,7 @@ def select_new_config_name(hint: Optional[str]) -> Optional[str]:
         prompt = 'Enter a new configuration name'
 
     while True:
-        name: str = click.prompt(prompt, default=hint)
+        name: str = prompt_with_default(prompt, default=hint if hint else '')
 
         if not name:
             return None
@@ -227,19 +258,17 @@ def select_app_path() -> Optional[str]:
     apps = get_installed_apps()
 
     if apps:
-        inst = click.prompt('Do you want to choose an IDE installed by Projector?'
-                            ' If NO, at the next step you will have to enter a path '
-                            'to a locally installed IDE. [Y/n]',
-                            type=bool, default=True, show_default=False)  # type: ignore
+        inst = ask('Do you want to choose an IDE installed by Projector?'
+                   ' If NO, at the next step you will have to enter a path '
+                   'to a locally installed IDE.', default=True)
 
         if inst:
             return select_installed_app_path()
 
         return select_manual_app_path()
 
-    enter = click.prompt('There are no installed Projector IDEs.\nWould you like to specify '
-                         'a path to IDE manually? [Y/n]',
-                         type=bool, default=True, show_default=False)  # type: ignore
+    enter = ask('There are no installed Projector IDEs.\nWould you like to specify '
+                'a path to IDE manually?', default=True)
     if enter:
         return select_manual_app_path()
 
@@ -307,8 +336,8 @@ def check_listening_address(address: str) -> bool:
 def select_projector_port() -> int:
     """Selects port for projector server."""
     port = get_def_projector_port()
-    res: int = click.prompt('Enter a desired Projector port (press ENTER for default)',
-                            default=str(port))
+    res: int = int(prompt_with_default('Enter a desired Projector port (press ENTER for default)',
+                                       default=str(port)))
     return res
 
 
@@ -324,15 +353,12 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
     """Prompts for pair of access passwords if needed"""
     password = ''
     ro_password = ''
-    need_password = click.prompt('Would you like to set password for connection? [y/N]',
-                                 type=bool, default=False, show_default=False)  # type: ignore
+    need_password = ask('Would you like to set password for connection?', default=False)
 
     if need_password:
         password = select_password('Please specify RW password:', default=def_password)
 
-        need_ro_password = click.prompt('Would you like to set separate read-only password? [y/N]',
-                                        type=bool, default=False,  # type: ignore
-                                        show_default=False)
+        need_ro_password = ask('Would you like to set separate read-only password?', default=False)
 
         if need_ro_password:
             ro_password = select_password('Please specify RO password:', default=def_ro_password)
@@ -344,13 +370,13 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
 
 def select_custom_names(default: str = 'localhost') -> str:
     """Asks user for custom domain names"""
-    use_custom_names = click.prompt('Would you like to specify custom DNS names '
-                                    'for Projector access?[y/N]',
-                                    type=bool, default=False, show_default=False)  # type: ignore
+    use_custom_names = ask('Would you like to specify custom DNS names '
+                           'for Projector access?',
+                           default=False)
 
-    custom_names: str = click.prompt('Please specify the comma-separated list of custom names',
-                                     default=default,
-                                     type=str) if use_custom_names else ''
+    custom_names: str = prompt_with_default(
+        'Please specify the comma-separated list of custom names',
+        default=default) if use_custom_names else ''
 
     return custom_names
 
@@ -361,32 +387,32 @@ def edit_config(config: RunConfig) -> RunConfig:
     config.toolbox = False
 
     if is_toolbox_path(config.path_to_app):
-        config.toolbox = click.prompt(
+        config.toolbox = ask(
             'The path looks like a path to JetBrains Toolbox-managed app. '
             'Would you like Projector to update the path automatically '
-            'when the app updates? [Y/n]',
-            type=bool, default=True, show_default=False)  # type: ignore
+            'when the app updates?', default=True)
 
-    config.projector_port = click.prompt('Enter a Projector port (press ENTER for default)',
-                                         default=str(config.projector_port))
+    config.projector_port = int(prompt_with_default(
+        'Enter a Projector port (press ENTER for default)',
+        default=str(config.projector_port)))
 
     config.custom_names = select_custom_names(config.custom_names)
 
     keep_cert = False
 
     if config.certificate:
-        keep_cert = click.prompt('This config uses custom certificate. '
-                                 'Would you like to keep it? [Y/n]',
-                                 type=bool, default=True, show_default=False)  # type: ignore
+        keep_cert = ask('This config uses custom certificate. '
+                        'Would you like to keep it?',
+                        default=True)
 
     if not keep_cert:
         config.certificate = ''
         config.certificate_key = ''
         config.certificate_chain = ''
-        secure_config = click.prompt(
+        secure_config = ask(
             'Use secure connection '
-            '(this option requires installing a projector\'s certificate to browser)? [y/N]',
-            type=bool, default=False, show_default=False)  # type: ignore
+            '(this option requires installing a projector\'s certificate to browser)?',
+            default=False)
 
         config.token = generate_token() if secure_config else ''
 
@@ -407,11 +433,10 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
     is_toolbox = False
 
     if is_toolbox_path(app_path):
-        is_toolbox = click.prompt(
+        is_toolbox = ask(
             'The path looks like a path to JetBrains Toolbox-managed app. '
             'Would you like Projector to update the path automatically '
-            'when the app updates? [Y/n]',
-            type=bool, default=True, show_default=False)  # type: ignore
+            'when the app updates?', default=True)
 
     projector_port = get_def_projector_port()
 

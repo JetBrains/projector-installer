@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Fixed
+- mussed carriage return on default selection in Linux Mint
+
 # 0.1.18
 
 **Important note**: Starting from this version users can use install-certificate command to make run config secure.

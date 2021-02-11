@@ -183,3 +183,20 @@ def generate_token(length: int = DEF_TOKEN_LEN) -> str:
     """Generates token to access server's secrets"""
     alphabet = string.ascii_letters + string.digits
     return ''.join(secrets.choice(alphabet) for i in range(length))
+
+
+def get_distributive_name() -> str:
+    """Try to obtain distributive name from /etc/lsb-release"""
+    try:
+        with open('/etc/lsb-release', 'r') as file:
+            for line in file:
+                if line.startswith('DISTRIB_ID'):
+                    parts = line.split('=')
+
+                    if len(parts) > 1:
+                        return parts[1].strip()
+
+    except OSError:
+        pass
+
+    return ''
