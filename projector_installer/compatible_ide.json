@@ -12,6 +12,7 @@
     {"name": "DataGrip 2020.2", "url": "https://download.jetbrains.com/datagrip/datagrip-2020.2.tar.gz", "kind":  "DataGrip"},
     {"name": "PhpStorm 2019.3.4", "url": "https://download.jetbrains.com/webide/PhpStorm-2019.3.4.tar.gz", "kind":  "PhpStorm"},
     {"name": "PhpStorm 2020.2", "url": "https://download.jetbrains.com/webide/PhpStorm-2020.2.tar.gz", "kind":  "PhpStorm"},
+    {"name": "PhpStorm 2020.3.2", "url": "https://download-cf.jetbrains.com/webide/PhpStorm-2020.3.2.tar.gz", "kind":  "PhpStorm"},
     {"name": "PyCharm Community 2019.3.4", "url": "https://download.jetbrains.com/python/pycharm-community-2019.3.4.tar.gz", "kind":  "PyCharm_Community"},
     {"name": "PyCharm Community 2020.2", "url": "https://download.jetbrains.com/python/pycharm-community-2020.2.tar.gz", "kind":  "PyCharm_Community"},
     {"name": "PyCharm Professional 2019.3.4", "url": "https://download.jetbrains.com/python/pycharm-professional-2019.3.4.tar.gz", "kind":  "PyCharm_Professional"},
