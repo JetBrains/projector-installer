@@ -9,6 +9,9 @@ import socket
 from typing import Optional, Any
 from urllib.error import URLError
 
+import click
+
+from .global_config import get_changelog_url
 from .utils import get_json
 
 from .version import __version__
@@ -47,3 +50,23 @@ def is_update_available() -> bool:
         return False
 
     return is_newer_than_current(pypi_ver)
+
+
+def check_for_projector_updates() -> None:
+    """Check if new projector version is available"""
+    pypi_version = get_latest_installer_version(timeout=SHORT_NETWORK_TIMEOUT)
+
+    if pypi_version is None:
+        click.echo('Checking for updates ... ', nl=False)
+        pypi_version = get_latest_installer_version(timeout=LONG_NETWORK_TIMEOUT)
+        click.echo('done.')
+
+        if pypi_version is None:
+            return
+
+    if is_newer_than_current(pypi_version):
+        msg = f'\nNew version {pypi_version} of projector-installer is available ' \
+              f'(ver. {__version__} is installed)!\n' \
+              f'Changelog: {get_changelog_url(pypi_version)}\n' \
+              f'To update use command: pip3 install projector-installer --upgrade\n'
+        click.echo(click.style(msg, bold=True))

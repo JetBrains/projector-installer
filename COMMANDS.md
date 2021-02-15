@@ -97,7 +97,11 @@ runs the configuration with name 'goland'
 `projector config show` - show configuration details
 
 `projector config rebuild` - regenerates all files, related to run config. 
-Can be useful after manual run config file edit, or incompatible changes in installer. 
+Can be useful after manual run config file edit, or incompatible changes in the installer. 
+
+`projector config update` - updates IDE in a selected config. Please note - 
+this command updates IDE installed by projector-installer only. Depending on selected run config 
+updates searched in compatible_ide files or on JB release server. 
 
 ### Shortcut commands
 

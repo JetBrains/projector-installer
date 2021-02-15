@@ -14,7 +14,7 @@ import subprocess
 import secrets
 import string
 from os import listdir, remove, makedirs
-from os.path import join, isfile, getsize, basename, isdir
+from os.path import join, isfile, getsize, basename, isdir, realpath, expandvars, expanduser
 from shutil import copy
 from urllib.request import urlopen
 from typing import Optional, BinaryIO, cast, List, Any
@@ -200,3 +200,8 @@ def get_distributive_name() -> str:
         pass
 
     return ''
+
+
+def expand_path(path: str) -> str:
+    """Performs full path expansion"""
+    return realpath(expandvars(expanduser(path)))

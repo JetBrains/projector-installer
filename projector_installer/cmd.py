@@ -5,45 +5,23 @@
 
 """Command line interface to projector-installer"""
 from os import path
-from os.path import expanduser, realpath, expandvars
 from typing import Any, Optional
 import click
 
 from . import global_config
-from .global_config import init_config_dir, init_cache_dir, get_changelog_url
+from .global_config import init_config_dir, init_cache_dir
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
-    do_rename_config, do_rebuild_config, do_install_cert
+    do_rename_config, do_rebuild_config, do_install_cert, do_update_config
 from .license import display_license
-from .updates import get_latest_installer_version, SHORT_NETWORK_TIMEOUT, LONG_NETWORK_TIMEOUT, \
-    is_newer_than_current
-from .version import __version__
+from .projector_updates import check_for_projector_updates
+from .utils import expand_path
 
 
 def is_first_start() -> bool:
     """Detects first app start."""
     return not path.isdir(global_config.config_dir)
-
-
-def check_for_updates() -> None:
-    """Check if new projector version is available"""
-    pypi_version = get_latest_installer_version(timeout=SHORT_NETWORK_TIMEOUT)
-
-    if pypi_version is None:
-        click.echo('Checking for updates ... ', nl=False)
-        pypi_version = get_latest_installer_version(timeout=LONG_NETWORK_TIMEOUT)
-        click.echo('done.')
-
-        if pypi_version is None:
-            return
-
-    if is_newer_than_current(pypi_version):
-        msg = f'\nNew version {pypi_version} of projector-installer is available ' \
-              f'(ver. {__version__} is installed)!\n' \
-              f'Changelog: {get_changelog_url(pypi_version)}\n' \
-              f'To update use command: pip3 install projector-installer --upgrade\n'
-        click.echo(click.style(msg, bold=True))
 
 
 @click.group(invoke_without_command=True)
@@ -60,12 +38,12 @@ def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
     This script helps to install, manage, and run JetBrains IDEs with Projector.
     """
 
-    check_for_updates()
+    check_for_projector_updates()
 
-    global_config.config_dir = realpath(expandvars(expanduser(config_directory)))
+    global_config.config_dir = expand_path(config_directory)
 
     if cache_directory:
-        global_config.cache_dir = realpath(expandvars(expanduser(cache_directory)))
+        global_config.cache_dir = expand_path(cache_directory)
 
     if is_first_start():
         display_license()
@@ -200,6 +178,17 @@ def run(config_name: Optional[str], run_browser: bool) -> None:
     do_run_config(config_name, run_browser)
 
 
+@click.command(short_help='Update IDE in selected configuration')
+@click.argument('config_name', type=click.STRING, required=False)
+def update(config_name: Optional[str]) -> None:
+    """projector config update config_name
+
+    Updates IDE in selected config if update is available
+    Updates IDE in selected config if update is available
+    """
+    do_update_config(config_name)
+
+
 @click.command(short_help='Install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
 @click.option('--auto-run/--no-auto-run', default=True,
@@ -266,6 +255,7 @@ config.add_command(edit, name='edit')
 config.add_command(rename, name='rename')
 config.add_command(rebuild, name='rebuild')
 config.add_command(run, name='run')
+config.add_command(update, name='update')
 
 # Shortcut commands
 projector.add_command(find_app, name='find')

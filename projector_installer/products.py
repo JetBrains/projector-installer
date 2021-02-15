@@ -46,6 +46,7 @@ class Product:
     name: str
     url: str
     kind: IDEKind
+    ver: LooseVersion = LooseVersion('0.0.0')
 
     def __key__(self) -> Tuple[str, str]:
         return self.name, self.url
@@ -77,7 +78,9 @@ def _parse_entry(entry: Any) -> Product:
     except KeyError:
         kind = IDEKind.Unknown
 
-    return Product(entry['name'], entry['url'], kind)
+    ver = LooseVersion(entry['name'].split(' ')[-1])
+
+    return Product(entry['name'], entry['url'], kind, ver)
 
 
 def load_installable_apps_from_file(file_name: str) -> List[Product]:
@@ -167,7 +170,7 @@ def get_product_releases(kind: IDEKind) -> List[Product]:
                 continue
 
             link = downloads['linux']['link']
-            res.append(Product(f'{name} {ver}', link, kind))
+            res.append(Product(f'{name} {ver}', link, kind, ver))
 
     return res
 

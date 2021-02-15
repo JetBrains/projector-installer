@@ -4,6 +4,7 @@
 
 
 """Application management functions."""
+import sys
 from os import listdir, rename
 from os.path import join, expanduser, dirname, isfile, isdir, basename
 from distutils.version import LooseVersion
@@ -11,8 +12,8 @@ from typing import Optional, List
 from dataclasses import dataclass
 import json
 
-from .global_config import get_apps_dir
-from .utils import unpack_tar_file
+from .global_config import get_apps_dir, get_download_cache_dir
+from .utils import unpack_tar_file, expand_path, download_file
 
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
 
@@ -193,6 +194,23 @@ def unpack_app(file_path: str) -> str:
     return app_name
 
 
+def download_and_install(url: str) -> str:
+    """Downloads and installs app"""
+    try:
+        path_to_dist = download_file(url, get_download_cache_dir())
+    except IOError as error:
+        print(f'Unable to write downloaded file, try again later: {str(error)}. Exiting ...')
+        sys.exit(1)
+
+    try:
+        app_name = unpack_app(path_to_dist)
+    except IOError as error:
+        print(f'Unable to extract the archive: {str(error)}, exiting...')
+        sys.exit(1)
+
+    return get_app_path(app_name)
+
+
 def get_jre_dir(path_to_app: str) -> str:
     """Return path to dir with bundled jre"""
     product_info = get_product_info(path_to_app)
@@ -280,3 +298,9 @@ def get_app_name_from_toolbox_path(toolbox_path: str) -> str:
 def get_channel_from_toolbox_path(toolbox_channel_path: str) -> str:
     """Returns channel name by toolbox path"""
     return basename(toolbox_channel_path)
+
+
+def is_projector_installed_ide(path_to_ide: str) -> bool:
+    """Returns True if IDE is installed """
+    ide_path = expand_path(path_to_ide)
+    return ide_path.startswith(get_apps_dir())

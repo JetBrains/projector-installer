@@ -12,19 +12,19 @@ from os import path, system, uname, remove
 from os.path import isfile
 from typing import Optional, List
 
+
 from .apps import get_app_path, get_installed_apps, get_product_info, \
-    unpack_app, get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path
+    get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, download_and_install
 from .certificate_chain import get_certificate_chain
+from .ide_update import is_updatable_ide, get_update, update_config, check_ide_update
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file, parse_custom_names
 
-from .utils import download_file, get_java_version, get_local_addresses
+from .utils import get_java_version, get_local_addresses
 
 from .dialogs import select_app, select_new_config_name, list_configs, \
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, get_quick_config, select_app_path
-
-from .global_config import get_download_cache_dir
 
 from .ide_configuration import forbid_updates_for
 from .run_config import RunConfig, get_run_configs, get_run_script_path, validate_run_config, \
@@ -141,6 +141,9 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     run_config = select_run_config(config_name)
 
     print(f'Configuration name: {run_config.name}')
+
+    check_ide_update(run_config)
+
     run_config = regenerate_config_if_toolbox(run_config)
     run_script_name = get_run_script_path(run_config.name)
 
@@ -338,6 +341,34 @@ def do_rebuild_config(config_name: Optional[str] = None) -> None:
     release_config(lock)
 
 
+def do_update_config(config_name: Optional[str] = None) -> None:
+    """Updates IDE in selected config if update is available"""
+    run_config = select_run_config(config_name)
+
+    if not is_updatable_ide(run_config.path_to_app):
+        print(f'IDE {run_config.path_to_app} can\'t be updated by Projector. Exiting...')
+        return
+
+    print('Checking for updates.')
+    product = get_update(run_config.path_to_app)
+
+    if product is None:
+        print(f'There are no updates for IDE {run_config.path_to_app}. Exiting...')
+        return
+
+    lock = lock_config(run_config.name)
+
+    if not lock:
+        print(f'Configuration {run_config.name} is already in use. Exiting...')
+        sys.exit(1)
+
+    print(f'Updating IDE for run config {run_config.name}.')
+    update_config(run_config, product)
+    print(' done.')
+
+    release_config(lock)
+
+
 def do_install_cert(config_name: Optional[str], path_to_certificate: Optional[str],
                     path_to_key: Optional[str], path_to_chain: Optional[str]) -> None:
     """Installs user-specified certificate"""
@@ -416,19 +447,7 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
 
     print(f'Installing {app.name}')
 
-    try:
-        path_to_dist = download_file(app.url, get_download_cache_dir())
-    except IOError as error:
-        print(f'Unable to write downloaded file, try again later: {str(error)}. Exiting ...')
-        sys.exit(1)
-
-    try:
-        app_name = unpack_app(path_to_dist)
-    except IOError as error:
-        print(f'Unable to extract the archive: {str(error)}, exiting...')
-        sys.exit(1)
-
-    app_path = get_app_path(app_name)
+    app_path = download_and_install(app.url)
 
     if not allow_updates:
         forbid_updates_for(app_path)
