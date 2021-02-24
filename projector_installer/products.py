@@ -24,6 +24,7 @@ COMPATIBLE_IDE_FILE_URL: str = \
     'projector_installer/compatible_ide.json'
 
 
+# pylint: disable=C0103
 class IDEKind(Enum):
     """Known IDE kinds"""
     Unknown = auto()
