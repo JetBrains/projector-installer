@@ -6,6 +6,7 @@
 """
 Misc utility functions.
 """
+import sys
 import io
 import json
 import tarfile
@@ -205,3 +206,13 @@ def get_distributive_name() -> str:
 def expand_path(path: str) -> str:
     """Performs full path expansion"""
     return realpath(expandvars(expanduser(path)))
+
+
+def is_in_venv() -> bool:
+    """Check if process run in Python virtual enviromnment"""
+
+    def get_base_prefix() -> Optional[str]:
+        """Safe get the sys.base_prefix property"""
+        return getattr(sys, "base_prefix", None) or getattr(sys, "real_prefix", None) or sys.prefix
+
+    return get_base_prefix() != sys.prefix

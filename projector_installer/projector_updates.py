@@ -11,8 +11,8 @@ from urllib.error import URLError
 
 import click
 
-from .global_config import get_changelog_url
-from .utils import get_json
+from .global_config import get_changelog_url, INSTALL_DIR, USER_HOME
+from .utils import get_json, is_in_venv
 
 from .version import __version__
 
@@ -52,6 +52,22 @@ def is_update_available() -> bool:
     return is_newer_than_current(pypi_ver)
 
 
+def is_user_install() -> bool:
+    """Returns True if projector _probably_ installed with --user option"""
+    return INSTALL_DIR.startswith(USER_HOME) and not is_in_venv()
+
+
+UPDATE_COMMAND = 'pip3 install projector-installer --upgrade'
+
+
+def get_update_command() -> str:
+    """Returns update command string"""
+    if is_user_install():
+        return f'{UPDATE_COMMAND} --user'
+
+    return UPDATE_COMMAND
+
+
 def check_for_projector_updates() -> None:
     """Check if new projector version is available"""
     pypi_version = get_latest_installer_version(timeout=SHORT_NETWORK_TIMEOUT)
@@ -68,5 +84,5 @@ def check_for_projector_updates() -> None:
         msg = f'\nNew version {pypi_version} of projector-installer is available ' \
               f'(ver. {__version__} is installed)!\n' \
               f'Changelog: {get_changelog_url(pypi_version)}\n' \
-              f'To update use command: pip3 install projector-installer --upgrade\n'
+              f'To update use command: {get_update_command()}\n'
         click.echo(click.style(msg, bold=True))
