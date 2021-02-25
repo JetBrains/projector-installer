@@ -22,6 +22,7 @@ Install, configure and run JetBrains IDEs with [Projector Server](https://github
    5. [WSL issues](#WSL-issues)   
    6. [projector exits immediately](#projector-exits-immediately)
 
+
 ## Installation
 ### Prerequisites
 To use projector-installer you need machine with Linux (or WSL) and with Python 3.6 or higher.
@@ -30,6 +31,12 @@ In Debian-based distributive you can install them using the command:
 ```bash
 sudo apt install python3 python3-pip 
 ``` 
+
+If you are running Ubuntu 18.04 or earlier update pip using the following command:  
+```bash
+python3 -m pip install -U pip 
+```
+
 Also make sure that you have installed the following packets: 
  - libxext6
  - libxi6
@@ -207,3 +214,5 @@ If you have issues with accessing Projector running in WSL from browser, try do 
  - Make sure that you installed all packages mentioned in [Prerequisites](#Prerequisites) section. 
  - Check log-file (it's location shown in console when installer runs the config).
  - Make sure that there is no another instance of same config running.
+
+
