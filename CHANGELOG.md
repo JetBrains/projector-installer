@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 0.1.19
 
 ## Fixed
 
@@ -11,6 +11,10 @@ Notable changes to this project are documented in this file.
 ## Added
 
 - projector config update command for IDE update
+
+## Changed
+
+- Projector server v0.51.15
 
 # 0.1.18
 
