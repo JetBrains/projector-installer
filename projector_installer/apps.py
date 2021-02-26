@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import json
 
 from .global_config import get_apps_dir, get_download_cache_dir
-from .utils import unpack_tar_file, expand_path, download_file
+from .utils import unpack_tar_file, expand_path, download_file, create_dir_if_not_exist
 
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
 
@@ -194,23 +194,6 @@ def unpack_app(file_path: str) -> str:
     return app_name
 
 
-def download_and_install(url: str) -> str:
-    """Downloads and installs app"""
-    try:
-        path_to_dist = download_file(url, get_download_cache_dir())
-    except IOError as error:
-        print(f'Unable to write downloaded file, try again later: {str(error)}. Exiting ...')
-        sys.exit(1)
-
-    try:
-        app_name = unpack_app(path_to_dist)
-    except IOError as error:
-        print(f'Unable to extract the archive: {str(error)}, exiting...')
-        sys.exit(1)
-
-    return get_app_path(app_name)
-
-
 def get_jre_dir(path_to_app: str) -> str:
     """Return path to dir with bundled jre"""
     product_info = get_product_info(path_to_app)
@@ -304,3 +287,58 @@ def is_projector_installed_ide(path_to_ide: str) -> bool:
     """Returns True if IDE is installed """
     ide_path = expand_path(path_to_ide)
     return ide_path.startswith(get_apps_dir())
+
+
+def is_disabled(file_name: str, plugin_name: str) -> bool:
+    """Checks if given plugin is already disabled"""
+    if not isfile(file_name):
+        return False
+
+    with open(file_name, 'r') as file:
+        lines = [line.strip() for line in file]
+        return plugin_name in lines
+
+
+def disable_plugin(file_name: str, plugin_name: str) -> None:
+    """Disables specified plugin"""
+    directory = dirname(file_name)
+    create_dir_if_not_exist(directory)
+
+    with open(file_name, 'a') as file:
+        file.write(f'{plugin_name}')
+
+
+DISABLED_PLUGINS_FILE = 'disabled_plugins.txt'
+IDEA_PROPERTIES_FILE = 'idea.properties'
+FORBID_UPDATE_STRING = 'ide.no.platform.update=Projector'
+
+
+def forbid_updates_for(app_path: str) -> None:
+    """Forbids IDEA platform update for specified app."""
+    bin_dir = get_bin_dir(app_path)
+    prop_file = join(bin_dir, IDEA_PROPERTIES_FILE)
+
+    with open(prop_file, 'a') as file:
+        file.write(f'{FORBID_UPDATE_STRING}')
+
+
+def download_and_install(url: str, allow_updates: bool) -> str:
+    """Downloads and installs app"""
+    try:
+        path_to_dist = download_file(url, get_download_cache_dir())
+    except IOError as error:
+        print(f'Unable to write downloaded file, try again later: {str(error)}. Exiting ...')
+        sys.exit(1)
+
+    try:
+        app_name = unpack_app(path_to_dist)
+    except IOError as error:
+        print(f'Unable to extract the archive: {str(error)}, exiting...')
+        sys.exit(1)
+
+    res = get_app_path(app_name)
+
+    if not allow_updates:
+        forbid_updates_for(res)
+
+    return res

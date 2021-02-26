@@ -12,7 +12,6 @@ from os import path, system, uname, remove
 from os.path import isfile
 from typing import Optional, List
 
-
 from .apps import get_app_path, get_installed_apps, get_product_info, \
     get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, download_and_install
 from .certificate_chain import get_certificate_chain
@@ -26,7 +25,6 @@ from .dialogs import select_app, select_new_config_name, list_configs, \
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
     get_user_install_input, get_quick_config, select_app_path
 
-from .ide_configuration import forbid_updates_for
 from .run_config import RunConfig, get_run_configs, get_run_script_path, validate_run_config, \
     delete_config, rename_config, make_config_name, get_configs_with_app, \
     lock_config, release_config, make_config_name_from_path
@@ -341,7 +339,7 @@ def do_rebuild_config(config_name: Optional[str] = None) -> None:
     release_config(lock)
 
 
-def do_update_config(config_name: Optional[str] = None) -> None:
+def do_update_config(config_name: Optional[str] = None, allow_update: bool = False) -> None:
     """Updates IDE in selected config if update is available"""
     run_config = select_run_config(config_name)
 
@@ -363,7 +361,7 @@ def do_update_config(config_name: Optional[str] = None) -> None:
         sys.exit(1)
 
     print(f'Updating IDE for run config {run_config.name}.')
-    update_config(run_config, product)
+    update_config(run_config, product, allow_update)
     print(' done.')
 
     release_config(lock)
@@ -446,13 +444,7 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
         sys.exit(1)
 
     print(f'Installing {app.name}')
-
-    app_path = download_and_install(app.url)
-
-    if not allow_updates:
-        forbid_updates_for(app_path)
-
-    run_config.path_to_app = app_path
+    run_config.path_to_app = download_and_install(app.url, allow_updates)
 
     try:
         validate_run_config(run_config)

@@ -72,9 +72,9 @@ def get_update(path_to_ide: str) -> Optional[Product]:
     return product
 
 
-def update_config(run_config: RunConfig, product: Product) -> None:
+def update_config(run_config: RunConfig, product: Product, allow_updates: bool) -> None:
     """Updates IDE in given config"""
-    run_config.path_to_app = download_and_install(product.url)
+    run_config.path_to_app = download_and_install(product.url, allow_updates)
     save_config(run_config)
 
 

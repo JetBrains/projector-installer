@@ -2,6 +2,12 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Added
+
+- --allow-updates option for config update command
+
 # 0.1.19
 
 ## Fixed

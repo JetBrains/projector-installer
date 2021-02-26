@@ -180,13 +180,15 @@ def run(config_name: Optional[str], run_browser: bool) -> None:
 
 @click.command(short_help='Update IDE in selected configuration')
 @click.argument('config_name', type=click.STRING, required=False)
-def update(config_name: Optional[str]) -> None:
+@click.option('--allow-updates', default=False, is_flag=True,
+              help='Allow updates of installed IDE.')
+def update(config_name: Optional[str], allow_updates: bool) -> None:
     """projector config update config_name
 
     Updates IDE in selected config if update is available
     Updates IDE in selected config if update is available
     """
-    do_update_config(config_name)
+    do_update_config(config_name, allow_updates)
 
 
 @click.command(short_help='Install and configure selected IDE')
