@@ -7,6 +7,7 @@
 
 import sys
 import readline
+
 from os.path import expanduser
 from typing import Optional, Dict, List, Tuple, TypeVar, Callable
 
@@ -124,10 +125,14 @@ def use_eol_workaround() -> bool:
     return get_distributive_name() in NO_EOL_DISTRIBUTIVE_LIST
 
 
-def get_app_list(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
+def get_app_list(kind: IDEKind, pattern: Optional[str] = None) -> Tuple[str, List[Product]]:
     """Returns compatible or full app list, depending on user choice"""
     compatible = ask('Do you want to select from Projector-tested IDE only?', default=False)
-    return get_compatible_app_names(kind, pattern) if compatible else get_all_apps(kind, pattern)
+
+    if compatible:
+        return RunConfig.TESTED, get_compatible_app_names(kind, pattern)
+
+    return RunConfig.NOT_TESTED, get_all_apps(kind, pattern)
 
 
 def find_apps(pattern: Optional[str] = None) -> None:
@@ -138,20 +143,21 @@ def find_apps(pattern: Optional[str] = None) -> None:
         print('No app kind selected, exiting...')
         sys.exit(2)
 
-    apps = get_app_list(kind, pattern)
+    channel, apps = get_app_list(kind, pattern)  # pylint: disable=unused-variable
     print_selection_list(list(map(lambda x: x.name, apps)))
 
 
-def select_app(pattern: Optional[str] = None) -> Optional[Product]:
+def select_app(pattern: Optional[str] = None) -> Tuple[str, Optional[Product]]:
     """Interactively selects app name from list of projector-compatible applications."""
     kind = select_ide_kind()
 
     if kind is None:
-        return None
+        return RunConfig.UNKNOWN, None
 
-    apps = get_app_list(kind, pattern)
+    channel, apps = get_app_list(kind, pattern)
 
-    return select_from_list(apps, lambda it: it.name, 'Choose IDE number to install or 0 to exit')
+    return channel, select_from_list(apps, lambda it: it.name,
+                                     'Choose IDE number to install or 0 to exit')
 
 
 def select_unused_config_name(hint: str) -> str:

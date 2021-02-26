@@ -106,6 +106,9 @@ def save_config(run_config: RunConfig) -> None:
         config['FQDNS'] = {}
         config['FQDNS']['FQDNS'] = run_config.custom_names  # type: ignore
 
+    config['UPDATE'] = {}
+    config['UPDATE']['CHANNEL'] = run_config.update_channel
+
     config_path = join(get_run_configs_dir(), run_config.name)
 
     if not isdir(config_path):

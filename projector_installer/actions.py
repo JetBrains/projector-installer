@@ -15,6 +15,7 @@ from typing import Optional, List
 from .apps import get_app_path, get_installed_apps, get_product_info, \
     get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, download_and_install
 from .certificate_chain import get_certificate_chain
+from .global_config import LONG_NETWORK_TIMEOUT
 from .ide_update import is_updatable_ide, get_update, update_config, check_ide_update
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file, parse_custom_names
@@ -139,7 +140,6 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     run_config = select_run_config(config_name)
 
     print(f'Configuration name: {run_config.name}')
-
     check_ide_update(run_config)
 
     run_config = regenerate_config_if_toolbox(run_config)
@@ -348,7 +348,7 @@ def do_update_config(config_name: Optional[str] = None, allow_update: bool = Fal
         return
 
     print('Checking for updates.')
-    product = get_update(run_config.path_to_app)
+    product = get_update(run_config, timeout=LONG_NETWORK_TIMEOUT)
 
     if product is None:
         print(f'There are no updates for IDE {run_config.path_to_app}. Exiting...')
@@ -426,7 +426,7 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
               'with "--expert" argument or edit this config later '
               'via "projector config edit" command')
 
-    app = select_app(app_name)
+    channel, app = select_app(app_name)
 
     if app is None:
         print('IDE was not selected, exiting...')
@@ -444,6 +444,7 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
         sys.exit(1)
 
     print(f'Installing {app.name}')
+    run_config.update_channel = channel
     run_config.path_to_app = download_and_install(app.url, allow_updates)
 
     try:

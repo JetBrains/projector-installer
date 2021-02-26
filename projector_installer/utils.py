@@ -171,13 +171,13 @@ def get_local_addresses() -> List[str]:
 
 def get_json(url: str, timeout: float) -> Any:
     """Returns dictionary - parsed json, retrieved via given URL"""
-    with urlopen(url, timeout=timeout) as resp:
-        code = resp.getcode()
+    resp = urlopen(url, timeout=timeout)
+    code = resp.getcode()
 
-        if code != 200:
-            raise IOError(f'HTTP error code: {code}')
+    if code != 200:
+        raise IOError(f'HTTP error code: {code}')
 
-        return json.loads(resp.read().decode())
+    return json.loads(resp.read().decode())
 
 
 def generate_token(length: int = DEF_TOKEN_LEN) -> str:

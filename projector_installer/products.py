@@ -15,6 +15,7 @@ from urllib.error import URLError
 from distutils.version import LooseVersion
 from dataclasses import dataclass
 
+from .global_config import LONG_NETWORK_TIMEOUT
 from .utils import download_file, get_file_name_from_url, get_json
 
 COMPATIBLE_IDE_FILE: str = join(dirname(abspath(__file__)), 'compatible_ide.json')
@@ -149,10 +150,10 @@ KIND2CODE = {
 EARLIEST_COMPATIBLE_VERSION = LooseVersion('2019.3')
 
 
-def get_product_releases(kind: IDEKind) -> List[Product]:
+def get_product_releases(kind: IDEKind, timeout: float) -> List[Product]:
     """Retrieves list of product releases from JB products service"""
     url = f'{PRODUCTS_URL}?code={KIND2CODE[kind]}&release.type=release'
-    data = get_json(url, timeout=1)
+    data = get_json(url, timeout=timeout)
     res = []
 
     for entry in data:
@@ -205,5 +206,5 @@ def get_compatible_apps(kind: IDEKind, pattern: Optional[str] = None) -> List[Pr
 
 def get_all_apps(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
     """Returns list of all released apps, matched given kind and pattern."""
-    apps = get_product_releases(kind)
+    apps = get_product_releases(kind, timeout=LONG_NETWORK_TIMEOUT)
     return filter_app_by_name_pattern(apps, pattern)

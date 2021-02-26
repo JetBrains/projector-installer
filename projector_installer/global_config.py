@@ -22,6 +22,8 @@ SERVER_DIR: str = 'server'
 config_dir: str = join(USER_HOME, DEF_CONFIG_DIR)
 cache_dir: str = ''
 CHANGELOG_URL = 'https://github.com/JetBrains/projector-installer/blob/master/CHANGELOG.md'
+LONG_NETWORK_TIMEOUT = 3.0
+SHORT_NETWORK_TIMEOUT = 0.2
 
 
 def get_changelog_url(ver: str) -> str:

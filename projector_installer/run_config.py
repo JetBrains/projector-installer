@@ -8,7 +8,7 @@ import shutil
 from os import listdir, rename
 from os.path import join, isdir, basename
 from shutil import rmtree
-from typing import Optional, Dict, List, TextIO
+from typing import Optional, Dict, List, TextIO, ClassVar
 from fcntl import lockf, LOCK_EX, LOCK_NB
 from dataclasses import dataclass
 
@@ -36,9 +36,11 @@ def get_path_to_certificate_dir(config_name: str) -> str:
 
 @dataclass
 class RunConfig:
-    """Run config dataclass"""
-
     # pylint: disable=too-many-instance-attributes
+    """Run config dataclass"""
+    TESTED: ClassVar[str] = 'tested'  # pylint: disable=invalid-name
+    NOT_TESTED: ClassVar[str] = 'not_tested'  # pylint: disable=invalid-name
+    UNKNOWN: ClassVar[str] = 'unknown'  # pylint: disable=invalid-name
     name: str
     path_to_app: str
     projector_port: int
@@ -50,6 +52,7 @@ class RunConfig:
     certificate: str = ''
     certificate_key: str = ''
     certificate_chain: str = ''
+    update_channel: str = UNKNOWN
 
     def is_secure(self) -> bool:
         """Checks if secure configuration"""
@@ -118,7 +121,8 @@ def load_config(config_name: str) -> RunConfig:
                      config.get('FQDNS', 'FQDNS', fallback=''),
                      config.get('SSL', 'CERTIFICATE_FILE', fallback=''),
                      config.get('SSL', 'KEY_FILE', fallback=''),
-                     config.get('SSL', 'CHAIN_FILE', fallback=''))
+                     config.get('SSL', 'CHAIN_FILE', fallback=''),
+                     config.get('UPDATE', 'CHANNEL', fallback=RunConfig.UNKNOWN))
 
 
 def get_run_script_path(config_name: str) -> str:

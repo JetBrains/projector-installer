@@ -11,14 +11,13 @@ from urllib.error import URLError
 
 import click
 
-from .global_config import get_changelog_url, INSTALL_DIR, USER_HOME
+from .global_config import get_changelog_url, INSTALL_DIR, USER_HOME, LONG_NETWORK_TIMEOUT, \
+    SHORT_NETWORK_TIMEOUT
 from .utils import get_json, is_in_venv
 
 from .version import __version__
 
 PYPI_PRODUCT_URL = 'https://pypi.org/pypi/projector-installer/json'
-LONG_NETWORK_TIMEOUT = 3.0
-SHORT_NETWORK_TIMEOUT = 0.2
 
 
 def get_latest_installer_version(timeout: float) -> Optional[Any]:
