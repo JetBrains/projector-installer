@@ -7,6 +7,7 @@ Notable changes to this project are documented in this file.
 ## Added
 
 - --allow-updates option for config update command
+- update channels
 
 # 0.1.19
 
