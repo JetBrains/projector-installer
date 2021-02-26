@@ -13,10 +13,11 @@ from os.path import isfile
 from typing import Optional, List
 
 from .apps import get_app_path, get_installed_apps, get_product_info, \
-    get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, download_and_install
+    get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, \
+    download_and_install
 from .certificate_chain import get_certificate_chain
 from .global_config import LONG_NETWORK_TIMEOUT
-from .ide_update import is_updatable_ide, get_update, update_config, check_ide_update
+from .ide_update import is_updatable_ide, get_update, update_config, check_ide_update, is_tested_ide
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file, parse_custom_names
 
@@ -349,9 +350,16 @@ def do_update_config(config_name: Optional[str] = None, allow_update: bool = Fal
 
     print('Checking for updates.')
     product = get_update(run_config, timeout=LONG_NETWORK_TIMEOUT)
+    current = get_product_info(run_config.path_to_app).name
 
     if product is None:
-        print(f'There are no updates for IDE {run_config.path_to_app}. Exiting...')
+        msg = f'There are no updates for IDE {current}'
+        if is_tested_ide(run_config):
+            msg += ' in compatible IDE file.'
+        else:
+            msg += ' on release server.'
+
+        print(msg, ' Exiting...')
         return
 
     lock = lock_config(run_config.name)
@@ -362,7 +370,7 @@ def do_update_config(config_name: Optional[str] = None, allow_update: bool = Fal
 
     print(f'Updating IDE for run config {run_config.name}.')
     update_config(run_config, product, allow_update)
-    print(' done.')
+    print(f'{current} is updated to {product.name}')
 
     release_config(lock)
 
