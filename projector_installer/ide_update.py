@@ -96,6 +96,9 @@ def check_ide_update(run_config: RunConfig) -> None:
             click.echo('done.')
 
         if product is not None:
-            msg = f'\nNew version {product.name} is available. ' \
+            prod_info = get_product_info(run_config.path_to_app)
+
+            msg = f'\nNew version {product.name} is available.\n' \
+                  f'Current version {prod_info.version}.\n' \
                   f'To update use command: projector config update {run_config.name}\n'
             click.echo(click.style(msg, bold=True))
