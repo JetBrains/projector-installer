@@ -8,6 +8,7 @@ Notable changes to this project are documented in this file.
 
 - --allow-updates option for config update command
 - update channels
+- IntelliJ 2020.3 based IDE added to compatible list
 
 # 0.1.19
 
