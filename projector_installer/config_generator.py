@@ -23,6 +23,10 @@ TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
 RO_TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_RO_HANDSHAKE_TOKEN'
 SSL_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_SSL_PROPERTIES_PATH'
 
+CLASS_TO_LAUNCH_PROPERTY_NAME='org.jetbrains.projector.server.classToLaunch'
+HOST_PROPERTY_NAME='org.jetbrains.projector.server.host'
+PORT_PROPERTY_NAME='org.jetbrains.projector.server.port'
+
 
 def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
     """Writes run script from src to dst"""
@@ -33,8 +37,11 @@ def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
         elif line.find("classpath") != -1:
             line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
         elif line.find(IDEA_RUN_CLASS) != -1:
-            line = f' -Dorg.jetbrains.projector.server.port={run_config.projector_port} \\\n'
-            line += f' -Dorg.jetbrains.projector.server.classToLaunch={IDEA_RUN_CLASS} \\\n'
+            line = f' -D{PORT_PROPERTY_NAME}={run_config.projector_port} \\\n'
+            line += f' -D{CLASS_TO_LAUNCH_PROPERTY_NAME}={IDEA_RUN_CLASS} \\\n'
+
+            if run_config.projector_host != RunConfig.HOST_ALL:
+                line += f' -D{HOST_PROPERTY_NAME}={run_config.projector_host} \\\n'
 
             if run_config.is_secure():
                 line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
@@ -83,6 +90,7 @@ def save_config(run_config: RunConfig) -> None:
 
     config['PROJECTOR'] = {}
     config['PROJECTOR']['PORT'] = str(run_config.projector_port)
+    config['PROJECTOR']['HOST'] = run_config.projector_host
 
     if run_config.is_secure():
         config['SSL'] = {}

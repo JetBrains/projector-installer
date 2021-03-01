@@ -9,6 +9,9 @@ Notable changes to this project are documented in this file.
 - --allow-updates option for config update command
 - update channels
 - IntelliJ 2020.3 based IDE added to compatible list
+- explicit shutdown projector process on when Ctrl-C is pressed
+- new run config parameter 'projector host' allows to restrict the set 
+  of listening addresses for Projector server 
 
 # 0.1.19
 

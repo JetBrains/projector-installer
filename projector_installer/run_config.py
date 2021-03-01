@@ -41,6 +41,8 @@ class RunConfig:
     TESTED: ClassVar[str] = 'tested'  # pylint: disable=invalid-name
     NOT_TESTED: ClassVar[str] = 'not_tested'  # pylint: disable=invalid-name
     UNKNOWN: ClassVar[str] = 'unknown'  # pylint: disable=invalid-name
+    HOST_ALL: ClassVar[str] = '*'  # pylint: disable=invalid-name
+
     name: str
     path_to_app: str
     projector_port: int
@@ -53,6 +55,7 @@ class RunConfig:
     certificate_key: str = ''
     certificate_chain: str = ''
     update_channel: str = UNKNOWN
+    projector_host: str = HOST_ALL
 
     def is_secure(self) -> bool:
         """Checks if secure configuration"""
@@ -122,7 +125,8 @@ def load_config(config_name: str) -> RunConfig:
                      config.get('SSL', 'CERTIFICATE_FILE', fallback=''),
                      config.get('SSL', 'KEY_FILE', fallback=''),
                      config.get('SSL', 'CHAIN_FILE', fallback=''),
-                     config.get('UPDATE', 'CHANNEL', fallback=RunConfig.UNKNOWN))
+                     config.get('UPDATE', 'CHANNEL', fallback=RunConfig.UNKNOWN),
+                     config.get('PROJECTOR', 'HOST', fallback=RunConfig.HOST_ALL))
 
 
 def get_run_script_path(config_name: str) -> str:

@@ -387,6 +387,17 @@ def select_custom_names(default: str = 'localhost') -> str:
     return custom_names
 
 
+def select_projector_host(default: str = RunConfig.HOST_ALL) -> str:
+    """Asks for Projector's listening address(host)"""
+    use_host = ask('Would you like to specify listening address (or host) for Projector?',
+                   default=False)
+
+    res = prompt_with_default('Enter a Projector listening address (press ENTER for default)',
+                              default=default) if use_host else RunConfig.HOST_ALL
+
+    return res
+
+
 def edit_config(config: RunConfig) -> RunConfig:
     """Edits existing config."""
     config.path_to_app = select_manual_app_path(default=config.path_to_app)
@@ -399,9 +410,10 @@ def edit_config(config: RunConfig) -> RunConfig:
             'when the app updates?', default=True)
 
     config.projector_port = int(prompt_with_default(
-        'Enter a Projector port (press ENTER for default)',
+        'Enter a Projector listening port (press ENTER for default)',
         default=str(config.projector_port)))
 
+    config.projector_host = select_projector_host(config.projector_host)
     config.custom_names = select_custom_names(config.custom_names)
 
     keep_cert = False
@@ -445,19 +457,22 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
             'when the app updates?', default=True)
 
     projector_port = get_def_projector_port()
-
+    projector_host = select_projector_host()
     custom_names = select_custom_names()
 
     password, ro_password = select_password_pair()
 
-    return RunConfig(config_name, expanduser(app_path), projector_port,
-                     '', password, ro_password, is_toolbox, custom_names)
+    return RunConfig(name=config_name, path_to_app=expanduser(app_path),
+                     projector_port=projector_port, projector_host=projector_host,
+                     token='', password=password, ro_password=ro_password,
+                     toolbox=is_toolbox, custom_names=custom_names)
 
 
 def get_quick_config(config_name: str) -> RunConfig:
     """Generates user input in quick mode """
-    return RunConfig(select_unused_config_name(config_name), path_to_app='',
+    return RunConfig(name=select_unused_config_name(config_name), path_to_app='',
                      projector_port=get_def_projector_port(),
+                     projector_host=RunConfig.HOST_ALL,
                      token='', password='', ro_password='',
                      toolbox=False, custom_names='')
 
@@ -470,11 +485,12 @@ def get_user_install_input(config_name_hint: str) -> Optional[RunConfig]:
         return None
 
     projector_port = get_def_projector_port()
-
+    projector_host = select_projector_host()
     custom_names = select_custom_names()
 
     password, ro_password = select_password_pair()
 
-    return RunConfig(config_name, path_to_app='', projector_port=projector_port,
+    return RunConfig(name=config_name, path_to_app='',
+                     projector_port=projector_port, projector_host=projector_host,
                      token='', password=password, ro_password=ro_password,
                      toolbox=False, custom_names=custom_names)
