@@ -62,7 +62,7 @@ def dump_last_log_session(log: TextIO) -> None:
 
 def is_unexpected_exit(ret_code: int) -> bool:
     """Check if process exits without error"""
-    return ret_code not in [0, -2]
+    return ret_code not in [0, -2, -15]
 
 
 def shutdown_log(ret_code: int, log_file: TextIO) -> None:

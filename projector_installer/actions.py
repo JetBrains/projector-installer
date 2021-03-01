@@ -3,7 +3,7 @@
 # in the LICENSE file.
 
 """Real actions performed by projector script."""
-
+import os
 import shutil
 import signal
 import subprocess
@@ -135,6 +135,9 @@ def regenerate_config_if_toolbox(run_config: RunConfig) -> RunConfig:
     return run_config
 
 
+PROJECTOR_PID = None
+
+
 def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
     """Executes specified config. If given name does not specify
     config, runs interactive selection procedure."""
@@ -164,14 +167,18 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
     def signal_handler(*args):  # type: ignore
         # pylint: disable=unused-argument
         print('\nCtrl-C is pressed, exiting...')
-
-    signal.signal(signal.SIGINT, signal_handler)
+        if PROJECTOR_PID:
+            os.kill(PROJECTOR_PID, signal.SIGTERM)
 
     log_file = init_log(run_config.name)
 
     projector_process = subprocess.Popen([f'{run_script_name}'],
                                          stdout=log_file,
                                          stderr=log_file)
+
+    global PROJECTOR_PID  # pylint: disable=global-statement
+    PROJECTOR_PID = projector_process.pid
+    signal.signal(signal.SIGINT, signal_handler)
 
     access_urls = get_access_urls(run_config)
     urls_string = "\n\t".join(access_urls)
