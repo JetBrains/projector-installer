@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.0.0
 
 ## Added
 
@@ -12,6 +12,10 @@ Notable changes to this project are documented in this file.
 - explicit shutdown projector process on when Ctrl-C is pressed
 - new run config parameter 'projector host' allows to restrict the set 
   of listening addresses for Projector server 
+
+## Changed
+
+- Projector server v1.0.0
 
 # 0.1.19
 
