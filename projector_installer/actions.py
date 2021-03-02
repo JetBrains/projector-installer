@@ -128,7 +128,7 @@ def regenerate_config_if_toolbox(run_config: RunConfig) -> RunConfig:
     if run_config.toolbox:
         path_to_app = get_path_to_latest_app(run_config.path_to_app)
 
-        if path_to_app:
+        if path_to_app and run_config.path_to_app != path_to_app:
             run_config.path_to_app = path_to_app
             save_config(run_config)
 
