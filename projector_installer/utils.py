@@ -145,7 +145,6 @@ def get_java_version(java_path: str) -> str:
     proc = subprocess.Popen([java_path, '-version'],
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
-
     line = io.TextIOWrapper(cast(BinaryIO, proc.stderr), encoding='utf-8').readline()
     values = line.split(' ')
     version = values[2]
@@ -209,7 +208,7 @@ def expand_path(path: str) -> str:
 
 
 def is_in_venv() -> bool:
-    """Check if process run in Python virtual enviromnment"""
+    """Check if process run in Python virtual environment"""
 
     def get_base_prefix() -> Optional[str]:
         """Safe get the sys.base_prefix property"""
