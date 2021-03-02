@@ -5,9 +5,6 @@
 """IDE update stuff"""
 from distutils.version import LooseVersion
 from typing import Optional, List
-from urllib.error import URLError
-
-import socket
 import click
 
 from .config_generator import save_config
@@ -15,6 +12,7 @@ from .global_config import SHORT_NETWORK_TIMEOUT, LONG_NETWORK_TIMEOUT
 from .products import Product, get_product_releases, IDEKind, init_compatible_apps
 from .apps import is_projector_installed_ide, get_product_info, download_and_install
 from .run_config import RunConfig
+from .timeout import TimeoutException, timeout
 
 CODE2KIND = {
     'IC': IDEKind.Idea_Community,
@@ -57,7 +55,7 @@ def is_tested_ide(run_config: RunConfig) -> bool:
     return run_config.update_channel == RunConfig.TESTED
 
 
-def get_update(run_config: RunConfig, timeout: float) -> Optional[Product]:
+def get_update(run_config: RunConfig) -> Optional[Product]:
     """Returns update for given app if available"""
     prod_info = get_product_info(run_config.path_to_app)
     kind: IDEKind = CODE2KIND.get(prod_info.product_code, IDEKind.Unknown)
@@ -68,7 +66,7 @@ def get_update(run_config: RunConfig, timeout: float) -> Optional[Product]:
     current = LooseVersion(prod_info.version)
 
     prod_list = get_product_list_from_file(kind) \
-        if is_tested_ide(run_config) else get_product_releases(kind, timeout)
+        if is_tested_ide(run_config) else get_product_releases(kind, timeout=LONG_NETWORK_TIMEOUT)
 
     product = None
 
@@ -85,14 +83,20 @@ def update_config(run_config: RunConfig, product: Product, allow_updates: bool) 
     save_config(run_config)
 
 
+@timeout(SHORT_NETWORK_TIMEOUT)
+def get_fast_update(run_config: RunConfig) -> Optional[Product]:
+    """Checks available updates with short network timeout"""
+    return get_update(run_config)
+
+
 def check_ide_update(run_config: RunConfig) -> None:
     """Check if update is available and prints message if yes"""
     if is_updatable_ide(run_config.path_to_app):
         try:
-            product = get_update(run_config, SHORT_NETWORK_TIMEOUT)
-        except (URLError, socket.timeout):
+            product = get_fast_update(run_config)
+        except TimeoutException:
             click.echo('Checking for updates ... ', nl=False)
-            product = get_update(run_config, LONG_NETWORK_TIMEOUT)
+            product = get_update(run_config)
             click.echo('done.')
 
         if product is not None:
@@ -102,3 +106,22 @@ def check_ide_update(run_config: RunConfig) -> None:
                   f'Current version {prod_info.version}.\n' \
                   f'To update use command: projector config update {run_config.name}\n'
             click.echo(click.style(msg, bold=True))
+
+#
+# def check_ide_update(run_config: RunConfig) -> None:
+#     """Check if update is available and prints message if yes"""
+#     if is_updatable_ide(run_config.path_to_app):
+#         try:
+#             product = get_update(run_config, SHORT_NETWORK_TIMEOUT)
+#         except (URLError, socket.timeout):
+#             click.echo('Checking for updates ... ', nl=False)
+#             product = get_update(run_config, LONG_NETWORK_TIMEOUT)
+#             click.echo('done.')
+#
+#         if product is not None:
+#             prod_info = get_product_info(run_config.path_to_app)
+#
+#             msg = f'\nNew version {product.name} is available.\n' \
+#                   f'Current version {prod_info.version}.\n' \
+#                   f'To update use command: projector config update {run_config.name}\n'
+#             click.echo(click.style(msg, bold=True))

@@ -16,7 +16,6 @@ from .apps import get_app_path, get_installed_apps, get_product_info, \
     get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, \
     download_and_install
 from .certificate_chain import get_certificate_chain
-from .global_config import LONG_NETWORK_TIMEOUT
 from .ide_update import is_updatable_ide, get_update, update_config, check_ide_update, is_tested_ide
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file, parse_custom_names
@@ -356,7 +355,7 @@ def do_update_config(config_name: Optional[str] = None, allow_update: bool = Fal
         return
 
     print('Checking for updates.')
-    product = get_update(run_config, timeout=LONG_NETWORK_TIMEOUT)
+    product = get_update(run_config)
     current = get_product_info(run_config.path_to_app).name
 
     if product is None:

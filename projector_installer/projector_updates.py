@@ -13,6 +13,8 @@ import click
 
 from .global_config import get_changelog_url, INSTALL_DIR, USER_HOME, LONG_NETWORK_TIMEOUT, \
     SHORT_NETWORK_TIMEOUT
+
+from .timeout import timeout, TimeoutException
 from .utils import get_json, is_in_venv
 
 from .version import __version__
@@ -20,10 +22,10 @@ from .version import __version__
 PYPI_PRODUCT_URL = 'https://pypi.org/pypi/projector-installer/json'
 
 
-def get_latest_installer_version(timeout: float) -> Optional[Any]:
+def get_latest_installer_version(time: float) -> Optional[Any]:
     """Retrieve projector-installer version from pypi with given timeout"""
     try:
-        res = get_json(PYPI_PRODUCT_URL, timeout=timeout)
+        res = get_json(PYPI_PRODUCT_URL, timeout=time)
         return res['info']['version']
     except (URLError, socket.timeout):
         return None
@@ -67,17 +69,24 @@ def get_update_command() -> str:
     return UPDATE_COMMAND
 
 
+@timeout(SHORT_NETWORK_TIMEOUT)
+def get_latest_version_fast() -> Optional[Any]:
+    """Decorated for fast check"""
+    return get_latest_installer_version(LONG_NETWORK_TIMEOUT)
+
+
 def check_for_projector_updates() -> None:
     """Check if new projector version is available"""
-    pypi_version = get_latest_installer_version(timeout=SHORT_NETWORK_TIMEOUT)
 
-    if pypi_version is None:
+    try:
+        pypi_version = get_latest_version_fast()
+    except TimeoutException:
         click.echo('Checking for updates ... ', nl=False)
-        pypi_version = get_latest_installer_version(timeout=LONG_NETWORK_TIMEOUT)
+        pypi_version = get_latest_installer_version(LONG_NETWORK_TIMEOUT)
         click.echo('done.')
 
-        if pypi_version is None:
-            return
+    if pypi_version is None:
+        return
 
     if is_newer_than_current(pypi_version):
         msg = f'\nNew version {pypi_version} of projector-installer is available ' \
