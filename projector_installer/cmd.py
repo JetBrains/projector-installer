@@ -4,7 +4,8 @@
 
 
 """Command line interface to projector-installer"""
-from os import path
+import sys
+from os import path, getcwd
 from typing import Any, Optional
 import click
 
@@ -24,6 +25,15 @@ def is_first_start() -> bool:
     return not path.isdir(global_config.config_dir)
 
 
+def is_cwd_exist() -> bool:
+    """Checks cwd existence"""
+    try:
+        getcwd()
+        return True
+    except FileNotFoundError:
+        return False
+
+
 @click.group(invoke_without_command=True)
 @click.pass_context
 @click.version_option()
@@ -37,6 +47,10 @@ def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
     """
     This script helps to install, manage, and run JetBrains IDEs with Projector.
     """
+
+    if not is_cwd_exist():
+        print('Could not determine current working directory. Exiting...')
+        sys.exit(1)
 
     check_for_projector_updates()
 
