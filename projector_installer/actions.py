@@ -102,7 +102,7 @@ def get_access_urls(run_config: RunConfig) -> List[str]:
             addresses = ['localhost'] + addresses
 
     for address in addresses:
-        urls.append(f'{schema}://{address}:{run_config.projector_port}/index.html')
+        urls.append(f'{schema}://{address}:{run_config.projector_port}/')
 
     if run_config.password:
         res = list(map(lambda x: x + "?token=" + run_config.password, urls))
