@@ -5,7 +5,7 @@
 
 """Command line interface to projector-installer"""
 import sys
-from os import path, getcwd
+from os import path, getcwd, getenv
 from typing import Any, Optional
 import click
 
@@ -49,7 +49,8 @@ def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
     """
 
     if not is_cwd_exist():
-        print('Could not determine current working directory. Exiting...')
+        it = getenv('PWD', 'it')  # pylint: disable=invalid-name
+        print(f'Could not determine current working directory. Does {it} exist? Exiting...')
         sys.exit(1)
 
     check_for_projector_updates()
