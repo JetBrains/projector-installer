@@ -2,6 +2,20 @@
 
 Notable changes to this project are documented in this file.
 
+# 1.0.1
+
+## Changes
+
+- Simplify URLs
+- Avoid recreating config when not necessary
+- Check for cwd existence on start
+- Forbid usage of special symbols in passwords (not for long)
+
+## Fix
+
+- Typos
+- Unexpected timeouts
+
 # 1.0.0
 
 ## Added
