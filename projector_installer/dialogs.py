@@ -256,7 +256,7 @@ def select_manual_app_path(default: str = '') -> str:
         if is_valid_app_path(path):
             return path
 
-        click.echo(f'Path {path} does not looks like a valid path.')
+        click.echo(f'Path {path} does not look like a valid path.')
 
 
 def select_app_path() -> Optional[str]:
