@@ -4,7 +4,7 @@
 
 
 """User dialog related procedures."""
-
+import string
 import sys
 import readline
 
@@ -347,10 +347,26 @@ def select_projector_port() -> int:
     return res
 
 
+ALPHABET = string.ascii_letters + string.digits
+
+
+def is_valid_password(password: str) -> bool:
+    """Check password symbols for validity"""
+    return all(list(map(lambda it: ALPHABET.find(it) >= 0, password)))
+
+
 def select_password(prompt: str, default: str = '') -> str:
     """Prompts for password if needed """
-    password: str = click.prompt(text=prompt, default=default, hide_input=True,
-                                 confirmation_prompt=True)
+
+    is_valid = False
+
+    while not is_valid:
+        password: str = click.prompt(text=prompt, default=default, hide_input=True,
+                                     confirmation_prompt=True)
+        is_valid = is_valid_password(password)
+
+        if not is_valid:
+            click.echo('Invalid password. Please use only alphanumeric symbols.')
 
     return password
 
@@ -362,6 +378,7 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
     need_password = ask('Would you like to set password for connection?', default=False)
 
     if need_password:
+        click.echo('Please use only alphanumeric symbols in passwords.')
         password = select_password('Please specify RW password:', default=def_password)
 
         need_ro_password = ask('Would you like to set separate read-only password?', default=False)

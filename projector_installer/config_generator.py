@@ -23,9 +23,9 @@ TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_HANDSHAKE_TOKEN'
 RO_TOKEN_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_RO_HANDSHAKE_TOKEN'
 SSL_ENV_NAME = 'ORG_JETBRAINS_PROJECTOR_SERVER_SSL_PROPERTIES_PATH'
 
-CLASS_TO_LAUNCH_PROPERTY_NAME='org.jetbrains.projector.server.classToLaunch'
-HOST_PROPERTY_NAME='org.jetbrains.projector.server.host'
-PORT_PROPERTY_NAME='org.jetbrains.projector.server.port'
+CLASS_TO_LAUNCH_PROPERTY_NAME = 'org.jetbrains.projector.server.classToLaunch'
+HOST_PROPERTY_NAME = 'org.jetbrains.projector.server.host'
+PORT_PROPERTY_NAME = 'org.jetbrains.projector.server.port'
 
 
 def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
@@ -84,7 +84,7 @@ def generate_run_script(run_config: RunConfig) -> None:
 
 def save_config(run_config: RunConfig) -> None:
     """Saves given run config."""
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(strict=False, interpolation=None)
     config['IDE'] = {}
     config['IDE']['PATH'] = run_config.path_to_app
 

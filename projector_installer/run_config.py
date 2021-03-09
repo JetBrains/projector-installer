@@ -110,7 +110,7 @@ class RunConfig:
 
 def load_config(config_name: str) -> RunConfig:
     """Loads specified config from disk."""
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(strict=False, interpolation=None)
     config_path = join(get_path_to_config(config_name), CONFIG_INI_NAME)
     config.read(config_path)
 
