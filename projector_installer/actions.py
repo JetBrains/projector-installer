@@ -218,7 +218,7 @@ def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> 
         print('Creating config in quick mode; '
               'for full customization you can rerun this command '
               'with "--expert" argument or edit this config later '
-              'via "projector config edit" command')
+              'via "projector config edit" command.')
 
     app = app_path if app_path and is_valid_app_path(app_path) else select_app_path()
 
@@ -438,7 +438,7 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
         print('Installing IDE in quick mode; '
               'for full customization you can rerun this command '
               'with "--expert" argument or edit this config later '
-              'via "projector config edit" command')
+              'via "projector config edit" command.')
 
     channel, app = select_app(app_name)
 
