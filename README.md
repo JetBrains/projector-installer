@@ -38,7 +38,7 @@ can install them using the command:
 sudo apt install python3 python3-pip 
 ``` 
 
-If you are running Ubuntu 18.04 or earlier update pip using the following command:
+If you are running Ubuntu 18.04 or earlier update pip using the following command (for each user under which projector will be used):
 
 ```bash
 python3 -m pip install -U pip 
