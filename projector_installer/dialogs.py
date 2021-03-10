@@ -7,6 +7,7 @@
 import string
 import sys
 import readline
+from getpass import getpass
 
 from os.path import expanduser
 from typing import Optional, Dict, List, Tuple, TypeVar, Callable
@@ -355,18 +356,46 @@ def is_valid_password(password: str) -> bool:
     return all(list(map(lambda it: ALPHABET.find(it) >= 0, password)))
 
 
-def select_password(prompt: str, default: str = '') -> str:
-    """Prompts for password if needed """
-
+def enter_password(prompt: str, default: str = '') -> str:
+    """Hidden password input"""
     is_valid = False
+    password: str = ''
 
     while not is_valid:
-        password: str = click.prompt(text=prompt, default=default, hide_input=True,
-                                     confirmation_prompt=True)
+        try:
+            password = getpass(prompt)
+        except (KeyboardInterrupt, EOFError):
+            click.echo(None)
+            sys.exit(1)
+
+        if not password and default:
+            password = default
+
         is_valid = is_valid_password(password)
 
         if not is_valid:
             click.echo('Invalid password. Please use only alphanumeric symbols.')
+
+    return password
+
+
+def select_password(prompt: str, default: str = '') -> str:
+    """Prompts for password"""
+    matched_passwords = False
+    password: str = ''
+
+    while not matched_passwords:
+        password = enter_password(prompt, default)
+
+        if default and password == default:
+            return password
+
+        repeat = enter_password("Repeat password:", default)
+
+        matched_passwords = password == repeat
+
+        if not matched_passwords:
+            click.echo('Password mismatch. Please try again.')
 
     return password
 
