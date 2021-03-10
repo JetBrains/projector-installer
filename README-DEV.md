@@ -4,14 +4,14 @@ who is trying to install projector-installer from source and/or
 to build own wheel file.  
 
 # Table of Contents
-1. [Setup virtual environment](#Setup-virtual-environment) 
+1. [Prepare environment](#Prepare-environment) 
 2. [Install from source](#Install-from-source)
 3. [Create python wheel file](#Create-python-wheel-file)
 4. [Install from wheel file](#Install-from-wheel-file)
 5. [Publish](#Publish)
  
-## Setup virtual environment
-For experiments you may want to use virtual environment.
+## Prepare environment
+For experiments, you may want to use virtual environment.
 To use it you have to install python3-venv package first:
  ```commandline
 sudo apt install python3-venv
@@ -23,10 +23,16 @@ python3 -m venv venv
 source ./venv/bin/activate 
 ```
 
+If you are running Ubuntu 18.04 or earlier distributive it is necessary to upgrade pip
+with command:
+```commandline
+python3 -m pip install -U pip 
+```
+
 To leave virtual environment use command
 ```commandline
 deactivate
-``` 
+```
 
 ## Install from source 
 ```shell script
