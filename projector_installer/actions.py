@@ -101,10 +101,10 @@ def get_access_urls(run_config: RunConfig) -> List[str]:
         urls.append(f'{schema}://{address}:{run_config.projector_port}/')
 
     if run_config.password:
-        res = list(map(lambda x: x + "?token=" + quote(run_config.password, safe=''), urls))
+        res = list(map(lambda x: x + "?token=" + quote(run_config.password), urls))
 
         if run_config.password != run_config.ro_password:
-            res += list(map(lambda x: x + "?token=" + quote(run_config.ro_password, safe=''), urls))
+            res += list(map(lambda x: x + "?token=" + quote(run_config.ro_password), urls))
 
         urls = res
 
