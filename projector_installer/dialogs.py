@@ -4,7 +4,6 @@
 
 
 """User dialog related procedures."""
-import string
 import sys
 import readline
 from getpass import getpass
@@ -348,33 +347,16 @@ def select_projector_port() -> int:
     return res
 
 
-ALPHABET = string.ascii_letters + string.digits
-
-
-def is_valid_password(password: str) -> bool:
-    """Check password symbols for validity"""
-    return all(list(map(lambda it: ALPHABET.find(it) >= 0, password)))
-
-
 def enter_password(prompt: str, default: str = '') -> str:
     """Hidden password input"""
-    is_valid = False
-    password: str = ''
+    try:
+        password = getpass(prompt)
+    except (KeyboardInterrupt, EOFError):
+        click.echo(None)
+        sys.exit(1)
 
-    while not is_valid:
-        try:
-            password = getpass(prompt)
-        except (KeyboardInterrupt, EOFError):
-            click.echo(None)
-            sys.exit(1)
-
-        if not password and default:
-            password = default
-
-        is_valid = is_valid_password(password)
-
-        if not is_valid:
-            click.echo('Invalid password. Please use only alphanumeric symbols.')
+    if not password and default:
+        password = default
 
     return password
 

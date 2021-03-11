@@ -11,6 +11,7 @@ import sys
 from os import path, system, uname, remove
 from os.path import isfile
 from typing import Optional, List
+from urllib.parse import quote
 
 from .apps import get_app_path, get_installed_apps, get_product_info, \
     get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, \
@@ -85,11 +86,7 @@ def wsl_warning() -> None:
 def get_access_urls(run_config: RunConfig) -> List[str]:
     """Returns access URLs for given config"""
 
-    schema = 'http'
-
-    if run_config.is_secure():
-        schema = 'https'
-
+    schema = 'https' if run_config.is_secure() else 'http'
     urls = []
 
     if run_config.custom_names:
@@ -104,10 +101,10 @@ def get_access_urls(run_config: RunConfig) -> List[str]:
         urls.append(f'{schema}://{address}:{run_config.projector_port}/')
 
     if run_config.password:
-        res = list(map(lambda x: x + "?token=" + run_config.password, urls))
+        res = list(map(lambda x: x + "?token=" + quote(run_config.password, safe=''), urls))
 
         if run_config.password != run_config.ro_password:
-            res += list(map(lambda x: x + "?token=" + run_config.ro_password, urls))
+            res += list(map(lambda x: x + "?token=" + quote(run_config.ro_password, safe=''), urls))
 
         urls = res
 
