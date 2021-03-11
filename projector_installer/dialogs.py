@@ -389,7 +389,6 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
     need_password = ask('Would you like to set password for connection?', default=False)
 
     if need_password:
-        click.echo('Please use only alphanumeric symbols in passwords.')
         password = select_password('Please specify RW password:', default=def_password)
 
         need_ro_password = ask('Would you like to set separate read-only password?', default=False)
