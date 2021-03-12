@@ -29,6 +29,19 @@ HOST_PROPERTY_NAME = 'org.jetbrains.projector.server.host'
 PORT_PROPERTY_NAME = 'org.jetbrains.projector.server.port'
 
 
+def token_quote(token: str) -> str:
+    """Returns shell quoted token"""
+    res = quote(token)
+
+    if res:
+        if res[0] == res[-1] == '\'':
+            return res
+
+        res = f'\"{res}\"'
+
+    return res
+
+
 def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
     """Writes run script from src to dst"""
 
@@ -48,8 +61,8 @@ def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
                 line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
 
             if run_config.is_password_protected():
-                line += f' -D{TOKEN_ENV_NAME}={quote(run_config.password)} \\\n'
-                line += f' -D{RO_TOKEN_ENV_NAME}={quote(run_config.ro_password)} \\\n'
+                line += f' -D{TOKEN_ENV_NAME}={token_quote(run_config.password)} \\\n'
+                line += f' -D{RO_TOKEN_ENV_NAME}={token_quote(run_config.ro_password)} \\\n'
 
             line += f'  {PROJECTOR_RUN_CLASS}\\\n'
 
