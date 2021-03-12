@@ -8,6 +8,7 @@ import configparser
 import io
 from os import mkdir, stat, chmod
 from os.path import join, isdir
+from shlex import quote
 from typing import TextIO
 
 from .apps import get_launch_script
@@ -47,8 +48,8 @@ def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
                 line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
 
             if run_config.is_password_protected():
-                line += f' -D{TOKEN_ENV_NAME}=\"{run_config.password}\" \\\n'
-                line += f' -D{RO_TOKEN_ENV_NAME}=\"{run_config.ro_password}\" \\\n'
+                line += f' -D{TOKEN_ENV_NAME}={quote(run_config.password)} \\\n'
+                line += f' -D{RO_TOKEN_ENV_NAME}={quote(run_config.ro_password)} \\\n'
 
             line += f'  {PROJECTOR_RUN_CLASS}\\\n'
 
