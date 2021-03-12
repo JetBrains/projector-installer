@@ -111,9 +111,16 @@ def select_installed_app(pattern: Optional[str] = None) -> Optional[str]:
                             'Choose an IDE number to uninstall or 0 to exit')
 
 
-def select_ide_kind() -> Optional[IDEKind]:
-    """Interactively selects desired IDE kind"""
+def select_ide_kind(pattern: Optional[str]) -> Optional[IDEKind]:
+    """Select an IDE kind that matches the given pattern or interactively select one otherwise"""
     kinds = [k for k in IDEKind if k != IDEKind.Unknown]
+    if pattern:
+        pattern = pattern.lower().split(' ')[0]
+        matched_kinds = [k for k in kinds if k.name.lower().startswith(pattern)]
+        if len(matched_kinds) == 1:
+            return matched_kinds[0]
+        if len(matched_kinds) > 1:
+            kinds = matched_kinds
     return select_from_list(kinds, lambda it: it.name, 'Choose IDE type or 0 to exit')
 
 
@@ -137,7 +144,7 @@ def get_app_list(kind: IDEKind, pattern: Optional[str] = None) -> Tuple[str, Lis
 
 def find_apps(pattern: Optional[str] = None) -> None:
     """Pretty-print projector-compatible applications, matched to given pattern."""
-    kind = select_ide_kind()
+    kind = select_ide_kind(pattern)
 
     if kind is None:
         print('No app kind selected, exiting...')
@@ -148,13 +155,18 @@ def find_apps(pattern: Optional[str] = None) -> None:
 
 
 def select_app(pattern: Optional[str] = None) -> Tuple[str, Optional[Product]]:
-    """Interactively selects app name from list of projector-compatible applications."""
-    kind = select_ide_kind()
+    """Selects app name from list of projector-compatible applications."""
+    kind = select_ide_kind(pattern)
 
     if kind is None:
         return RunConfig.UNKNOWN, None
 
-    channel, apps = get_app_list(kind, pattern)
+    if pattern:
+        matched_apps = get_all_apps(kind, pattern)
+        if len(matched_apps) == 1:
+            return RunConfig.NOT_TESTED, matched_apps[0]
+
+    channel, apps = get_app_list(kind)
 
     return channel, select_from_list(apps, lambda it: it.name,
                                      'Choose IDE number to install or 0 to exit')
