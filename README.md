@@ -25,6 +25,7 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     5. [WSL issues](#WSL-issues)
     6. [projector exits immediately](#projector-exits-immediately)
     7. [Using Projector as systemd service](#Using-Projector-as-systemd-service)
+    8. [Change existing configuration](#Change-existing-configuration)
 
 ## Installation
 
@@ -224,3 +225,8 @@ Straightforward creating systemd service to automatically start Projector in the
 process. You can avoid this using projector generated run script instead of using projector run command. For details
 refer to the answer of [this](https://youtrack.jetbrains.com/issue/PRJ-298) issue.
 
+### Change existing configuration
+To change run config (for example - change listening port or access password) use command 
+```commandline
+projector config edit
+```
