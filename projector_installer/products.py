@@ -39,6 +39,7 @@ class IDEKind(Enum):
     PhpStorm = auto()
     WebStorm = auto()
     RubyMine = auto()
+    Rider = auto()
 
 
 @dataclass
