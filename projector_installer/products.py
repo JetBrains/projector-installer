@@ -145,6 +145,7 @@ KIND2CODE = {
     IDEKind.PhpStorm: 'PS',
     IDEKind.WebStorm: 'WS',
     IDEKind.RubyMine: 'RM',
+    IDEKind.Rider: 'RD',
 }
 
 # All releases before this version considered as unsupported
