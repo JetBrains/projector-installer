@@ -2,6 +2,12 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Changed
+- special symbols in passwords are enabled again 
+
+
 # 1.0.1
 
 ## Changes
