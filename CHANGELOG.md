@@ -4,6 +4,9 @@ Notable changes to this project are documented in this file.
 
 # Unreleased
 
+## Fixed
+- ide install command behaviour
+
 ## Changed
 - special symbols in passwords are enabled again 
 
