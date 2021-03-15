@@ -25,6 +25,7 @@ CODE2KIND = {
     'PS': IDEKind.PhpStorm,
     'WS': IDEKind.WebStorm,
     'RM': IDEKind.RubyMine,
+    'RD': IDEKind.Rider
 }
 
 
@@ -106,22 +107,3 @@ def check_ide_update(run_config: RunConfig) -> None:
                   f'Current version {prod_info.version}.\n' \
                   f'To update use command: projector config update {run_config.name}\n'
             click.echo(click.style(msg, bold=True))
-
-#
-# def check_ide_update(run_config: RunConfig) -> None:
-#     """Check if update is available and prints message if yes"""
-#     if is_updatable_ide(run_config.path_to_app):
-#         try:
-#             product = get_update(run_config, SHORT_NETWORK_TIMEOUT)
-#         except (URLError, socket.timeout):
-#             click.echo('Checking for updates ... ', nl=False)
-#             product = get_update(run_config, LONG_NETWORK_TIMEOUT)
-#             click.echo('done.')
-#
-#         if product is not None:
-#             prod_info = get_product_info(run_config.path_to_app)
-#
-#             msg = f'\nNew version {product.name} is available.\n' \
-#                   f'Current version {prod_info.version}.\n' \
-#                   f'To update use command: projector config update {run_config.name}\n'
-#             click.echo(click.style(msg, bold=True))
