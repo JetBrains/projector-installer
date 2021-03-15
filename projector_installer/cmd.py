@@ -63,8 +63,10 @@ def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
     if is_first_start():
         display_license()
         init_config_dir()
-        print('Please select IDE to install:')
-        do_install_app(None, auto_run=True, allow_updates=False, run_browser=True)
+
+        if not ctx.invoked_subcommand:
+            print('Please select IDE to install:')
+            do_install_app(None, auto_run=True, allow_updates=False, run_browser=True)
     elif not ctx.invoked_subcommand:
         click.echo(ctx.get_help())
     else:
