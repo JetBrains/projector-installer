@@ -47,7 +47,7 @@ def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
 
     for line in src:
         if line.startswith("IDE_BIN_HOME"):
-            line = f'IDE_BIN_HOME={join(run_config.path_to_app, "bin")}\n'
+            line = f'IDE_BIN_HOME={quote(join(run_config.path_to_app, "bin"))}\n'
         elif line.find("classpath") != -1:
             line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
         elif line.find(IDEA_RUN_CLASS) != -1:
