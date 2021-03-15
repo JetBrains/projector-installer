@@ -4,6 +4,9 @@ Notable changes to this project are documented in this file.
 
 # Unreleased
 
+## Added
+- Rider IDE support
+
 ## Fixed
 - ide install command behaviour
 
