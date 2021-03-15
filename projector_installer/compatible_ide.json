@@ -25,5 +25,6 @@
     {"name": "PyCharm Professional 2020.2", "url": "https://download.jetbrains.com/python/pycharm-professional-2020.2.tar.gz", "kind":  "PyCharm_Professional"},
     {"name": "PyCharm Professional 2020.3.3", "url": "https://download.jetbrains.com/python/pycharm-professional-2020.3.3.tar.gz", "kind":  "PyCharm_Professional"},
     {"name": "RubyMine 2020.3.2", "url": "https://download.jetbrains.com/ruby/RubyMine-2020.3.2.tar.gz", "kind":  "RubyMine"},
-    {"name": "WebStorm 2020.3.2", "url": "https://download.jetbrains.com/webstorm/WebStorm-2020.3.2.tar.gz", "kind":  "WebStorm"}
+    {"name": "WebStorm 2020.3.2", "url": "https://download.jetbrains.com/webstorm/WebStorm-2020.3.2.tar.gz", "kind":  "WebStorm"},
+    {"name": "Rider 2020.3.3", "url": "https://download.jetbrains.com/rider/JetBrains.Rider-2020.3.3.tar.gz", "kind":  "Rider"}
 ]
