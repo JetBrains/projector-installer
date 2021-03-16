@@ -78,7 +78,7 @@ def prompt_with_default(prompt: str, default: str) -> str:
     """Asks for user input with default"""
     res: str = click.prompt(prompt, default=default)
 
-    if res == default and use_eol_workaround():
+    if res == default:
         print()
 
     return res
