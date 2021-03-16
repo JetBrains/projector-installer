@@ -26,6 +26,7 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     6. [projector exits immediately](#projector-exits-immediately)
     7. [Using Projector as systemd service](#Using-Projector-as-systemd-service)
     8. [Change existing configuration](#Change-existing-configuration)
+    9. [FreeBSD support](#FreeBSD-support)
 
 ## Installation
 
@@ -230,3 +231,34 @@ To change run config (for example - change listening port or access password) us
 ```commandline
 projector config edit
 ```
+
+### FreeBSD support
+projector-installer since ver. 1.0.2 has experimental FreeBSD support.
+To run Projector on FreeBSD perform the following steps
+(tested on FreeBSD-RELEASE 12.2):
+
+
+- install python 3.7 with necessary packages:
+```commandline
+sudo pkg install python37
+sudo pkg install py37-pip
+sudo pkg install py37-cryptography 
+```
+
+- install openjdk11:
+```commandline
+sudo pkg install openjdk11
+```
+
+- install projector-installer:
+```commandline
+pip install projector-installer --user
+```
+_WARNING:_ 
+1. Do not forget --user option!
+2. pip will fire several warning messages on incompatible cryptography module. 
+   You can safely ignore them.
+
+- add ~/.local/bin directory to your PATH variable.
+
+- run `projector` as usual 
