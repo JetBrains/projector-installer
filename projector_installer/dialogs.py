@@ -68,7 +68,7 @@ def ask(prompt: str, default: bool) -> bool:
     res: bool = click.prompt(question, type=bool, default=default,  # type: ignore
                              show_default=False)
 
-    if res == default and use_eol_workaround():
+    if res == default:
         print()
 
     return res
