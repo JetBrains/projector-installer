@@ -6,9 +6,11 @@ Notable changes to this project are documented in this file.
 
 ## Added
 - Rider IDE support
+- Experimental [FreeBSD support](https://github.com/JetBrains/projector-installer#FreeBSD-support)
 
 ## Fixed
 - ide install command behaviour
+- missed carriage return on default selection on some platforms
 
 ## Changed
 - special symbols in passwords are enabled again 
