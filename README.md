@@ -46,7 +46,7 @@ If you are running Ubuntu 18.04 or earlier update pip using the following comman
 python3 -m pip install -U pip 
 ```
 
-Also make sure that you have installed the following packets:
+Also make sure that you have installed the following packages:
 
 - libxext6
 - libxi6
