@@ -17,7 +17,7 @@ import click
 from .run_config import get_run_configs, RunConfig, get_run_config_names, get_used_projector_ports
 from .apps import get_installed_apps, get_app_path, is_toolbox_path, is_valid_app_path
 from .secure_config import generate_token
-from .utils import get_local_addresses, get_distributive_name
+from .utils import get_local_addresses
 from .products import get_compatible_apps, IDEKind, Product, get_all_apps
 
 DEF_PROJECTOR_PORT: int = 9999
@@ -60,28 +60,43 @@ def list_apps(pattern: Optional[str]) -> None:
     print_selection_list(apps)
 
 
+def get_user_input(prompt: str, default: str) -> str:
+    """Get user input string"""
+    res = input(prompt)
+
+    if not res:
+        res = default
+
+    return res
+
+
+YES_NO_STR = ['y', 'Y', 'n', 'N']
+
+
+def is_boolean_input(inp: str) -> bool:
+    """Checks if is valid boolean input"""
+    return inp in YES_NO_STR
+
+
 def ask(prompt: str, default: bool) -> bool:
     """Returns Yes-No result for given prompt.
     Contains workaround for Linux Mint issue with no-eol-on-default
     """
     question = prompt + (' [Y/n]' if default else ' [y/N]')
-    res: bool = click.prompt(question, type=bool, default=default,  # type: ignore
-                             show_default=False)
+    def_str = 'y' if default else 'n'
+    res = get_user_input(question, def_str)
 
-    if res == default:
-        print()
+    while not is_boolean_input(res):
+        print("Invalid input, please answer y or n.")
+        res = get_user_input(question, def_str)
 
-    return res
+    return res in ('y', 'Y')
 
 
 def prompt_with_default(prompt: str, default: str) -> str:
-    """Asks for user input with default"""
-    res: str = click.prompt(prompt, default=default)
-
-    if res == default:
-        print()
-
-    return res
+    """Get string user input with def prompt"""
+    prompt = prompt + f' [{default}]:'
+    return get_user_input(prompt, default)
 
 
 T = TypeVar('T', IDEKind, Product, str)  # pylint: disable=C0103
@@ -123,14 +138,6 @@ def select_ide_kind(pattern: Optional[str]) -> Optional[IDEKind]:
         if len(matched_kinds) > 1:
             kinds = matched_kinds
     return select_from_list(kinds, lambda it: it.name, 'Choose IDE type or 0 to exit')
-
-
-NO_EOL_DISTRIBUTIVE_LIST = ['LinuxMint']
-
-
-def use_eol_workaround() -> bool:
-    """Checks if need extra eol"""
-    return get_distributive_name() in NO_EOL_DISTRIBUTIVE_LIST
 
 
 def get_app_list(kind: IDEKind, pattern: Optional[str] = None) -> Tuple[str, List[Product]]:
