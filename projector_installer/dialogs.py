@@ -4,6 +4,7 @@
 
 
 """User dialog related procedures."""
+import platform
 import sys
 import readline
 from getpass import getpass
@@ -298,7 +299,10 @@ def get_all_listening_ports() -> List[int]:
     Returns all tcp port numbers in LISTEN state (on any address).
     Reads port state from /proc/net/tcp.
     """
-    res = []
+    res: List[int] = []
+
+    if platform.system() != 'Linux':
+        return res
 
     with open('/proc/net/tcp', 'r') as file:
         try:
