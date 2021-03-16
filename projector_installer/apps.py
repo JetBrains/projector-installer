@@ -4,6 +4,8 @@
 
 
 """Application management functions."""
+import platform
+import shutil
 import sys
 from os import listdir, rename
 from os.path import join, expanduser, dirname, isfile, isdir, basename
@@ -172,7 +174,16 @@ def is_android_studio(product_info: ProductInfo) -> bool:
 
 
 def get_java_path(app_path: str) -> str:
-    """Returns full path to bundled java."""
+    """Returns full path to bundled or system java java."""
+    if platform.system() != 'Linux':
+        java_path = shutil.which('java')
+
+        if not java_path:
+            print('No java found in system, please install openjdk 11. Exiting ...')
+            sys.exit(1)
+
+        return java_path
+
     product_info = get_product_info(app_path)
     return join(app_path, product_info.java_exec_path)
 
