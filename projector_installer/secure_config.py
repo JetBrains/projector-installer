@@ -3,6 +3,7 @@
 #  in the LICENSE file.
 
 """Secure config related stuff"""
+import shutil
 import socket
 from os.path import join, isfile
 from typing import List, Tuple, Optional, TextIO
@@ -200,7 +201,9 @@ def generate_ssl_properties_file(config_name: str, token: str) -> None:
 
 def get_keytool(path_to_app: str) -> str:
     """Returns full path to keytool for given config"""
-    return join(get_jre_dir(path_to_app), 'bin', 'keytool')
+    res = shutil.which('keytool')
+
+    return res if res else join(get_jre_dir(path_to_app), 'bin', 'keytool')
 
 
 def remove_server_secrets(config_name: str) -> None:
