@@ -26,8 +26,8 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     6. [projector exits immediately](#projector-exits-immediately)
     7. [Using Projector as systemd service](#Using-Projector-as-systemd-service)
     8. [Change existing configuration](#Change-existing-configuration)
-    9. [Experimental FreeBSD support](#FreeBSD-support)
-   10. [Experimental OpenBSD support](#OpenBSD-support)
+    9. [FreeBSD support](#FreeBSD-support)
+   10. [OpenBSD support](#OpenBSD-support)
 
 ## Installation
 
@@ -234,7 +234,7 @@ projector config edit
 ```
 
 ### FreeBSD support
-projector-installer since ver. 1.0.2 has _experimental_ FreeBSD support.
+projector-installer since ver. 1.1.0 has FreeBSD support.
 To run Projector on FreeBSD perform the following steps
 (tested on FreeBSD-RELEASE 12.2):
 
@@ -274,7 +274,7 @@ _WARNING:_
 - run `projector` as usual 
 
 ### OpenBSD support
-projector-installer since ver. 1.0.2 has _experimental_ OpenBSD support.
+projector-installer since ver. 1.1.0 has OpenBSD support.
 To run Projector on OpenBSD perform the following steps
 (tested on OpenBSD 6.8):
 

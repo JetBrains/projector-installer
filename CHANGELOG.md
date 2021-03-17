@@ -2,12 +2,12 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.1.0
 
 ## Added
 - Rider IDE support
-- Experimental [FreeBSD support](https://github.com/JetBrains/projector-installer#FreeBSD-support)
-- Experimental [OpenBSD support](https://github.com/JetBrains/projector-installer#OpenBSD-support)
+- [FreeBSD support](https://github.com/JetBrains/projector-installer#FreeBSD-support)
+- [OpenBSD support](https://github.com/JetBrains/projector-installer#OpenBSD-support)
 - check bundled Projector server availability
 
 ## Fixed
@@ -16,7 +16,7 @@ Notable changes to this project are documented in this file.
 
 ## Changed
 - special symbols in passwords are enabled again 
-
+- Projector Server v1.1.0
 
 # 1.0.1
 
