@@ -10,6 +10,7 @@ from sys import stdout
 from typing import TextIO
 
 from .global_config import get_run_configs_dir
+from .version import __version__
 
 LOG_FILE_NAME: str = 'projector.log'
 MAX_LOG_FILE_SIZE = 5 * 1024 * 1024
@@ -46,7 +47,8 @@ def init_log(config_name: str) -> TextIO:
     """Performs initialization of log file"""
     restrict_log_size(config_name)
     log = open(get_path_to_log(config_name), 'a+')
-    print(f"{START_SESSION_MARK} Run config: {config_name} - {datetime.now()}", file=log)
+    print(f'{START_SESSION_MARK} Installer version: {__version__} Run config: {config_name} - '
+          f'{datetime.now()}', file=log)
     log.flush()
 
     return log
