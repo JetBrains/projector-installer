@@ -9,14 +9,16 @@ import signal
 import subprocess
 import sys
 from os import path, system, uname, remove
-from os.path import isfile
+from os.path import isfile, isdir
 from typing import Optional, List
 from urllib.parse import quote
+from click import secho
 
 from .apps import get_app_path, get_installed_apps, get_product_info, \
     get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, \
     download_and_install
 from .certificate_chain import get_certificate_chain
+from .global_config import get_projector_server_dir
 from .ide_update import is_updatable_ide, get_update, update_config, check_ide_update, is_tested_ide
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .secure_config import get_ca_crt_file, parse_custom_names
@@ -131,12 +133,30 @@ def regenerate_config_if_toolbox(run_config: RunConfig) -> RunConfig:
     return run_config
 
 
+def check_bundled_server() -> None:
+    """Checks bundled server availabiluty. If server not found fires warning and exits."""
+    if not isdir(get_projector_server_dir()):
+        message = 'No bundled server found! Exiting ... \n' \
+                  'Most probably you installed or upgraded projector-installer from sources.\n' \
+                  'To resolve the issue follow this: ' \
+                  'https://github.com/JetBrains/projector-installer/blob/master/' \
+                  'README-DEV.md#Install-from-source instruction.' \
+                  'Do not forget run python3 setup.py bundle BEFORE pip install!\n' \
+                  'Or reinstall projector-installer from pypi.'
+        secho(message, bold=True)
+
+        sys.exit(2)
+
+
 PROJECTOR_PID = None
 
 
 def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -> None:
     """Executes specified config. If given name does not specify
     config, runs interactive selection procedure."""
+
+    check_bundled_server()
+
     run_config = select_run_config(config_name)
 
     print(f'Configuration name: {run_config.name}')
