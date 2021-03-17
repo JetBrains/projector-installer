@@ -299,7 +299,7 @@ doas pkg_add py3-cryptography
 
 - install openjdk11 
 ```commandline
-doas pkg_add openjdk11
+doas pkg_add jdk
 ```
 
 - install projector-installer:
