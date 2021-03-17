@@ -136,12 +136,12 @@ def regenerate_config_if_toolbox(run_config: RunConfig) -> RunConfig:
 def check_bundled_server() -> None:
     """Checks bundled server availabiluty. If server not found fires warning and exits."""
     if not isdir(get_projector_server_dir()):
-        message = 'No bundled server found! Exiting ... \n' \
+        message = 'No bundled server found! Exiting... \n' \
                   'Most probably you installed or upgraded projector-installer from sources.\n' \
                   'To resolve the issue follow this: ' \
                   'https://github.com/JetBrains/projector-installer/blob/master/' \
-                  'README-DEV.md#Install-from-source instruction.' \
-                  'Do not forget run python3 setup.py bundle BEFORE pip install!\n' \
+                  'README-DEV.md#Install-from-source instruction. ' \
+                  'Do not forget run `python3 setup.py bundle` BEFORE `pip install`!\n' \
                   'Or reinstall projector-installer from pypi.'
         secho(message, bold=True)
 
