@@ -249,6 +249,15 @@ sudo pkg install py37-cryptography
 ```commandline
 sudo pkg install openjdk11
 ```
+Do not forget add to fstab fdeskfs and procfs:
+```commandline
+fdesk /dev/fd fdeskfs rw  0 0
+proc  /proc   procfs  rw  0 0
+```
+and mount them:
+```commandline
+mount -a
+```
 
 - install projector-installer:
 ```commandline
