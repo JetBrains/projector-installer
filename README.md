@@ -26,7 +26,8 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     6. [projector exits immediately](#projector-exits-immediately)
     7. [Using Projector as systemd service](#Using-Projector-as-systemd-service)
     8. [Change existing configuration](#Change-existing-configuration)
-    9. [FreeBSD support](#FreeBSD-support)
+    9. [Experimental FreeBSD support](#FreeBSD-support)
+   10. [Experimental OpenBSD support](#OpenBSD-support)
 
 ## Installation
 
@@ -233,7 +234,7 @@ projector config edit
 ```
 
 ### FreeBSD support
-projector-installer since ver. 1.0.2 has experimental FreeBSD support.
+projector-installer since ver. 1.0.2 has _experimental_ FreeBSD support.
 To run Projector on FreeBSD perform the following steps
 (tested on FreeBSD-RELEASE 12.2):
 
@@ -268,6 +269,44 @@ _WARNING:_
 2. pip will fire several warning messages on incompatible cryptography module. 
    You can safely ignore them.
 
-- add ~/.local/bin directory to your PATH variable.
+- add ~/.local/bin directory to PATH variable.
+
+- run `projector` as usual 
+
+### OpenBSD support
+projector-installer since ver. 1.0.2 has _experimental_ OpenBSD support.
+To run Projector on OpenBSD perform the following steps
+(tested on OpenBSD 6.8):
+
+- it is expected, that filesets xbase, xfont, xserv and xshare
+are already installed in your system. If not add them as described here:
+  https://www.openbsd.org/faq/faq4.html#FilesNeeded
+  
+- install python 3.7 or later:
+```commandline
+doas pkg_add python
+```
+
+- install pip:
+```commandline
+doas pkg_add py3-pip    
+```
+
+-- install py3-cryptography:
+```commandline
+doas pkg_add py3-cryptography
+```
+
+- install openjdk11 
+```commandline
+doas pkg_add openjdk11
+```
+
+- install projector-installer:
+```commandline
+pip install projector-installer --user
+```
+
+- add ~/.local/bin directory to PATH variable.
 
 - run `projector` as usual 
