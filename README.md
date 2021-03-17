@@ -279,7 +279,7 @@ To run Projector on OpenBSD perform the following steps
 (tested on OpenBSD 6.8):
 
 - it is expected, that filesets xbase, xfont, xserv and xshare
-are already installed in your system. If not add them as described here:
+are already installed in your system. If it is not so add them as described here:
   https://www.openbsd.org/faq/faq4.html#FilesNeeded
   
 - install python 3.7 or later:
@@ -292,7 +292,7 @@ doas pkg_add python
 doas pkg_add py3-pip    
 ```
 
--- install py3-cryptography:
+- install py3-cryptography:
 ```commandline
 doas pkg_add py3-cryptography
 ```
