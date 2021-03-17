@@ -7,6 +7,8 @@ Notable changes to this project are documented in this file.
 ## Added
 - Rider IDE support
 - Experimental [FreeBSD support](https://github.com/JetBrains/projector-installer#FreeBSD-support)
+- Experimental [OpenBSD support](https://github.com/JetBrains/projector-installer#OpenBSD-support)
+- check bundled Projector server availability
 
 ## Fixed
 - ide install command behaviour
