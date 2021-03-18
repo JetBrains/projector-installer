@@ -260,13 +260,9 @@ and mount them:
 mount -a
 ```
 
-- install projector-installer:
-```commandline
-pip install projector-installer --user
-```
-_WARNING:_ 
-1. Do not forget --user option!
-2. pip will fire several warning messages on incompatible cryptography module. 
+- install projector-installer from sources as described [here](https://github.com/JetBrains/projector-installer/blob/master/README-DEV.md#Install-from-source)
+
+pip may fire several warning messages on incompatible cryptography module. 
    You can safely ignore them.
 
 - add ~/.local/bin directory to PATH variable.
@@ -302,10 +298,7 @@ doas pkg_add py3-cryptography
 doas pkg_add jdk
 ```
 
-- install projector-installer:
-```commandline
-pip install projector-installer --user
-```
+- install projector-installer from sources as described [here](https://github.com/JetBrains/projector-installer/blob/master/README-DEV.md#Install-from-source)
 
 - add ~/.local/bin directory to PATH variable.
 
