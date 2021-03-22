@@ -5,7 +5,7 @@ Notable changes to this project are documented in this file.
 # Unreleased
 
 ## Changed
-- IDE install on first start in quick mode
+- IDE install on first start runs in quick mode
 
 # 1.1.1
 

@@ -38,13 +38,24 @@ projector-installer make sure that you have python3 and pip3 installed in your s
 can install them using the command:
 
 ```bash
-sudo apt install python3 python3-pip 
+sudo apt install python3 python3-pip -y
 ``` 
 
-If you are running Ubuntu 18.04 or earlier update pip using the following command (for each user under which projector will be used):
+Check pip3 version with command:
+```commandline
+pip3 --version
+```
 
+If pip3 version is earlier than 19, it's necessary to update pip. 
+
+On Ubuntu run 
 ```bash
 python3 -m pip install -U pip 
+```
+
+For CentOS use command: 
+```bash
+python3 -m pip install -U pip --user 
 ```
 
 Also make sure that you have installed the following packages:
@@ -58,7 +69,7 @@ Also make sure that you have installed the following packages:
 In Debian-based distributive you can install them using the command:
 
 ```bash
-sudo apt install libxext6 libxrender1 libxtst6 libfreetype6 libxi6  
+sudo apt install libxext6 libxrender1 libxtst6 libfreetype6 libxi6 -y  
 ```    
 
 ### Install from PyPi
@@ -73,7 +84,7 @@ After that the command `projector` should be available.
 
 _NOTE:_ If it is not so, please refer to the [appropriate section](#no_projector) in the [FAQ](#FAQ).
 
-_NOTE:_ projector script checks for updates on start. If new version is available you can install an update using
+_NOTE:_ projector script checks for updates on start. If the new version is available, you can install an update using
 command
 `pip3 install projector-installer --upgrade --user`
 
