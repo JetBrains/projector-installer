@@ -67,9 +67,10 @@ runs the configuration with name 'goland'
 
 `projector ide list pattern` - display Projector-compatible IDEs whose names match the given pattern
 
-`projector ide install` - select and install IDE interactively
+`projector ide install` or `projector ide install ide_name` - select and install IDE interactively
  
-`projector ide install ide_name` - install the specified IDE
+`projector ide autoinstall --config-name name-of-new-config --ide-name name-of-ide [--port port-number]`  - 
+install IDE without interaction with user
 
 `projector ide uninstall` - uninstall IDE interactively 
 
@@ -111,7 +112,9 @@ it is enough to use a couple of shortcut commands, such as install and run.
 
 - find  - find available IDE (a shortcut for 'ide find')
  
-- install - install IDE (a shortcut for 'ide install')
+- install - install IDE interactively (a shortcut for 'ide install')
+
+- autoinstall - install IDE without interaction with user (a shortcut for 'ide autoinstall')
 
 - run - run IDE (a shortcut for 'config run')
 

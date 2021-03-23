@@ -192,8 +192,8 @@ Enter the path to IDE: /path/to/your/android-studio
 <a name="no_projector"/>
 
 Default instruction installs `projector` script in directory `~/.local/bin`. If system can't find the script after
-installation it means that the directory
-`~/.local/bin` was not included in the _PATH_ environment variable. Try the following:
+installation it means that the directory `~/.local/bin` was not included in the _PATH_ environment variable. 
+Try the following:
 
 - Restart the terminal. If `projector` was the first executable installed in `~/.local/bin`, and the directory wasn't
   exist when your login session started, it may help.

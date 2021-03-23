@@ -4,6 +4,9 @@ Notable changes to this project are documented in this file.
 
 # Unreleased
 
+## Added
+- new command autoinstall intended for install ide without user interaction. 
+
 ## Changed
 - IDE install on first start runs in quick mode
 
