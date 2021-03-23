@@ -21,6 +21,7 @@ from .certificate_chain import get_certificate_chain
 from .global_config import get_projector_server_dir
 from .ide_update import is_updatable_ide, get_update, update_config, check_ide_update, is_tested_ide
 from .log_utils import init_log, shutdown_log, get_path_to_log
+from .products import Product, get_all_apps
 from .secure_config import get_ca_crt_file, parse_custom_names
 
 from .utils import get_java_version, get_local_addresses
@@ -447,8 +448,59 @@ def do_list_app(pattern: Optional[str] = None) -> None:
     list_apps(pattern)
 
 
-def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates: bool = False,
-                   run_browser: bool = True, quick: bool = False) -> None:
+def install_app(run_config: RunConfig, app: Product, allow_updates: bool) -> RunConfig:
+    """Perform selected app install"""
+    print(f'Installing {app.name}')
+    run_config.path_to_app = download_and_install(app.url, allow_updates)
+
+    try:
+        validate_run_config(run_config)
+    except ValueError as exception:
+        print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
+        sys.exit(1)
+
+    save_config(run_config)
+
+    return run_config
+
+
+def do_auto_install(config_name: str,
+                    app_name: str,
+                    allow_updates: bool = False) -> None:
+    """Performs non-interactive IDE install"""
+    configs = get_run_configs(config_name)
+
+    if config_name in configs:
+        print(f'Config with name {config_name} is already exists. Exiting...')
+        sys.exit(2)
+
+    apps = get_all_apps(pattern=app_name)
+
+    if len(apps) == 0:
+        print(f'There is no apps with name {app_name}, supported by Projector. Exiting...')
+        sys.exit(2)
+
+    if len(apps) > 1:
+        print(f'There are too many apps with name matched to {app_name}.')
+        print('Examples:')
+
+        for app in apps[:5]:
+            print(app.name)
+
+        print('Please provide more specific name. Exiting...')
+        sys.exit(2)
+
+    app = apps[0]
+    run_config = get_quick_config(config_name)
+    run_config.update_channel = RunConfig.NOT_TESTED
+    install_app(run_config, app, allow_updates)
+
+
+def do_install_app(app_name: Optional[str],
+                   auto_run: bool = True,
+                   allow_updates: bool = False,
+                   run_browser: bool = True,
+                   quick: bool = False) -> None:
     """Installs specified app."""
 
     if quick:
@@ -474,17 +526,8 @@ def do_install_app(app_name: Optional[str], auto_run: bool = True, allow_updates
         print('Config parameters was not specified, exiting ...')
         sys.exit(1)
 
-    print(f'Installing {app.name}')
     run_config.update_channel = channel
-    run_config.path_to_app = download_and_install(app.url, allow_updates)
-
-    try:
-        validate_run_config(run_config)
-    except ValueError as exception:
-        print(f'Wrong configuration parameters: {str(exception)}, exiting ...')
-        sys.exit(1)
-
-    save_config(run_config)
+    run_config = install_app(run_config, app, allow_updates)
 
     if auto_run:
         do_run_config(run_config.name, run_browser)

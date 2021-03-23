@@ -148,19 +148,35 @@ KIND2CODE = {
     IDEKind.Rider: 'RD',
 }
 
+CODE2KIND = {code: kind for kind, code in KIND2CODE.items()}
+
 # All releases before this version considered as unsupported
 EARLIEST_COMPATIBLE_VERSION = LooseVersion('2019.3')
 
 
-def get_product_releases(kind: IDEKind, timeout: float) -> List[Product]:
+def get_all_product_codes() -> str:
+    """Returns code parameter string with all known IDE codes"""
+    codes = [KIND2CODE[kind] for kind in IDEKind if kind != IDEKind.Unknown]
+    params = list(map(lambda it: f'code={it}', codes))
+
+    return '&'.join(params)
+
+
+def get_product_releases(kind: Optional[IDEKind], timeout: float) -> List[Product]:
     """Retrieves list of product releases from JB products service"""
-    url = f'{PRODUCTS_URL}?code={KIND2CODE[kind]}&release.type=release'
+
+    if kind:
+        url = f'{PRODUCTS_URL}?code={KIND2CODE[kind]}&release.type=release'
+    else:
+        url = f'{PRODUCTS_URL}?release.type=release&{get_all_product_codes()}'
+
     data = get_json(url, timeout=timeout)
     res = []
 
     for entry in data:
         name = entry['name']
         releases = entry['releases']
+        code = entry['code']
 
         for release in releases:
             ver = release['version']
@@ -174,7 +190,7 @@ def get_product_releases(kind: IDEKind, timeout: float) -> List[Product]:
                 continue
 
             link = downloads['linux']['link']
-            res.append(Product(f'{name} {ver}', link, kind, ver))
+            res.append(Product(f'{name} {ver}', link, CODE2KIND[code], ver))
 
     return res
 
@@ -206,7 +222,7 @@ def get_compatible_apps(kind: IDEKind, pattern: Optional[str] = None) -> List[Pr
     return filter_app_by_name_pattern(apps, pattern)
 
 
-def get_all_apps(kind: IDEKind, pattern: Optional[str] = None) -> List[Product]:
+def get_all_apps(kind: Optional[IDEKind] = None, pattern: Optional[str] = None) -> List[Product]:
     """Returns list of all released apps, matched given kind and pattern."""
     apps = get_product_releases(kind, timeout=LONG_NETWORK_TIMEOUT)
     return filter_app_by_name_pattern(apps, pattern)

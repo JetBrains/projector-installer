@@ -14,7 +14,8 @@ from .apps import is_projector_installed_ide, get_product_info, download_and_ins
 from .run_config import RunConfig
 from .timeout import TimeoutException, timeout
 
-CODE2KIND = {
+# This map differs from products.CODE2KIND in several positions.
+IDE_UPDATE_CODE2KIND = {
     'IC': IDEKind.Idea_Community,
     'IU': IDEKind.Idea_Ultimate,
     'PC': IDEKind.PyCharm_Community,
@@ -44,7 +45,7 @@ def is_tested_ide(run_config: RunConfig) -> bool:
 
     if run_config.update_channel == RunConfig.UNKNOWN:
         prod_info = get_product_info(run_config.path_to_app)
-        kind: IDEKind = CODE2KIND.get(prod_info.product_code, IDEKind.Unknown)
+        kind: IDEKind = IDE_UPDATE_CODE2KIND.get(prod_info.product_code, IDEKind.Unknown)
         ver = LooseVersion(prod_info.version)
 
         for prod in init_compatible_apps():
@@ -59,7 +60,7 @@ def is_tested_ide(run_config: RunConfig) -> bool:
 def get_update(run_config: RunConfig) -> Optional[Product]:
     """Returns update for given app if available"""
     prod_info = get_product_info(run_config.path_to_app)
-    kind: IDEKind = CODE2KIND.get(prod_info.product_code, IDEKind.Unknown)
+    kind: IDEKind = IDE_UPDATE_CODE2KIND.get(prod_info.product_code, IDEKind.Unknown)
 
     if kind == IDEKind.Unknown:
         return None

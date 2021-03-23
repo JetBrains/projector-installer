@@ -14,7 +14,7 @@ from .global_config import init_config_dir, init_cache_dir
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
-    do_rename_config, do_rebuild_config, do_install_cert, do_update_config
+    do_rename_config, do_rebuild_config, do_install_cert, do_update_config, do_auto_install
 from .license import display_license
 from .projector_updates import check_for_projector_updates
 from .utils import expand_path
@@ -208,7 +208,7 @@ def update(config_name: Optional[str], allow_updates: bool) -> None:
     do_update_config(config_name, allow_updates)
 
 
-@click.command(short_help='Install and configure selected IDE')
+@click.command(short_help='Interactive install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
 @click.option('--auto-run/--no-auto-run', default=True,
               help='Run installed IDE.')
@@ -218,9 +218,11 @@ def update(config_name: Optional[str], allow_updates: bool) -> None:
               help='Auto run browser in WSL environment.')
 @click.option('--expert', default=False, is_flag=True,
               help='Expert mode - set all config parameters')
-def install_app(ide_name: Optional[str], auto_run: bool,
+def install_app(ide_name: Optional[str],
+                auto_run: bool,
                 allow_updates: bool,
-                run_browser: bool, expert: bool) -> None:
+                run_browser: bool,
+                expert: bool) -> None:
     """projector ide install [ide_name]
 
     Parameter ide_name is the name of IDE to install.
@@ -228,6 +230,18 @@ def install_app(ide_name: Optional[str], auto_run: bool,
     install process.
     """
     do_install_app(ide_name, auto_run, allow_updates, run_browser, not expert)
+
+
+@click.command(short_help='Install selected IDE')
+@click.option('--config-name', type=click.STRING, required=True, help='Name of run configuration.')
+@click.option('--ide-name', type=click.STRING, required=True, help='Name of IDE to install.')
+@click.option('--allow-updates', default=False, is_flag=True,
+              help='Allow updates of installed IDE.')
+def auto_install_app(config_name: str,
+                     ide_name: str,
+                     allow_updates: bool) -> None:
+    """projector ide autoinstall --config-name name --ide-name name"""
+    do_auto_install(config_name, ide_name, allow_updates)
 
 
 @click.command(short_help='Install user certificate to given config')
@@ -264,6 +278,7 @@ ide.add_command(find_app, name='find')
 ide.add_command(list_apps, name='list')
 ide.add_command(install_app, name='install')
 ide.add_command(uninstall, name='uninstall')
+ide.add_command(auto_install_app, name='autoinstall')
 
 # Config commands
 config.add_command(list_config, name='list')
@@ -280,4 +295,5 @@ config.add_command(update, name='update')
 projector.add_command(find_app, name='find')
 projector.add_command(run, name='run')
 projector.add_command(install_app, name='install')
+projector.add_command(auto_install_app, name='autoinstall')
 projector.add_command(install_certificate, name='install-certificate')
