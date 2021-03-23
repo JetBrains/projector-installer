@@ -235,13 +235,17 @@ def install_app(ide_name: Optional[str],
 @click.command(short_help='Install selected IDE')
 @click.option('--config-name', type=click.STRING, required=True, help='Name of run configuration.')
 @click.option('--ide-name', type=click.STRING, required=True, help='Name of IDE to install.')
+@click.option('--port', type=click.INT, required=False, help='Projector port')
 @click.option('--allow-updates', default=False, is_flag=True,
               help='Allow updates of installed IDE.')
 def auto_install_app(config_name: str,
                      ide_name: str,
-                     allow_updates: bool) -> None:
+                     port: Optional[int],
+                     allow_updates: Optional[bool]) -> None:
     """projector ide autoinstall --config-name name --ide-name name"""
-    do_auto_install(config_name, ide_name, allow_updates)
+
+    allow_updates = False if allow_updates is None else allow_updates
+    do_auto_install(config_name, ide_name, port, allow_updates)
 
 
 @click.command(short_help='Install user certificate to given config')

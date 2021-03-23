@@ -466,6 +466,7 @@ def install_app(run_config: RunConfig, app: Product, allow_updates: bool) -> Run
 
 def do_auto_install(config_name: str,
                     app_name: str,
+                    port: Optional[int],
                     allow_updates: bool = False) -> None:
     """Performs non-interactive IDE install"""
     configs = get_run_configs(config_name)
@@ -493,6 +494,10 @@ def do_auto_install(config_name: str,
     app = apps[0]
     run_config = get_quick_config(config_name)
     run_config.update_channel = RunConfig.NOT_TESTED
+
+    if port:
+        run_config.projector_port = port
+
     install_app(run_config, app, allow_updates)
 
 
