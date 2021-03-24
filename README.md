@@ -77,7 +77,8 @@ sudo apt install libxext6 libxrender1 libxtst6 libfreetype6 libxi6 -y
 You can install projector-installer script from PyPi, using command:
 
 ```bash
-pip3 install projector-installer --user 
+pip3 install projector-installer --user
+source ~/.profile 
 ```
 
 After that the command `projector` should be available.
@@ -298,6 +299,7 @@ doas pkg_add python
 ```commandline
 doas pkg_add py3-pip    
 ```
+Do not forget to make the symbolic link for installed pip to  /usr/local/bin/pip.
 
 - install py3-cryptography:
 ```commandline
@@ -308,9 +310,14 @@ doas pkg_add py3-cryptography
 ```commandline
 doas pkg_add jdk
 ```
+Do not forget to define JAVA_HOME variable and add $JAVA_HOME/bin to PATH variable.  
 
 - install projector-installer from sources as described [here](https://github.com/JetBrains/projector-installer/blob/master/README-DEV.md#Install-from-source)
-
+or install from pypi using 
+```commandline
+pip install projector-installer
+```  
+ 
 - add ~/.local/bin directory to PATH variable.
 
 - run `projector` as usual 
