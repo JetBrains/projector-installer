@@ -67,7 +67,8 @@ runs the configuration with name 'goland'
 
 `projector ide list pattern` - display Projector-compatible IDEs whose names match the given pattern
 
-`projector ide install` or `projector ide install ide_name` - select and install IDE interactively
+`projector ide install` or `projector ide install ide_name` - select and install IDE interactively. 
+Use `projector install --expert` command to specify all significant projector parameters.  
  
 `projector ide autoinstall --config-name name-of-new-config --ide-name name-of-ide [--port port-number]`  - 
 install IDE without interaction with user
