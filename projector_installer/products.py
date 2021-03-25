@@ -5,7 +5,6 @@
 """Product class and related stuff"""
 import json
 import socket
-import sys
 from os import remove
 from os.path import join, dirname, abspath
 from tempfile import gettempdir
@@ -118,18 +117,13 @@ def load_compatible_apps_from_github() -> List[Product]:
 def load_compatible_apps(file_name: str) -> List[Product]:
     """Loads from file and from github and merges results"""
     local_list = load_installable_apps_from_file(file_name)
-    github_list = load_compatible_apps_from_github()
+
+    try:
+        github_list = load_compatible_apps_from_github()
+    except (URLError, IOError):
+        github_list = []
 
     return list(set(local_list) | set(github_list))
-
-
-def init_compatible_apps() -> List[Product]:
-    """Initializes compatible apps list."""
-    try:
-        return load_compatible_apps(COMPATIBLE_IDE_FILE)
-    except IOError as error:
-        print(f'Cannot load compatible ide file: {str(error)}. Exiting...')
-        sys.exit(2)
 
 
 PRODUCTS_URL = 'https://data.services.jetbrains.com/products'
@@ -170,7 +164,11 @@ def get_product_releases(kind: Optional[IDEKind], timeout: float) -> List[Produc
     else:
         url = f'{PRODUCTS_URL}?release.type=release&{get_all_product_codes()}'
 
-    data = get_json(url, timeout=timeout)
+    try:
+        data = get_json(url, timeout=timeout)
+    except URLError:
+        data = []
+
     res = []
 
     for entry in data:
@@ -197,8 +195,7 @@ def get_product_releases(kind: Optional[IDEKind], timeout: float) -> List[Produc
 
 def get_compatible_products(kind: IDEKind) -> List[Product]:
     """Returns list of all compatible apps with given kind"""
-    apps = init_compatible_apps()
-    return [app for app in apps if app.kind == kind]
+    return [app for app in load_compatible_apps(COMPATIBLE_IDE_FILE) if app.kind == kind]
 
 
 def filter_app_by_name_pattern(data: List[Product], pattern: Optional[str] = None) -> List[Product]:

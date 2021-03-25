@@ -9,7 +9,8 @@ import click
 
 from .config_generator import save_config
 from .global_config import SHORT_NETWORK_TIMEOUT, LONG_NETWORK_TIMEOUT
-from .products import Product, get_product_releases, IDEKind, init_compatible_apps
+from .products import Product, get_product_releases, IDEKind, load_compatible_apps, \
+    COMPATIBLE_IDE_FILE
 from .apps import is_projector_installed_ide, get_product_info, download_and_install
 from .run_config import RunConfig
 from .timeout import TimeoutException, timeout
@@ -37,7 +38,7 @@ def is_updatable_ide(path_to_ide: str) -> bool:
 
 def get_product_list_from_file(kind: IDEKind) -> List[Product]:
     """Get product list from compatible IDE json"""
-    return [prod for prod in init_compatible_apps() if prod.kind == kind]
+    return [prod for prod in load_compatible_apps(COMPATIBLE_IDE_FILE) if prod.kind == kind]
 
 
 def is_tested_ide(run_config: RunConfig) -> bool:
@@ -48,7 +49,7 @@ def is_tested_ide(run_config: RunConfig) -> bool:
         kind: IDEKind = IDE_UPDATE_CODE2KIND.get(prod_info.product_code, IDEKind.Unknown)
         ver = LooseVersion(prod_info.version)
 
-        for prod in init_compatible_apps():
+        for prod in load_compatible_apps(COMPATIBLE_IDE_FILE):
             if prod.kind == kind and prod.ver == ver:
                 return True
 
