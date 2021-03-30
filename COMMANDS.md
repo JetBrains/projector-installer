@@ -70,7 +70,7 @@ runs the configuration with name 'goland'
 `projector ide install` or `projector ide install ide_name` - select and install IDE interactively. 
 Use `projector install --expert` command to specify all significant projector parameters.  
  
-`projector ide autoinstall --config-name name-of-new-config --ide-name name-of-ide [--port port-number]`  - 
+`projector ide autoinstall --config-name name-of-new-config --ide-name name-of-ide [--port port-number] [--hostname hostname]`  - 
 install IDE without interaction with user
 
 `projector ide uninstall` - uninstall IDE interactively 
