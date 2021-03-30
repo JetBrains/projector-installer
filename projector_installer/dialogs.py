@@ -14,6 +14,7 @@ from typing import Optional, Dict, List, Tuple, TypeVar, Callable
 
 import click
 
+from .defaults import get_defaults, Defaults
 from .run_config import get_run_configs, RunConfig, get_run_config_names, get_used_projector_ports
 from .apps import get_installed_apps, get_app_path, is_toolbox_path, is_valid_app_path
 from .secure_config import generate_token
@@ -95,7 +96,7 @@ def ask(prompt: str, default: bool) -> bool:
 
 def prompt_with_default(prompt: str, default: str) -> str:
     """Get string user input with def prompt"""
-    prompt = prompt + f' [{default}]:'
+    prompt = prompt + f' [{default}]: '
     return get_user_input(prompt, default)
 
 
@@ -424,7 +425,7 @@ def select_password_pair(def_password: str = '', def_ro_password: str = '') -> T
     return password, ro_password
 
 
-def select_host_names(default: str = 'localhost') -> str:
+def select_host_names(default: str = '') -> str:
     """Asks user for custom domain names"""
     use_custom_names = ask('Would you like to specify hostname '
                            'for Projector access?',
@@ -432,7 +433,7 @@ def select_host_names(default: str = 'localhost') -> str:
 
     host_names: str = prompt_with_default(
         'Please specify the comma-separated list of host names',
-        default=default) if use_custom_names else ''
+        default=get_defaults().get_host(default)) if use_custom_names else ''
 
     return host_names
 
@@ -524,7 +525,7 @@ def get_quick_config(config_name: str) -> RunConfig:
                      projector_port=get_def_projector_port(),
                      projector_host=RunConfig.HOST_ALL,
                      token='', password='', ro_password='',
-                     toolbox=False, custom_names='')
+                     toolbox=False, custom_names=get_defaults().host)
 
 
 def get_user_install_input(config_name_hint: str) -> Optional[RunConfig]:
@@ -544,3 +545,22 @@ def get_user_install_input(config_name_hint: str) -> Optional[RunConfig]:
                      projector_port=projector_port, projector_host=projector_host,
                      token='', password=password, ro_password=ro_password,
                      toolbox=False, custom_names=custom_names)
+
+
+def get_user_defaults(hostname: Optional[str]) -> Defaults:
+    """Returns Defaults"""
+    defaults = get_defaults()
+
+    if hostname:
+        defaults.host = hostname
+    else:
+        use_default_host = ask('Would you like to specify default hostname '
+                               'for Projector access?',
+                               default=True)
+
+        defaults.host = prompt_with_default(
+            'Please specify default hostname for Projector '
+            '(you can specify several names, separated by comma): ',
+            default=get_defaults().get_host()) if use_default_host else ''
+
+    return defaults

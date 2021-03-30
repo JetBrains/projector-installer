@@ -14,7 +14,8 @@ from .global_config import init_config_dir, init_cache_dir
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
-    do_rename_config, do_rebuild_config, do_install_cert, do_update_config, do_auto_install
+    do_rename_config, do_rebuild_config, do_install_cert, do_update_config, do_auto_install, \
+    do_save_defaults
 from .license import display_license
 from .projector_updates import check_for_projector_updates
 from .utils import expand_path
@@ -265,6 +266,16 @@ def install_certificate(config_name: Optional[str], certificate: Optional[str],
     do_install_cert(config_name, certificate, key, chain)
 
 
+@click.command(short_help='Configure projector defaults')
+@click.option('--hostname', type=click.STRING, required=False)
+def defaults(hostname: Optional[str]) -> None:
+    """projector defaults [--hostname host]
+
+    Configure projector defaults
+    """
+    do_save_defaults(hostname)
+
+
 @projector.group()
 def ide() -> None:
     """
@@ -303,3 +314,4 @@ projector.add_command(run, name='run')
 projector.add_command(install_app, name='install')
 projector.add_command(auto_install_app, name='autoinstall')
 projector.add_command(install_certificate, name='install-certificate')
+projector.add_command(defaults, name='defaults')

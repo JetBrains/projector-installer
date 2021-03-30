@@ -18,6 +18,7 @@ from .apps import get_app_path, get_installed_apps, get_product_info, \
     get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, \
     download_and_install
 from .certificate_chain import get_certificate_chain
+from .defaults import save_defaults, get_path_to_defaults
 from .global_config import get_projector_server_dir
 from .ide_update import is_updatable_ide, get_update, update_config, check_ide_update, is_tested_ide
 from .log_utils import init_log, shutdown_log, get_path_to_log
@@ -28,7 +29,7 @@ from .utils import get_java_version, get_local_addresses
 
 from .dialogs import select_app, select_new_config_name, list_configs, \
     find_apps, edit_config, list_apps, select_installed_app, select_run_config, make_run_config, \
-    get_user_install_input, get_quick_config, select_app_path
+    get_user_install_input, get_quick_config, select_app_path, get_user_defaults
 
 from .run_config import RunConfig, get_run_configs, get_run_script_path, validate_run_config, \
     delete_config, rename_config, make_config_name, get_configs_with_app, \
@@ -571,4 +572,12 @@ def do_uninstall_app(app_name: Optional[str] = None) -> None:
     print(f'Uninstalling {app_name}')
     app_path = get_app_path(app_name)
     shutil.rmtree(app_path)
+    print('done.')
+
+
+def do_save_defaults(hostname: Optional[str]) -> None:
+    """Create and save defaults"""
+    defaults = get_user_defaults(hostname)
+    print(f'Saving defaults to {get_path_to_defaults()}')
+    save_defaults(defaults)
     print('done.')
