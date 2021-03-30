@@ -29,7 +29,7 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     9. [FreeBSD support](#FreeBSD-support)
    10. [OpenBSD support](#OpenBSD-support)
 
-## Installation
+## Installation<a id="Installation"></a>
 
 ### Prerequisites
 
@@ -89,7 +89,7 @@ _NOTE:_ projector script checks for updates on start. If the new version is avai
 command
 `pip3 install projector-installer --upgrade --user`
 
-## Quick start
+## Quick start<a id="Quick-start"></a>
 
 First time you run projector, it will automatically download, install, configure and start IDE. Just run projector and
 follow the instructions. The script will run the installed IDE with projector-server and display URLs to access it. Open
@@ -106,9 +106,9 @@ To get help projector commands run `projector --help`
 If you want to know more on projector usage please refer to
 [this](https://github.com/JetBrains/projector-installer/blob/master/COMMANDS.md) file.
 
-## FAQ
+## FAQ<a id="FAQ"></a>
 
-### Secure connection
+### Secure connection<a id="Secure-connection"></a>
 
 __SECURITY WARNING:
 Keep your projector config directory safe when using domain certificate and private key!
@@ -161,13 +161,13 @@ wss://host:port". Please change wss to https, open it in a new tab, and click th
 these two actions, the browser should remember this connection and you won't have to perform these actions again. Just
 open the initial web page and use all functionality of Projector.
 
-### projector-installer config directory
+### projector-installer config directory<a id="projector-installer-config-directory"></a>
 
 projector-installer keeps downloaded IDE and run configurations in the configuration directory. Usually configuration
 directory is ~/.projector. User can specify another location for it, using option --config-directory, for example:
 `projector --config-directory=config run`
 
-### Android Studio support
+### Android Studio support<a id="Android-Studio-support"></a>
 
 Projector installer can't support automatic Android Studio installation due to legal issues. However, installer can help
 you to configure already installed Android Studio to use with Projector. To make new run config for Android Studio
@@ -188,9 +188,7 @@ Enter the path to IDE: /path/to/your/android-studio
 ...
 ```
 
-### projector command is unavailable
-
-<a name="no_projector"/>
+### projector command is unavailable<a id="projector-command-is-unavailable"></a>
 
 Default instruction installs `projector` script in directory `~/.local/bin`. If system can't find the script after
 installation it means that the directory `~/.local/bin` was not included in the _PATH_ environment variable. 
@@ -203,15 +201,15 @@ Try the following:
   environment variable. In this case add `export  PATH=${PATH}:~/.local/bin` to your `~/.profile`  
   and run `source ~/.profile`.
 
-### WSL issues
+### WSL issues<a id="WSL-issues"></a>
 
 WSL is new technology and sometimes there are problems with network interfaces forwarding from Linux to Windows system.
 For example: https://github.com/microsoft/WSL/issues/4636 .
 
-If you have issues with accessing Projector running in WSL from browser, try do the following:
+If you have issues with accessing Projector running in WSL from the browser, try the following:
 
-- Do not use several WSL machines in the same time. Connectivity issues happens rarely if only one WSL machine is
-  running. You can check state of existing WSL machies using `wsl -l -v` command.
+- Do not use several WSL machines in the same time. Connectivity issues rarely happens if only one WSL machine is
+  running. You can check state of existing WSL machines using `wsl -l -v` command.
 
 - Try command `Get-Service LxssManager | Restart-Service` in PowerShell console
 
@@ -227,25 +225,25 @@ If you have issues with accessing Projector running in WSL from browser, try do 
   address other than localhost. You can assign HTTP listening address during initial installation or using
   `projector config edit` command.
 
-### projector exits immediately
+### projector exits immediately<a id="projector-exits-immediately"></a>
 
 - Make sure that you installed all packages mentioned in [Prerequisites](#Prerequisites) section.
 - Check log-file (it's location shown in console when installer runs the config).
 - Make sure that there is no another instance of same config running.
 
-### Using Projector as systemd service
+### Using Projector as systemd service<a id="Using-Projector-as-systemd-service"></a>
 
 Straightforward creating systemd service to automatically start Projector in the background, lead to projector zombie
 process. You can avoid this using projector generated run script instead of using projector run command. For details
 refer to the answer of [this](https://youtrack.jetbrains.com/issue/PRJ-298) issue.
 
-### Change existing configuration
+### Change existing configuration<a id="Change-existing-configuration"></a>
 To change run config (for example - change listening port or access password) use command 
 ```commandline
 projector config edit
 ```
 
-### FreeBSD support
+### FreeBSD support<a id="FreeBSD-support"></a>
 projector-installer since ver. 1.1.0 has FreeBSD support.
 To run Projector on FreeBSD perform the following steps
 (tested on FreeBSD-RELEASE 12.2):
@@ -281,7 +279,7 @@ pip may fire several warning messages on incompatible cryptography module.
 
 - run `projector` as usual 
 
-### OpenBSD support
+### OpenBSD support<a id="OpenBSD-support"></a>
 projector-installer since ver. 1.1.0 has OpenBSD support.
 To run Projector on OpenBSD perform the following steps
 (tested on OpenBSD 6.8):
