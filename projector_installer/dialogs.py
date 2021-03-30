@@ -260,7 +260,7 @@ def select_manual_app_path(default: str = '') -> str:
     readline.parse_and_bind("tab: complete")
 
     if default:
-        prompt = f'Enter the path to IDE (default: {default}, <tab> for complete): '
+        prompt = f'Enter the path to IDE (<enter> for {default}, <tab> for complete): '
     else:
         prompt = 'Enter the path to IDE (<tab> for complete): '
 
