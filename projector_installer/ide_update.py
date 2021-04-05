@@ -27,7 +27,8 @@ IDE_UPDATE_CODE2KIND = {
     'PS': IDEKind.PhpStorm,
     'WS': IDEKind.WebStorm,
     'RM': IDEKind.RubyMine,
-    'RD': IDEKind.Rider
+    'RD': IDEKind.Rider,
+    'PD': IDEKind.DataSpell
 }
 
 

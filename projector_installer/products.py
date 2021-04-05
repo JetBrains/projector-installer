@@ -39,6 +39,7 @@ class IDEKind(Enum):
     WebStorm = auto()
     RubyMine = auto()
     Rider = auto()
+    DataSpell = auto()
 
 
 @dataclass
@@ -140,6 +141,7 @@ KIND2CODE = {
     IDEKind.WebStorm: 'WS',
     IDEKind.RubyMine: 'RM',
     IDEKind.Rider: 'RD',
+    IDEKind.DataSpell: 'PD',
 }
 
 CODE2KIND = {code: kind for kind, code in KIND2CODE.items()}

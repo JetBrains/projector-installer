@@ -5,8 +5,9 @@ Notable changes to this project are documented in this file.
 # Unreleased
 
 ## Added
-- new command 'autoinstall' intended for install ide without user interaction. 
+- new command 'autoinstall' intended for install IDE without user interaction. 
 - new command 'defaults' to save user defaults (hostname only is supported yet)
+- DataSpell IDE support
 
 ## Changed
 - IDE install on first start runs in quick mode
