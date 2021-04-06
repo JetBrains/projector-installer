@@ -83,7 +83,7 @@ source ~/.profile
 
 After that the command `projector` should be available.
 
-_NOTE:_ If it is not so, please refer to the [appropriate section](#no_projector) in the [FAQ](#FAQ).
+_NOTE:_ If it is not so, please refer to the [appropriate section](#projector-command-is-unavailable) in the [FAQ](#FAQ).
 
 _NOTE:_ projector script checks for updates on start. If the new version is available, you can install an update using
 command
