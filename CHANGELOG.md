@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Changed
+- filter out Docker interfaces when run outside Docker container
+
 # 1.1.2
 
 ## Added
