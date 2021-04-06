@@ -10,6 +10,7 @@ import sys
 from os import listdir, rename
 from os.path import join, expanduser, dirname, isfile, isdir, basename
 from distutils.version import LooseVersion
+from tarfile import ReadError
 from typing import Optional, List
 from dataclasses import dataclass
 import json
@@ -193,14 +194,17 @@ def unpack_app(file_path: str) -> str:
     app_name = unpack_tar_file(file_path, get_apps_dir())
 
     # For android studio - ensure that app directory has unique name
-    app_path = get_app_path(app_name)
-    product_info = get_product_info(app_path)
+    try:  # MPS does not have product-info.json
+        app_path = get_app_path(app_name)
+        product_info = get_product_info(app_path)
 
-    if is_android_studio(product_info):
-        versioned_name = app_name + "_" + product_info.version.replace(' ', '_')
-        new_path = get_app_path(versioned_name)
-        rename(app_path, new_path)
-        app_name = versioned_name
+        if is_android_studio(product_info):
+            versioned_name = app_name + "_" + product_info.version.replace(' ', '_')
+            new_path = get_app_path(versioned_name)
+            rename(app_path, new_path)
+            app_name = versioned_name
+    except:
+        pass
 
     return app_name
 
