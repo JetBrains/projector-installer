@@ -59,7 +59,7 @@ python3 -m pip install -U pip --user
 ```
 
 Also make sure that you have installed the following packages:
-
+- less 
 - libxext6
 - libxi6
 - libxrender1
@@ -69,7 +69,7 @@ Also make sure that you have installed the following packages:
 In Debian-based distributive you can install them using the command:
 
 ```bash
-sudo apt install libxext6 libxrender1 libxtst6 libfreetype6 libxi6 -y  
+sudo apt install less libxext6 libxrender1 libxtst6 libfreetype6 libxi6 -y  
 ```    
 
 ### Install from PyPi
