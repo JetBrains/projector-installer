@@ -12,6 +12,8 @@ Notable changes to this project are documented in this file.
 ## Changed
 - IDE install on first start runs in quick mode
 - ignore network errors during updates check 
+- <enter> hint in manual app selection
+- README anchors workaround for PyPi
 
 # 1.1.1
 
