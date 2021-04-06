@@ -28,6 +28,8 @@ CLASS_TO_LAUNCH_PROPERTY_NAME = 'org.jetbrains.projector.server.classToLaunch'
 HOST_PROPERTY_NAME = 'org.jetbrains.projector.server.host'
 PORT_PROPERTY_NAME = 'org.jetbrains.projector.server.port'
 
+MPS_MAIN_CLASS = '${MAIN_CLASS}'
+
 
 def token_quote(token: str) -> str:
     """Returns shell quoted token"""
@@ -42,6 +44,26 @@ def token_quote(token: str) -> str:
     return res
 
 
+def launch_script_last_lines(run_config: RunConfig, main_class: str) -> str:
+    """Launch script last lines"""
+    line = f' -D{PORT_PROPERTY_NAME}={run_config.projector_port} \\\n'
+    line += f' -D{CLASS_TO_LAUNCH_PROPERTY_NAME}={main_class} \\\n'
+
+    if run_config.projector_host != RunConfig.HOST_ALL:
+        line += f' -D{HOST_PROPERTY_NAME}={run_config.projector_host} \\\n'
+
+    if run_config.is_secure():
+        line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
+
+    if run_config.is_password_protected():
+        line += f' -D{TOKEN_ENV_NAME}={token_quote(run_config.password)} \\\n'
+        line += f' -D{RO_TOKEN_ENV_NAME}={token_quote(run_config.ro_password)} \\\n'
+
+    line += f'  {PROJECTOR_RUN_CLASS}\\\n'
+
+    return line
+
+
 def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
     """Writes run script from src to dst"""
 
@@ -51,20 +73,9 @@ def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
         elif line.find("classpath") != -1:
             line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
         elif line.find(IDEA_RUN_CLASS) != -1:
-            line = f' -D{PORT_PROPERTY_NAME}={run_config.projector_port} \\\n'
-            line += f' -D{CLASS_TO_LAUNCH_PROPERTY_NAME}={IDEA_RUN_CLASS} \\\n'
-
-            if run_config.projector_host != RunConfig.HOST_ALL:
-                line += f' -D{HOST_PROPERTY_NAME}={run_config.projector_host} \\\n'
-
-            if run_config.is_secure():
-                line += f' -D{SSL_ENV_NAME}=\"{get_ssl_properties_file(run_config.name)}\" \\\n'
-
-            if run_config.is_password_protected():
-                line += f' -D{TOKEN_ENV_NAME}={token_quote(run_config.password)} \\\n'
-                line += f' -D{RO_TOKEN_ENV_NAME}={token_quote(run_config.ro_password)} \\\n'
-
-            line += f'  {PROJECTOR_RUN_CLASS}\\\n'
+            line = launch_script_last_lines(run_config, IDEA_RUN_CLASS)
+        elif line.find(MPS_MAIN_CLASS) != -1:
+            line = launch_script_last_lines(run_config, MPS_MAIN_CLASS)
 
         dst.write(line)
 

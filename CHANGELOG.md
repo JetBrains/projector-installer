@@ -4,8 +4,11 @@ Notable changes to this project are documented in this file.
 
 # Unreleased
 
+## Added
+- PRJ-414: MPS support
+
 ## Changed
-- filter out Docker interfaces when run outside Docker container
+- filter out Docker interfaces when run outside container
 
 # 1.1.2
 

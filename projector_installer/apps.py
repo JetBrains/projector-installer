@@ -7,11 +7,11 @@
 import platform
 import shutil
 import sys
-from os import listdir, rename
+import os
+from os import listdir
 from os.path import join, expanduser, dirname, isfile, isdir, basename
 from distutils.version import LooseVersion
-from tarfile import ReadError
-from typing import Optional, List
+from typing import Optional, List, Tuple
 from dataclasses import dataclass
 import json
 
@@ -91,33 +91,74 @@ def get_data_dir_from_script(run_script: str) -> str:
     raise Exception('Unable to find data directory in the launch script.')
 
 
+class UnknownIDEException(Exception):
+    """Unknown IDE exception"""
+
+
+MPS_LAUNCHER_PATH = 'bin/mps.sh'
+MPS_SVG_ICON_PATH = 'bin/mps.svg'
+MPS_VM_OPTIONS_PATH = 'bin/mps64.vmoptions'
+MPS_STARTUP_WM_CLASS = 'jetbrains-mps'
+
+
+def is_mps_dir(app_path: str) -> bool:
+    """Check if given path is MPS app directory"""
+    return isfile(join(app_path, MPS_LAUNCHER_PATH))
+
+
+def get_mps_version(app_path: str) -> Tuple[str, str]:
+    """Extract MPS version and build number from build.number file"""
+    pairs = map(lambda x: x.split('='),
+                [line.strip() for line in open(join(app_path, 'build.number'), "r")])
+    data = {elem[0]: elem[1] for elem in pairs}
+    return data['version'], data['build.number']
+
+
+def get_mps_product_info(app_path: str) -> ProductInfo:
+    """Construct MPS ProductInfo"""
+
+    if not is_mps_dir(app_path):
+        raise UnknownIDEException(app_path)
+
+    version, build_number = get_mps_version(app_path)
+
+    return ProductInfo(name='MPS', version=version, build_number=build_number,
+                       product_code='MPS', data_dir='', svg_icon_path=MPS_SVG_ICON_PATH,
+                       os='linux', launcher_path=MPS_LAUNCHER_PATH, java_exec_path='jbr/bin/java',
+                       vm_options_path=MPS_VM_OPTIONS_PATH, startup_wm_class=MPS_STARTUP_WM_CLASS)
+
+
 def get_product_info(app_path: str) -> ProductInfo:
     """Parses product info file to ProductInfo class."""
     prod_info_path = join(app_path, PRODUCT_INFO)
-    with open(prod_info_path, "r") as file:
-        data = json.load(file)
-        java_exec_path = 'jre/bin/java'
 
-        if 'javaExecutablePath' in data['launch'][0]:
-            java_exec_path = data['launch'][0]['javaExecutablePath']
+    try:
+        with open(prod_info_path, "r") as file:
+            data = json.load(file)
+            java_exec_path = 'jre/bin/java'
 
-        product_info = ProductInfo(data['name'], data['version'], data['buildNumber'],
-                                   data['productCode'], '', data['svgIconPath'],
-                                   data['launch'][0]['os'],
-                                   data['launch'][0]['launcherPath'],
-                                   java_exec_path,
-                                   data['launch'][0]['vmOptionsFilePath'],
-                                   data['launch'][0]['startupWmClass'])
+            if 'javaExecutablePath' in data['launch'][0]:
+                java_exec_path = data['launch'][0]['javaExecutablePath']
 
-        version = parse_version(product_info.version)
+            product_info = ProductInfo(data['name'], data['version'], data['buildNumber'],
+                                       data['productCode'], '', data['svgIconPath'],
+                                       data['launch'][0]['os'],
+                                       data['launch'][0]['launcherPath'],
+                                       java_exec_path,
+                                       data['launch'][0]['vmOptionsFilePath'],
+                                       data['launch'][0]['startupWmClass'])
 
-        if version.year >= 2020 and version.quart >= 2:
-            product_info.data_dir = data['dataDirectoryName']
-        else:
-            product_info.data_dir = get_data_dir_from_script(
-                join(app_path, product_info.launcher_path))
+            version = parse_version(product_info.version)
 
-        return product_info
+            if version.year >= 2020 and version.quart >= 2:
+                product_info.data_dir = data['dataDirectoryName']
+            else:
+                product_info.data_dir = get_data_dir_from_script(
+                    join(app_path, product_info.launcher_path))
+    except FileNotFoundError:  # MPS does not have product_info
+        product_info = get_mps_product_info(app_path)
+
+    return product_info
 
 
 def get_launch_script(app_path: str) -> str:
@@ -170,8 +211,13 @@ def get_plugin_dir(app_path: str) -> str:
 
 
 def is_android_studio(product_info: ProductInfo) -> bool:
-    """Returns True if given product info corresponds to is from AS"""
+    """Returns True if given product info corresponds AS"""
     return product_info.product_code == 'AI'
+
+
+def is_mps(product_info: ProductInfo) -> bool:
+    """Returns True if given product info corresponds MPS"""
+    return product_info.product_code == 'MPS'
 
 
 def get_java_path(app_path: str) -> str:
@@ -194,17 +240,20 @@ def unpack_app(file_path: str) -> str:
     app_name = unpack_tar_file(file_path, get_apps_dir())
 
     # For android studio - ensure that app directory has unique name
-    try:  # MPS does not have product-info.json
-        app_path = get_app_path(app_name)
-        product_info = get_product_info(app_path)
+    app_path = get_app_path(app_name)
+    product_info = get_product_info(app_path)
 
-        if is_android_studio(product_info):
-            versioned_name = app_name + "_" + product_info.version.replace(' ', '_')
-            new_path = get_app_path(versioned_name)
-            rename(app_path, new_path)
-            app_name = versioned_name
-    except:
-        pass
+    if is_android_studio(product_info):
+        versioned_name = app_name + "_" + product_info.version.replace(' ', '_')
+        new_path = get_app_path(versioned_name)
+        shutil.rmtree(new_path, ignore_errors=True)
+        os.rename(app_path, new_path)
+        app_name = versioned_name
+    elif is_mps(product_info):
+        new_path = get_app_path(product_info.build_number)
+        shutil.rmtree(new_path, ignore_errors=True)
+        os.rename(app_path, new_path)
+        app_name = product_info.build_number
 
     return app_name
 
@@ -222,7 +271,7 @@ def get_jre_dir(path_to_app: str) -> str:
 def is_path_to_app(app_path: str) -> bool:
     """Checks app path validity"""
     prod_info_path = join(app_path, PRODUCT_INFO)
-    return isfile(prod_info_path)
+    return isfile(prod_info_path) or is_mps_dir(app_path)
 
 
 def get_path_to_toolbox_channel(path: str) -> Optional[str]:
