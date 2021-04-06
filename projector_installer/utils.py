@@ -27,6 +27,7 @@ CHUNK_SIZE = 4 * 1024 * 1024
 PROGRESS_BAR_WIDTH = 50
 PROGRESS_BAR_TEMPLATE = '[%(bar)s]  %(info)s'
 DEF_TOKEN_LEN = 20
+DOCKER_VENDOR = '02:42'
 
 
 def create_dir_if_not_exist(dir_name: str) -> None:
@@ -151,12 +152,33 @@ def get_java_version(java_path: str) -> str:
     return version.strip('"')
 
 
+def is_inside_docker() -> bool:
+    """Detects if we run inside docker container"""
+    return isfile('/.dockerenv')
+
+
+def is_docker_interface(ifs: Any) -> bool:
+    """Returns True if given interface belongs to docker"""
+    addresses = netifaces.ifaddresses(ifs)
+
+    if netifaces.AF_LINK in addresses:
+        for mac in addresses[netifaces.AF_LINK]:
+            if mac['addr'][:5] == DOCKER_VENDOR:
+                return True
+
+    return False
+
+
 def get_local_addresses() -> List[str]:
     """Returns list of local ip addresses."""
     interfaces = netifaces.interfaces()
     res = []
 
     for ifs in interfaces:
+
+        if not is_inside_docker() and is_docker_interface(ifs):
+            continue
+
         addresses = netifaces.ifaddresses(ifs)
 
         if netifaces.AF_INET in addresses:
