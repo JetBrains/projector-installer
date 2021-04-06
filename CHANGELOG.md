@@ -10,7 +10,7 @@ Notable changes to this project are documented in this file.
 # 1.1.2
 
 ## Added
-- new command 'autoinstall' intended for install IDE without user interaction. 
+- new command 'autoinstall' intended for install the IDE without user interaction. 
 - new command 'defaults' to save user defaults (hostname only is supported yet)
 - DataSpell IDE support
 

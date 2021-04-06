@@ -40,6 +40,7 @@ class IDEKind(Enum):
     RubyMine = auto()
     Rider = auto()
     DataSpell = auto()
+    MPS = auto()
 
 
 @dataclass
@@ -142,6 +143,7 @@ KIND2CODE = {
     IDEKind.RubyMine: 'RM',
     IDEKind.Rider: 'RD',
     IDEKind.DataSpell: 'PD',
+    IDEKind.MPS: 'MPS'
 }
 
 CODE2KIND = {code: kind for kind, code in KIND2CODE.items()}
