@@ -6,6 +6,8 @@
 """
 Misc utility functions.
 """
+import os
+import stat
 import sys
 import io
 import json
@@ -14,7 +16,8 @@ import zipfile
 import subprocess
 import secrets
 import string
-from os import listdir, remove, makedirs
+from os import listdir, remove, makedirs, chmod
+
 from os.path import join, isfile, getsize, basename, isdir, realpath, expandvars, expanduser
 from shutil import copy
 from urllib.request import urlopen
@@ -106,6 +109,15 @@ def download_file(url: str, destination: str, timeout: Optional[int] = None,
     return file_path
 
 
+def ensure_writable(path: str) -> None:
+    """Makes file writable by owner"""
+    if isfile(path):
+        file_stats = os.stat(path)
+
+        if (file_stats.st_mode & stat.S_IWUSR) == 0:
+            chmod(path, file_stats.st_mode | stat.S_IWUSR)
+
+
 def unpack_tar_file(file_path: str, destination: str) -> str:
     """ Unpacks given file in destination directory. """
     print(f'Unpacking {basename(file_path)}')
@@ -117,7 +129,9 @@ def unpack_tar_file(file_path: str, destination: str) -> str:
         with progressbar(length=len(members), width=PROGRESS_BAR_WIDTH,
                          bar_template=PROGRESS_BAR_TEMPLATE) as progress_bar:
             for member in members:
-                tar_file.extract(member, destination)
+                out_member_path = join(destination, member.name)
+                tar_file.extract(member=member, path=destination)
+                ensure_writable(out_member_path)  # workaround for MPS licenses
                 progress_bar.update(1)
 
     return dir_name
