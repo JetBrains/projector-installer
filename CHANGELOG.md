@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.1.2
 
 ## Added
 - new command 'autoinstall' intended for install IDE without user interaction. 
@@ -14,6 +14,7 @@ Notable changes to this project are documented in this file.
 - ignore network errors during updates check 
 - <enter> hint in manual app selection
 - README anchors workaround for PyPi
+- Projector Server v1.1.2
 
 # 1.1.1
 
