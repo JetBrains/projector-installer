@@ -44,7 +44,9 @@ def is_cwd_exist() -> bool:
 @click.option('--cache-directory', type=click.Path(),
               default='',
               help='Path to download cache directory')
-def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
+@click.option('--accept-license', default=False, is_flag=True,
+              help='Accept GPL v2 license without prompt.')
+def projector(ctx: Any, config_directory: str, cache_directory: str, accept_license: bool) -> None:
     """
     This script helps to install, manage, and run JetBrains IDEs with Projector.
     """
@@ -62,7 +64,9 @@ def projector(ctx: Any, config_directory: str, cache_directory: str) -> None:
         global_config.cache_dir = expand_path(cache_directory)
 
     if is_first_start():
-        display_license()
+        if not accept_license:
+            display_license()
+
         init_config_dir()
 
         if not ctx.invoked_subcommand:
