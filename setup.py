@@ -4,7 +4,7 @@
 
 
 """projector-installer setup file."""
-
+import sys
 from shutil import copyfile, rmtree
 from os.path import isfile, join
 from os import remove
@@ -27,6 +27,9 @@ def copy_license() -> None:
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
+
+if sys.version_info < (3, 7):
+    requirements.append('dataclasses')
 
 PACKAGE_DIR = 'projector_installer'
 bundled_dir = join(PACKAGE_DIR, BUNDLED_DIR)

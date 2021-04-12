@@ -10,6 +10,7 @@ Notable changes to this project are documented in this file.
 
 ## Changed
 - filter out Docker interfaces when run outside container
+- PRJ-428: dataclasses package dependency for python 3.6 only
 
 # 1.1.2
 
