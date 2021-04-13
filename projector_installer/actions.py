@@ -19,10 +19,11 @@ from .apps import get_app_path, get_installed_apps, get_product_info, \
     download_and_install
 from .certificate_chain import get_certificate_chain
 from .defaults import save_defaults, get_path_to_defaults
-from .global_config import get_projector_server_dir
+from .global_config import get_projector_server_dir, LONG_NETWORK_TIMEOUT
 from .ide_update import is_updatable_ide, get_update, update_config, check_ide_update, is_tested_ide
 from .log_utils import init_log, shutdown_log, get_path_to_log
 from .products import Product, get_all_apps
+from .projector_updates import get_latest_installer_version, is_newer_than_current, self_update
 from .secure_config import get_ca_crt_file, parse_custom_names
 
 from .utils import get_java_version, get_local_addresses
@@ -36,6 +37,7 @@ from .run_config import RunConfig, get_run_configs, get_run_script_path, validat
     lock_config, release_config, make_config_name_from_path
 
 from .config_generator import save_config, check_config
+from .version import __version__
 
 
 def do_list_config(pattern: Optional[str] = None) -> None:
@@ -580,4 +582,22 @@ def do_save_defaults(hostname: Optional[str]) -> None:
     defaults = get_user_defaults(hostname)
     print(f'Saving defaults to {get_path_to_defaults()}')
     save_defaults(defaults)
+    print('done.')
+
+
+def do_self_update() -> None:
+    """Do self update to latest PyPi version"""
+    pypi_version = get_latest_installer_version(LONG_NETWORK_TIMEOUT)
+
+    if pypi_version is None:
+        print('There are no available updates. Exiting...')
+        sys.exit(0)
+
+    if not is_newer_than_current(pypi_version):
+        print(f'You already running the latest projector-installer version: {__version__}. '
+              f'Exiting...')
+        sys.exit(0)
+
+    print(f'Current version is {__version__}. Upgrading projector to version {pypi_version}...')
+    self_update(pypi_version)
     print('done.')
