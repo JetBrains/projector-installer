@@ -4,3 +4,4 @@ netifaces
 setuptools
 cryptography
 pyOpenSSL
+pip

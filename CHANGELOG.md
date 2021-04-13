@@ -7,6 +7,7 @@ Notable changes to this project are documented in this file.
 ## Added
 - PRJ-414: MPS support
 - PRJ-370: --accept-license command line option
+- PRJ-436: self-update command
 
 ## Changed
 - filter out Docker interfaces when run outside container

@@ -15,7 +15,7 @@ from .global_config import init_config_dir, init_cache_dir
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
     do_rename_config, do_rebuild_config, do_install_cert, do_update_config, do_auto_install, \
-    do_save_defaults
+    do_save_defaults, do_self_update
 from .license import display_license
 from .projector_updates import check_for_projector_updates
 from .utils import expand_path
@@ -280,6 +280,15 @@ def defaults(hostname: Optional[str]) -> None:
     do_save_defaults(hostname)
 
 
+@click.command(short_help='Update projector-installer')
+def self_update() -> None:
+    """projector self-update
+
+    Update projector-installer
+    """
+    do_self_update()
+
+
 @projector.group()
 def ide() -> None:
     """
@@ -319,3 +328,4 @@ projector.add_command(install_app, name='install')
 projector.add_command(auto_install_app, name='autoinstall')
 projector.add_command(install_certificate, name='install-certificate')
 projector.add_command(defaults, name='defaults')
+projector.add_command(self_update, name='self-update')
