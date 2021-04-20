@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.1.3
 
 ## Added
 - PRJ-414: MPS support
@@ -13,6 +13,7 @@ Notable changes to this project are documented in this file.
 - filter out Docker interfaces when run outside container
 - PRJ-428: dataclasses package dependency for python 3.6 only
 - PRJ-449: system java is used on non-x86_64 platform 
+- Projector Server v1.1.3
 
 # 1.1.2
 
