@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Fixed
+- PRJ-464: Check pip compatibility with self-update functionality 
+
 # 1.1.3
 
 ## Added

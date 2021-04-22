@@ -3,14 +3,11 @@
 #  in the LICENSE file.
 
 """Check updates module"""
-
 from distutils.version import LooseVersion
 import socket
 from os import environ
 from typing import Optional, Any
 from urllib.error import URLError
-from pip._internal.cli.main import main as _main  # type: ignore
-
 import click
 
 from .global_config import get_changelog_url, LONG_NETWORK_TIMEOUT, \
@@ -22,6 +19,20 @@ from .utils import get_json, is_in_venv
 from .version import __version__
 
 PYPI_PRODUCT_URL = 'https://pypi.org/pypi/projector-installer/json'
+
+
+def print_self_update_warning() -> None:
+    """Print PIP incompatibility warning"""
+    click.secho('PIP version is incompatible with self-upgrade feature.\n'
+                'Try to upgrade pip to more recent version using command:\n\t'
+                'python3 -m pip install -U pip\n', bold=True, fg='yellow')
+
+
+try:
+    # pylint: disable=import-outside-toplevel
+    from pip._internal.cli.main import main as pip_main  # type: ignore
+except ModuleNotFoundError:
+    print_self_update_warning()
 
 
 def get_latest_installer_version(time: float) -> Optional[Any]:
@@ -82,7 +93,7 @@ def check_for_projector_updates() -> None:
               f'(ver. {__version__} is installed)!\n' \
               f'Changelog: {get_changelog_url(pypi_version)}\n' \
               f'To update use command: {UPDATE_COMMAND}\n'
-        click.echo(click.style(msg, bold=True))
+        click.secho(msg, bold=True)
 
 
 def is_user_install() -> bool:
@@ -102,4 +113,7 @@ def self_update(version: str) -> None:
     if is_user_install():
         args.append('--user')
 
-    _main(args)
+    try:
+        pip_main(args)
+    except NameError:
+        print_self_update_warning()
