@@ -39,14 +39,9 @@ can install them using the command:
 
 ```bash
 sudo apt install python3 python3-pip -y
-``` 
-
-Check pip3 version with command:
-```commandline
-pip3 --version
 ```
 
-If pip3 version is earlier than 19, it's necessary to update pip. 
+Update pip. 
 
 On Ubuntu run 
 ```bash
