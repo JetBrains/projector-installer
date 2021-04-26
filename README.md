@@ -28,6 +28,9 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     8. [Change existing configuration](#Change-existing-configuration)
     9. [FreeBSD support](#FreeBSD-support)
    10. [OpenBSD support](#OpenBSD-support)
+   11. [projector config update does not work](#config-update-does-not-work)
+    
+### <a id="Change-existing-configuration"></a>
 
 ## Installation<a id="Installation"></a>
 
@@ -237,6 +240,12 @@ To change run config (for example - change listening port or access password) us
 ```commandline
 projector config edit
 ```
+
+### projector config update does not work<a id="config-update-does-not-work"></a>
+Probably your run configuration uses "tested" update channel.
+Try change update channel to not_tested.
+You can inspect view update channel using `projector config show` command and
+change it via `projector config edit`.
 
 ### FreeBSD support<a id="FreeBSD-support"></a>
 projector-installer since ver. 1.1.0 has FreeBSD support.
