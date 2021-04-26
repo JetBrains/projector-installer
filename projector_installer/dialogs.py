@@ -449,6 +449,14 @@ def select_projector_listening_address(default: str = RunConfig.HOST_ALL) -> str
     return res
 
 
+def select_update_channel(default: str) -> str:
+    """Select update channel"""
+    channels = [RunConfig.TESTED, RunConfig.NOT_TESTED]
+    res = select_from_list(channels, lambda it: it,
+                           f'Choose update channel or 0 to keep current({default})')
+    return default if res is None else res
+
+
 def edit_config(config: RunConfig) -> RunConfig:
     """Edits existing config."""
     config.path_to_app = select_manual_app_path(default=config.path_to_app)
@@ -486,6 +494,8 @@ def edit_config(config: RunConfig) -> RunConfig:
         config.token = generate_token() if secure_config else ''
 
     config.password, config.ro_password = select_password_pair(config.password, config.ro_password)
+
+    config.update_channel = select_update_channel(config.update_channel)
 
     return config
 
