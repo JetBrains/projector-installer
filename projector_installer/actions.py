@@ -52,19 +52,24 @@ def do_show_config(pattern: Optional[str] = None) -> None:
     """
     run_config = select_run_config(pattern)
     print(f'Configuration: {run_config.name}')
-    print(f'IDE path: {run_config.path_to_app}')
     print(f'Projector port: {run_config.projector_port}')
+    print(f'Projector listening address: {run_config.projector_host}')
 
+    if run_config.custom_names:
+        print(f'Host name(s): {run_config.custom_names}')
+
+    print(f'IDE path: {run_config.path_to_app}')
     product_info = get_product_info(run_config.path_to_app)
-    print(f'Product info: {product_info.name}, '
+    print(f'Product name: {product_info.name}, '
           f'version={product_info.version}, '
           f'build={product_info.build_number}')
 
     if run_config.toolbox:
         print('Toolbox config = yes')
+    else:
+        print(f'Update channel: {run_config.update_channel}')
 
-    if run_config.is_secure():
-        print('Secure config = yes')
+    print(f'Projector uses secure config (https/wss)= {"yes" if run_config.is_secure() else "no"}')
 
     if run_config.is_password_protected():
         print(f'RW Password: = {run_config.password}')
