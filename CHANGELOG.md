@@ -4,6 +4,10 @@ Notable changes to this project are documented in this file.
 
 # Unreleased
 
+## Added 
+- change update channel via projector config edit command 
+- extend projector config show command
+
 ## Fixed
 - PRJ-464: Check pip compatibility with self-update functionality 
 
