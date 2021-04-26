@@ -46,7 +46,7 @@ def restrict_log_size(config_name: str) -> None:
 def init_log(config_name: str) -> TextIO:
     """Performs initialization of log file"""
     restrict_log_size(config_name)
-    log = open(get_path_to_log(config_name), 'a+')
+    log = open(get_path_to_log(config_name), 'a+')  # pylint: disable=consider-using-with
     print(f'{START_SESSION_MARK} Installer version: {__version__} Run config: {config_name} - '
           f'{datetime.now()}', file=log)
     log.flush()

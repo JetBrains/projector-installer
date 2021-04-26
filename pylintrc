@@ -141,7 +141,8 @@ disable=print-statement,
         comprehension-escape,
         too-few-public-methods,
         too-many-arguments,
-        no-self-use
+        no-self-use,
+	consider-using-with
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
