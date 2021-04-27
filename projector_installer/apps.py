@@ -377,13 +377,28 @@ IDEA_PROPERTIES_FILE = 'idea.properties'
 FORBID_UPDATE_STRING = 'ide.no.platform.update=Projector'
 
 
+def get_ide_properties_file(app_path: str) -> str:
+    """Returns path to ide properties file"""
+    bin_dir = get_bin_dir(app_path)
+    return join(bin_dir, IDEA_PROPERTIES_FILE)
+
+
+def is_updates_forbidden(app_path: str) -> bool:
+    """Returns True if updates for specified IDE is already forbidden"""
+    prop_file = get_ide_properties_file(app_path)
+    with open(prop_file, 'r') as file:
+        lines = file.read().splitlines()
+        return FORBID_UPDATE_STRING in lines
+
+
 def forbid_updates_for(app_path: str) -> None:
     """Forbids IDEA platform update for specified app."""
-    bin_dir = get_bin_dir(app_path)
-    prop_file = join(bin_dir, IDEA_PROPERTIES_FILE)
 
-    with open(prop_file, 'a') as file:
-        file.write(f'{FORBID_UPDATE_STRING}')
+    if not is_updates_forbidden(app_path):
+        prop_file = get_ide_properties_file(app_path)
+
+        with open(prop_file, 'a') as file:
+            file.write(f'{FORBID_UPDATE_STRING}')
 
 
 def download_and_install(url: str) -> str:

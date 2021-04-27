@@ -7,6 +7,7 @@ Notable changes to this project are documented in this file.
 ## Added 
 - change update channel via projector config edit command 
 - extend projector config show command
+- PRJ-407: config rebuild command forbids ide updates
 
 ## Fixed
 - PRJ-464: Check pip compatibility with self-update functionality
