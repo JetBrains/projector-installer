@@ -9,7 +9,10 @@ Notable changes to this project are documented in this file.
 - extend projector config show command
 
 ## Fixed
-- PRJ-464: Check pip compatibility with self-update functionality 
+- PRJ-464: Check pip compatibility with self-update functionality
+
+## Removed
+- --allow-updates option for install, autoinstall and config update commands
 
 # 1.1.3
 

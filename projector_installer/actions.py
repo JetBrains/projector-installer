@@ -372,7 +372,7 @@ def do_rebuild_config(config_name: Optional[str] = None) -> None:
     release_config(lock)
 
 
-def do_update_config(config_name: Optional[str] = None, allow_update: bool = False) -> None:
+def do_update_config(config_name: Optional[str] = None) -> None:
     """Updates IDE in selected config if update is available"""
     run_config = select_run_config(config_name)
 
@@ -401,7 +401,7 @@ def do_update_config(config_name: Optional[str] = None, allow_update: bool = Fal
         sys.exit(1)
 
     print(f'Updating IDE for run config {run_config.name}.')
-    update_config(run_config, product, allow_update)
+    update_config(run_config, product)
     print(f'{current} is updated to {product.name}')
 
     release_config(lock)
@@ -456,10 +456,10 @@ def do_list_app(pattern: Optional[str] = None) -> None:
     list_apps(pattern)
 
 
-def install_app(run_config: RunConfig, app: Product, allow_updates: bool) -> RunConfig:
+def install_app(run_config: RunConfig, app: Product) -> RunConfig:
     """Perform selected app install"""
     print(f'Installing {app.name}')
-    run_config.path_to_app = download_and_install(app.url, allow_updates)
+    run_config.path_to_app = download_and_install(app.url)
 
     try:
         validate_run_config(run_config)
@@ -475,7 +475,6 @@ def install_app(run_config: RunConfig, app: Product, allow_updates: bool) -> Run
 def do_auto_install(config_name: str,
                     app_name: str,
                     port: Optional[int],
-                    allow_updates: bool = False,
                     hostname: Optional[str] = '') -> None:
     """Performs non-interactive IDE install"""
     configs = get_run_configs(config_name)
@@ -510,12 +509,11 @@ def do_auto_install(config_name: str,
     if hostname:
         run_config.custom_names = hostname
 
-    install_app(run_config, app, allow_updates)
+    install_app(run_config, app)
 
 
 def do_install_app(app_name: Optional[str],
                    auto_run: bool = True,
-                   allow_updates: bool = False,
                    run_browser: bool = True,
                    quick: bool = False) -> None:
     """Installs specified app."""
@@ -544,7 +542,7 @@ def do_install_app(app_name: Optional[str],
         sys.exit(1)
 
     run_config.update_channel = channel
-    run_config = install_app(run_config, app, allow_updates)
+    run_config = install_app(run_config, app)
 
     if auto_run:
         do_run_config(run_config.name, run_browser)

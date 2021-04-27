@@ -71,7 +71,7 @@ def projector(ctx: Any, config_directory: str, cache_directory: str, accept_lice
 
         if not ctx.invoked_subcommand:
             print('Please select IDE to install:')
-            do_install_app(None, auto_run=True, allow_updates=False, run_browser=True, quick=True)
+            do_install_app(None, auto_run=True, run_browser=True, quick=True)
     elif not ctx.invoked_subcommand:
         click.echo(ctx.get_help())
     else:
@@ -202,30 +202,25 @@ def run(config_name: Optional[str], run_browser: bool) -> None:
 
 @click.command(short_help='Update IDE in selected configuration')
 @click.argument('config_name', type=click.STRING, required=False)
-@click.option('--allow-updates', default=False, is_flag=True,
-              help='Allow updates of installed IDE.')
-def update(config_name: Optional[str], allow_updates: bool) -> None:
+def update(config_name: Optional[str]) -> None:
     """projector config update config_name
 
     Updates IDE in selected config if update is available
     Updates IDE in selected config if update is available
     """
-    do_update_config(config_name, allow_updates)
+    do_update_config(config_name)
 
 
 @click.command(short_help='Interactive install and configure selected IDE')
 @click.argument('ide_name', type=click.STRING, required=False)
 @click.option('--auto-run/--no-auto-run', default=True,
               help='Run installed IDE.')
-@click.option('--allow-updates', default=False, is_flag=True,
-              help='Allow updates of installed IDE.')
 @click.option('--run-browser/--no-browser', default=True,
               help='Auto run browser in WSL environment.')
 @click.option('--expert', default=False, is_flag=True,
               help='Expert mode - set all config parameters')
 def install_app(ide_name: Optional[str],
                 auto_run: bool,
-                allow_updates: bool,
                 run_browser: bool,
                 expert: bool) -> None:
     """projector ide install [ide_name]
@@ -234,25 +229,20 @@ def install_app(ide_name: Optional[str],
     If no IDE name is given or the pattern is ambiguous, guides the user through the
     install process.
     """
-    do_install_app(ide_name, auto_run, allow_updates, run_browser, not expert)
+    do_install_app(ide_name, auto_run, run_browser, not expert)
 
 
 @click.command(short_help='Install selected IDE')
 @click.option('--config-name', type=click.STRING, required=True, help='Name of run configuration.')
 @click.option('--ide-name', type=click.STRING, required=True, help='Name of IDE to install.')
 @click.option('--port', type=click.INT, required=False, help='Projector port')
-@click.option('--allow-updates', default=False, is_flag=True,
-              help='Allow updates of installed IDE.')
 @click.option('--hostname', type=click.STRING, required=False, help='Projector hostname')
 def auto_install_app(config_name: str,
                      ide_name: str,
                      port: Optional[int],
-                     allow_updates: Optional[bool],
                      hostname: Optional[str]) -> None:
     """projector ide autoinstall --config-name name --ide-name name"""
-
-    allow_updates = False if allow_updates is None else allow_updates
-    do_auto_install(config_name, ide_name, port, allow_updates, hostname)
+    do_auto_install(config_name, ide_name, port, hostname)
 
 
 @click.command(short_help='Install user certificate to given config')

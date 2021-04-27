@@ -386,7 +386,7 @@ def forbid_updates_for(app_path: str) -> None:
         file.write(f'{FORBID_UPDATE_STRING}')
 
 
-def download_and_install(url: str, allow_updates: bool) -> str:
+def download_and_install(url: str) -> str:
     """Downloads and installs app"""
     try:
         path_to_dist = download_file(url, get_download_cache_dir())
@@ -401,8 +401,6 @@ def download_and_install(url: str, allow_updates: bool) -> str:
         sys.exit(1)
 
     res = get_app_path(app_name)
-
-    if not allow_updates:
-        forbid_updates_for(res)
+    forbid_updates_for(res)
 
     return res
