@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.1.4
 
 ## Added 
 - change update channel via projector config edit command 
@@ -14,6 +14,9 @@ Notable changes to this project are documented in this file.
 
 ## Removed
 - --allow-updates option for install, autoinstall and config update commands
+
+## Changed
+- Projector Server v1.1.4
 
 # 1.1.3
 
