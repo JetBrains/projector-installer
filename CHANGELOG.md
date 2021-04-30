@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Changed
+- projector update message not fire for self-update command 
+
 # 1.1.4
 
 ## Added 

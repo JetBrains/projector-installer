@@ -56,7 +56,8 @@ def projector(ctx: Any, config_directory: str, cache_directory: str, accept_lice
         print(f'Could not determine current working directory. Does {it} exist? Exiting...')
         sys.exit(1)
 
-    check_for_projector_updates()
+    if ctx.invoked_subcommand != 'self-update':
+        check_for_projector_updates()
 
     global_config.config_dir = expand_path(config_directory)
 
