@@ -37,7 +37,7 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
 ### Prerequisites
 
 To use projector-installer you need machine with Linux (or WSL) and with Python 3.6 or higher. Before install
-projector-installer make sure that you have python3 and pip3 installed in your system. In Debian-based distributive you
+projector-installer make sure that you have python3 and pip3 installed in your system. In Debian-based distributions you
 can install them using the command:
 
 ```bash
@@ -56,7 +56,7 @@ For CentOS use command:
 python3 -m pip install -U pip --user 
 ```
 
-Also make sure that you have installed the following packages:
+Also, make sure that you have installed the following packages:
 - less 
 - libxext6
 - libxi6
@@ -64,7 +64,7 @@ Also make sure that you have installed the following packages:
 - libxtst6
 - libfreetype6
 
-In Debian-based distributive you can install them using the command:
+In Debian-based distributions you can install them using the command:
 
 ```bash
 sudo apt install less libxext6 libxrender1 libxtst6 libfreetype6 libxi6 -y  
@@ -83,21 +83,21 @@ After that the command `projector` should be available.
 
 _NOTE:_ If it is not so, please refer to the [appropriate section](#projector-command-is-unavailable) in the [FAQ](#FAQ).
 
-_NOTE:_ projector script checks for updates on start. If the new version is available, you can install an update using
+_NOTE:_ projector script checks for updates on start. If a new version is available, you can install an update using
 command
 `pip3 install projector-installer --upgrade --user`
 
 ## Quick start<a id="Quick-start"></a>
 
-First time you run projector, it will automatically download, install, configure and start IDE. Just run projector and
+The first time you run projector, it will automatically download, install, configure and start IDE. Just run projector and
 follow the instructions. The script will run the installed IDE with projector-server and display URLs to access it. Open
-an URL in your browser and use IDE as usual.
+a URL in your browser and use IDE as usual.
 
 To run IDE again use `projector run`
 
 To install a new IDE run `projector install`
 
-To find out which JetBrains IDE are supported run `projector find`
+To find out which JetBrains IDEs are supported, run `projector find`
 
 To get help projector commands run `projector --help`
 
@@ -169,7 +169,7 @@ directory is ~/.projector. User can specify another location for it, using optio
 
 Projector installer can't support automatic Android Studio installation due to legal issues. However, installer can help
 you to configure already installed Android Studio to use with Projector. To make new run config for Android Studio
-use `projector config add`
+use the `projector config add`
 command.
 
 _NOTE:_ Please take into account, that Projector uses JVM, bundled with IDE and supports Java 11 only. Most of Android
