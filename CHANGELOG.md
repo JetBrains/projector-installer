@@ -2,10 +2,14 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.1.5
+
+## Fixed
+- PRJ-477: Fix accept license message
 
 ## Changed
 - projector update message not fire for self-update command 
+- Projector Server v1.1.5
 
 # 1.1.4
 
