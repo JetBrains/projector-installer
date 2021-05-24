@@ -110,7 +110,7 @@ def select_from_list(data: List[T], name: Callable[[T], str], prompt: str) -> Op
 
     while True:
         print_selection_list(names)
-        pos: int = click.prompt(prompt, type=int)
+        pos: int = click.prompt(prompt, type=int)  # type: ignore
 
         if pos < 0 or pos > len(names):
             print('Invalid number.')
@@ -231,7 +231,7 @@ def select_run_config(config_name: Optional[str]) -> RunConfig:
         while True:
             display_run_configs(run_configs)
             prompt = f'Choose a configuration number or 0 to exit: [0-{len(run_configs)}]'
-            config_number = click.prompt(prompt, type=int)
+            config_number = click.prompt(prompt, type=int)  # type: ignore
 
             if config_number < 0 or config_number > len(run_configs):
                 print('Invalid number selected.')

@@ -24,7 +24,7 @@ def display_license() -> None:
          license_file], check=False)
 
     accept = click.prompt('This software includes components licensed under GPLv2+CPE. '
-                          'Do you accept this license? [y/n]', type=bool)
+                          'Do you accept this license? [y/n]', type=bool)  # type: ignore
 
     if not accept:
         click.echo('The license was not accepted, exiting...')
