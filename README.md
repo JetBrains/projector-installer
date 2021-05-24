@@ -37,26 +37,34 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
 ### Prerequisites
 
 To use projector-installer you need machine with Linux (or WSL) and with Python 3.6 or higher. Before install
-projector-installer make sure that you have python3 and pip3 installed in your system. In Debian-based distributions you
-can install them using the command:
+projector-installer make sure that: 
 
-```bash
-sudo apt install python3 python3-pip -y
-```
+1. python3, pip3 and python3-crypto are installed in your system. 
+   In Debian-based distributions you can install them using the command:
+    ```bash
+    sudo apt install python3 python3-pip -y
+    sudo apt install python3-crypto -y
+    ```
+    
+    In CentOS use commands:
+    ```bash
+    sudo yum install python36 python3-pip -y
+    sudo yum install pyOpenSSL python-cryptography -y 
+    ```
 
-Update pip. 
+2. Update pip. 
 
-On Ubuntu run 
-```bash
-python3 -m pip install -U pip 
-```
+    For Debian-based distributions run 
+    ```bash
+    python3 -m pip install -U pip 
+    ```
 
-For CentOS use command: 
-```bash
-python3 -m pip install -U pip --user 
-```
+    For CentOS use command: 
+    ```bash
+    python3 -m pip install -U pip --user 
+    ```
 
-Also, make sure that you have installed the following packages:
+3. Make sure that you have installed the following packages:
 - less 
 - libxext6
 - libxi6
@@ -64,11 +72,16 @@ Also, make sure that you have installed the following packages:
 - libxtst6
 - libfreetype6
 
-In Debian-based distributions you can install them using the command:
+    For Debian-based distributions you can install them using the command:
 
-```bash
-sudo apt install less libxext6 libxrender1 libxtst6 libfreetype6 libxi6 -y  
-```    
+    ```bash
+    sudo apt install less libxext6 libxrender1 libxtst6 libfreetype6 libxi6 -y  
+    ```    
+  
+    For CentOS use command:
+    ```bash
+    sudo yum install less libXext libXrender libXtst libXi freetype -y  
+    ```
 
 ### Install from PyPi
 
@@ -76,10 +89,18 @@ You can install projector-installer script from PyPi, using command:
 
 ```bash
 pip3 install projector-installer --user
+```
+`projector` script will be installed in `~/.local/bin` directory. To make it available 
+on Debian-based systems run: 
+```bash
 source ~/.profile 
 ```
+for CentOS run: 
+```bash 
+source ~/.bash_profile
+``` 
 
-After that the command `projector` should be available.
+The command `projector` should be available now.
 
 _NOTE:_ If it is not so, please refer to the [appropriate section](#projector-command-is-unavailable) in the [FAQ](#FAQ).
 
