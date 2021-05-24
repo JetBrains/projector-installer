@@ -8,6 +8,7 @@
 import sys
 import subprocess
 import click
+from click import BOOL
 
 from .global_config import get_path_to_license
 
@@ -24,7 +25,7 @@ def display_license() -> None:
          license_file], check=False)
 
     accept = click.prompt('This software includes components licensed under GPLv2+CPE. '
-                          'Do you accept this license? [y/n]', type=bool)  # type: ignore
+                          'Do you accept this license? [y/n]', type=BOOL)
 
     if not accept:
         click.echo('The license was not accepted, exiting...')
