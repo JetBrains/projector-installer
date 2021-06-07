@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Added
+- User can pass CA password via PROJECTOR_CA_PASSWORD variable
+
 # 1.1.6
 
 ## Changed

@@ -5,6 +5,7 @@
 """Secure config related stuff"""
 import shutil
 import socket
+from os import getenv
 from os.path import join, isfile
 from typing import List, Tuple, Optional, TextIO
 
@@ -20,7 +21,13 @@ from .run_config import RunConfig, get_path_to_config
 
 PROJECTOR_JKS_NAME = 'projector'
 CA_NAME = 'ca'
-CA_PASSWORD = '85TibAyPS3NZX3'
+DEF_CA_PASSWORD = '85TibAyPS3NZX3'
+PROJECTOR_CA_PASSWORD_VAR = 'PROJECTOR_CA_PASSWORD'
+
+
+def get_ca_password() -> str:
+    """Return CA password"""
+    return getenv(PROJECTOR_CA_PASSWORD_VAR, DEF_CA_PASSWORD)
 
 
 def get_projector_jks_file(config_name: str) -> str:
@@ -65,7 +72,7 @@ def get_generate_ca_command() -> List[str]:
     """Returns list of args for generate ca"""
     return ['-genkeypair', '-alias', CA_NAME,
             '-dname', get_ca_dist_name(), '-keystore', get_ca_jks_file(),
-            '-keypass', CA_PASSWORD, '-storepass', CA_PASSWORD,
+            '-keypass', get_ca_password(), '-storepass', get_ca_password(),
             '-keyalg', 'RSA', '-keysize', '4096',
             '-ext', 'KeyUsage:critical=keyCertSign',
             '-ext', 'BasicConstraints:critical=ca:true',
@@ -75,8 +82,8 @@ def get_generate_ca_command() -> List[str]:
 
 def get_export_ca_command() -> List[str]:
     """Returns list of args for export ca.crt"""
-    return ['-export', '-alias', CA_NAME, '-file', get_ca_crt_file(), '-keypass', CA_PASSWORD,
-            '-storepass', CA_PASSWORD, '-keystore', get_ca_jks_file(), '-rfc']
+    return ['-export', '-alias', CA_NAME, '-file', get_ca_crt_file(), '-keypass', get_ca_password(),
+            '-storepass', get_ca_password(), '-keystore', get_ca_jks_file(), '-rfc']
 
 
 DIST_PROJECTOR_NAME = 'CN=Idea, OU=Development, O=Idea, L=SPB, S=SPB, C=RU'
@@ -156,7 +163,7 @@ def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
     return [
         '-gencert',
         '-alias', CA_NAME,
-        '-storepass', CA_PASSWORD,
+        '-storepass', get_ca_password(),
         '-keystore', get_ca_jks_file(),
         '-infile', get_projector_csr_file(run_config.name),
         '-outfile', get_projector_crt_file(run_config.name),
