@@ -3,10 +3,11 @@
 #  in the LICENSE file.
 
 """Secure config related stuff"""
+import configparser
 import shutil
 import socket
-from os import getenv
-from os.path import join, isfile
+from os import remove
+from os.path import join, isfile, isdir
 from typing import List, Tuple, Optional, TextIO
 
 import re
@@ -17,17 +18,128 @@ from .log_utils import init_log, shutdown_log
 from .utils import create_dir_if_not_exist, remove_file_if_exist, \
     get_local_addresses, generate_token
 from .apps import get_jre_dir
-from .run_config import RunConfig, get_path_to_config
+from .run_config import RunConfig, get_path_to_config, get_run_configs
 
 PROJECTOR_JKS_NAME = 'projector'
 CA_NAME = 'ca'
-DEF_CA_PASSWORD = '85TibAyPS3NZX3'
-PROJECTOR_CA_PASSWORD_VAR = 'PROJECTOR_CA_PASSWORD'
+DEF_CA_SEZAM = '85TibAyPS3NZX3'
+
+
+def is_required_ca_migration() -> bool:
+    """Returns True is it's necessary to migrate ca to new format"""
+    return isdir(get_ssl_dir()) and not isfile(get_ca_ini_file()) and len(get_run_configs()) > 0
+
+
+def do_ca_migration() -> bool:
+    """Migrate ca to new format"""
+    ret = make_ca_backup()
+    ret = ret and do_migration()
+
+    if ret:
+        remove_ca_backup()
+    else:
+        restore_ca_backup()
+
+    return ret
+
+
+def do_migration() -> bool:
+    """Do actual migration"""
+    token = generate_token()
+    ret = change_ca_passwords(token)
+
+    if ret:
+        create_ca_ini(token)
+
+    return ret
+
+
+def change_ca_passwords(token: str) -> bool:
+    """Change ca storage passwords"""
+    run_configs = get_run_configs()
+
+    if len(run_configs) == 0:
+        return False
+
+    config: RunConfig = next(iter(run_configs.items()))[1]
+    keytool_path = get_keytool(config.path_to_app)
+
+    cmd = [keytool_path, '-storepasswd', '-new', token, '-keystore', get_ca_jks_file(),
+           '-storepass', DEF_CA_SEZAM]
+
+    try:
+        subprocess.check_call(cmd, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        return False
+
+    cmd = [keytool_path, '-keypasswd', '-alias', CA_NAME, '-keypass', DEF_CA_SEZAM,
+           '-new', token, '-keystore', get_ca_jks_file(), '-storepass', token]
+
+    try:
+        subprocess.check_call(cmd, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        return False
+
+    return True
+
+
+def get_ca_ini_file() -> str:
+    """Return path to ca.ini"""
+    return join(get_ssl_dir(), f'{CA_NAME}.ini')
+
+
+def create_ca_ini(token: str) -> None:
+    """Create CA ini file"""
+    config = configparser.ConfigParser(strict=False, interpolation=None)
+    config['CA'] = {}
+    config['CA']['SAVED'] = token
+    with open(get_ca_ini_file(), 'w') as configfile:
+        config.write(configfile)
+
+
+def get_ca_jks_backup_file() -> str:
+    """Returns name of ca backup file"""
+    return join(get_ssl_dir(), f'{CA_NAME}.jks.backup')
+
+
+def make_ca_backup() -> bool:
+    """Make backup copy of ca file"""
+    try:
+        shutil.copy(get_ca_jks_file(), get_ca_jks_backup_file())
+    except OSError:
+        return False
+
+    return True
+
+
+def restore_ca_backup() -> bool:
+    """Restore ca from backup copy"""
+    try:
+        shutil.copy(get_ca_jks_backup_file(), get_ca_jks_file())
+    except OSError:
+        return False
+
+    return True
+
+
+def remove_ca_backup() -> bool:
+    """Remove ca backup file"""
+    try:
+        remove(get_ca_jks_backup_file())
+    except OSError:
+        return False
+
+    return True
 
 
 def get_ca_password() -> str:
     """Return CA password"""
-    return getenv(PROJECTOR_CA_PASSWORD_VAR, DEF_CA_PASSWORD)
+    if isfile(get_ca_ini_file()):
+        config = configparser.ConfigParser(strict=False, interpolation=None)
+        config.read(get_ca_ini_file())
+        return config.get('CA', 'SAVED')
+
+    return DEF_CA_SEZAM
 
 
 def get_projector_jks_file(config_name: str) -> str:
@@ -262,6 +374,7 @@ class SecureConfigGenerator:
     def _generate_ca(self) -> None:
         """Creates CA"""
         create_dir_if_not_exist(get_ssl_dir())
+        create_ca_ini(generate_token())
         self._run_keytool_with(get_generate_ca_command())
         self._run_keytool_with(get_export_ca_command())
 
