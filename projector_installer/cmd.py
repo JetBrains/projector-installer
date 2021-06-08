@@ -18,6 +18,7 @@ from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app,
     do_save_defaults, do_self_update
 from .license import display_license
 from .projector_updates import check_for_projector_updates
+from .secure_config import is_required_ca_migration, do_ca_migration
 from .utils import expand_path
 
 
@@ -63,6 +64,9 @@ def projector(ctx: Any, config_directory: str, cache_directory: str, accept_lice
 
     if cache_directory:
         global_config.cache_dir = expand_path(cache_directory)
+
+    if is_required_ca_migration():
+        do_ca_migration()
 
     if is_first_start():
         if not accept_license:
