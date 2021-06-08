@@ -22,7 +22,7 @@ from .run_config import RunConfig, get_path_to_config, get_run_configs
 
 PROJECTOR_JKS_NAME = 'projector'
 CA_NAME = 'ca'
-DEF_CA_SEZAM = '85TibAyPS3NZX3'
+DEF_CA_SEZAM_LEGACY = '85TibAyPS3NZX3'
 
 
 def is_required_ca_migration() -> bool:
@@ -65,14 +65,14 @@ def change_ca_passwords(token: str) -> bool:
     keytool_path = get_keytool(config.path_to_app)
 
     cmd = [keytool_path, '-storepasswd', '-new', token, '-keystore', get_ca_jks_file(),
-           '-storepass', DEF_CA_SEZAM]
+           '-storepass', DEF_CA_SEZAM_LEGACY]
 
     try:
         subprocess.check_call(cmd, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     except subprocess.CalledProcessError:
         return False
 
-    cmd = [keytool_path, '-keypasswd', '-alias', CA_NAME, '-keypass', DEF_CA_SEZAM,
+    cmd = [keytool_path, '-keypasswd', '-alias', CA_NAME, '-keypass', DEF_CA_SEZAM_LEGACY,
            '-new', token, '-keystore', get_ca_jks_file(), '-storepass', token]
 
     try:
@@ -139,7 +139,7 @@ def get_ca_password() -> str:
         config.read(get_ca_ini_file())
         return config.get('CA', 'SAVED')
 
-    return DEF_CA_SEZAM
+    return DEF_CA_SEZAM_LEGACY
 
 
 def get_projector_jks_file(config_name: str) -> str:
