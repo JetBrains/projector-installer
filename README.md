@@ -43,7 +43,7 @@ projector-installer make sure that:
    In Debian-based distributions you can install them using the command:
     ```bash
     sudo apt install python3 python3-pip -y
-    sudo apt install python3-crypto -y
+    sudo apt install python3-cryptography -y
     ```
     
     In CentOS use commands:
