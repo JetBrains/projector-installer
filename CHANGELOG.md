@@ -4,6 +4,17 @@ Notable changes to this project are documented in this file.
 
 # Unreleased
 
+## Added
+- PRJ-559: Non-interactive config add support. 
+  To use this feature user have to specify valid config name, 
+  path to application, port and host:
+  
+  `projector config add CONFIG_NAME ~/.projector/apps/idea-IC-211.7442.40 --port 8887 --hostname=localhost`
+  
+  If config with name  CONFIG_NAME is already exist, use --force flag: 
+  
+  `projector config add CONFIG_NAME ~/.projector/apps/idea-IC-211.7442.40 --port 8887 --hostname=localhost --force`
+
 ## Fixed
 - PRJ-504: avoid defunct java process 
 

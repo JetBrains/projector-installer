@@ -85,7 +85,10 @@ install IDE without interaction with user
 
 `projector config list` - list all existing configurations
  
-`projector config add` - add a new configuration
+`projector config add` - add a new configuration interactively.
+
+`projector config add _config_name_ /path/to/app --port  PORT --hostname=HOST_OR_ADDRESS` - add new config 
+without user input. To overwrite existing config use --force flag.
 
 `projector config edit` - change an existing configuration
 

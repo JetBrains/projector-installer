@@ -10,12 +10,13 @@ from typing import Any, Optional
 import click
 
 from . import global_config
+from .apps import is_valid_app_path
 from .global_config import init_config_dir, init_cache_dir
 
 from .actions import do_install_app, do_uninstall_app, do_find_app, do_list_app, do_run_config, \
     do_list_config, do_show_config, do_add_config, do_remove_config, do_edit_config, \
     do_rename_config, do_rebuild_config, do_install_cert, do_update_config, do_auto_install, \
-    do_save_defaults, do_self_update
+    do_save_defaults, do_self_update, do_auto_add_config
 from .license import display_license
 from .projector_updates import check_for_projector_updates
 from .secure_config import is_required_ca_migration, do_ca_migration
@@ -142,14 +143,35 @@ def show(config_name: Optional[str]) -> None:
 @click.command(short_help='Add new configuration')
 @click.argument('config_name', type=click.STRING, required=False)
 @click.argument('ide_path', type=click.STRING, required=False)
+@click.option('--port', type=click.INT, required=False, help='Projector port')
+@click.option('--hostname', type=click.STRING, required=False, help='Projector hostname')
+@click.option('--password', type=click.STRING, required=False, help='Projector RW password')
+@click.option('--ro-password', type=click.STRING, required=False, help='Projector RO password')
 @click.option('--expert', default=False, is_flag=True,
               help='Expert mode - set all config parameters')
-def add(config_name: Optional[str], ide_path: Optional[str], expert: bool) -> None:
+@click.option('--force', default=False, is_flag=True,
+              help='Force add config even if config with given name is already exist')
+def add(config_name: Optional[str],
+        ide_path: Optional[str],
+        port: Optional[int],
+        hostname: Optional[str],
+        password: Optional[str],
+        ro_password: Optional[str],
+        expert: bool,
+        force: bool) -> None:
     """projector config add [config_name]
 
     Add a new configuration.
     """
-    do_add_config(config_name, ide_path, not expert)
+    app_path: str = ide_path if ide_path else ''
+
+    if config_name and is_valid_app_path(app_path) and port and hostname:
+        do_auto_add_config(config_name=config_name, app_path=app_path,
+                           port=port, hostname=hostname, force=force,
+                           password=password if password else '',
+                           ro_password=ro_password if ro_password else '')
+    else:
+        do_add_config(hint=config_name, app_path=ide_path, quick=not expert)
 
 
 @click.command(short_help='Remove configuration')
@@ -246,7 +268,11 @@ def auto_install_app(config_name: str,
                      ide_name: str,
                      port: Optional[int],
                      hostname: Optional[str]) -> None:
-    """projector ide autoinstall --config-name name --ide-name name"""
+    """
+    projector ide autoinstall --config-name name --ide-name name
+    [--port listen_port] [--hostname hostname or address]
+    """
+
     do_auto_install(config_name, ide_name, port, hostname)
 
 

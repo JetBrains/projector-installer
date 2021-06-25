@@ -9,7 +9,7 @@ import signal
 import subprocess
 import sys
 from os import path, system, uname, remove
-from os.path import isfile, isdir
+from os.path import isfile, isdir, expanduser
 from typing import Optional, List
 from urllib.parse import quote
 from click import secho
@@ -236,8 +236,7 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
 
 def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> None:
     """
-    Adds new run config. If auto_run = True, runs it without questions.
-    Asks user otherwise.
+    Adds new run config.
     """
 
     if quick:
@@ -286,8 +285,37 @@ def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> 
         sys.exit(1)
 
     print(f'Adding new config with name {run_config.name}')
-
     save_config(run_config)
+    print('done.')
+
+
+def do_auto_add_config(config_name: str,
+                       app_path: str,
+                       port: int,
+                       hostname: str,
+                       password: str,
+                       ro_password: str,
+                       force: bool) -> None:
+    """Add new Run config non-interactively"""
+
+    if config_name in get_run_configs() and not force:
+        print(f'Configuration with name {config_name} is already exist.')
+        print('Choose another name or use --force flag.')
+        sys.exit(1)
+
+    if password and not ro_password:
+        ro_password = password
+
+    run_config = RunConfig(name=config_name, path_to_app=expanduser(app_path),
+                           projector_port=port, projector_host=hostname,
+                           token='', password=password, ro_password=ro_password,
+                           toolbox=is_toolbox_path(app_path), custom_names=hostname)
+
+    run_config.update_channel = RunConfig.NOT_TESTED
+
+    print(f'Adding new config with name {run_config.name}')
+    save_config(run_config)
+    print('done.')
 
 
 def do_remove_config(config_name: Optional[str] = None) -> None:
