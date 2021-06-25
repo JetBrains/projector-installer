@@ -161,6 +161,7 @@ def get_java_version(java_path: str) -> str:
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     line = io.TextIOWrapper(cast(BinaryIO, proc.stderr), encoding='utf-8').readline()
+    proc.wait()
     values = line.split(' ')
     version = values[2]
     return version.strip('"')

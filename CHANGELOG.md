@@ -2,6 +2,10 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Fixed
+- PRJ-504: avoid defunct java process 
 
 # 1.1.6
 
