@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# 1.2.1
+
+## Changed
+- Projector Server v1.2.1
+
 # 1.2.0
 
 ## Added
@@ -18,10 +23,13 @@ Notable changes to this project are documented in this file.
 ## Fixed
 - PRJ-504: avoid defunct java process 
 
+## Changed
+- Projector Server v1.2.0
+
 # 1.1.6
 
 ## Changed
-- Projector Server v1.1.5
+- Projector Server v1.1.6
 
 # 1.1.5
 
