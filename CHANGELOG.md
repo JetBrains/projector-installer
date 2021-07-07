@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.2.0
 
 ## Added
 - PRJ-559: Non-interactive config add support. 
