@@ -104,7 +104,7 @@ def download_compatible_apps() -> str:
         file_name = join(gettempdir(), name)
 
         return file_name
-    except (URLError, socket.timeout):
+    except (URLError, socket.timeout, ConnectionError):
         return ''
 
 
@@ -170,7 +170,7 @@ def get_product_releases(kind: Optional[IDEKind], timeout: float) -> List[Produc
 
     try:
         data = get_json(url, timeout=timeout)
-    except URLError:
+    except (URLError, socket.timeout, ConnectionError):
         data = []
 
     res = []
