@@ -40,7 +40,7 @@ def get_latest_installer_version(time: float) -> Optional[Any]:
     try:
         res = get_json(PYPI_PRODUCT_URL, timeout=time)
         return res['info']['version']
-    except (URLError, socket.timeout):
+    except (URLError, socket.timeout, ConnectionError):
         return None
 
 
