@@ -207,7 +207,7 @@ def get_projector_gen_jks_args(run_config: RunConfig) -> List[str]:
         '-genkeypair', '-alias', PROJECTOR_JKS_NAME, '-dname', DIST_PROJECTOR_NAME,
         '-keystore', get_projector_jks_file(run_config.name),
         '-keypass', run_config.token, '-storepass', run_config.token,
-        '-keyalg', 'RSA', '-keysize', '4096', '-validity', '4500'
+        '-keyalg', 'RSA', '-keysize', '4096', '-validity', '9999'
     ]
 
 
@@ -217,7 +217,7 @@ def get_projector_cert_sign_request_args(run_config: RunConfig) -> List[str]:
         '-certreq', '-alias', PROJECTOR_JKS_NAME, '-keypass', run_config.token,
         '-storepass', run_config.token,
         '-keystore', get_projector_jks_file(run_config.name),
-        '-file', get_projector_csr_file(run_config.name)
+        '-file', get_projector_csr_file(run_config.name), '-validity', '9999'
     ]
 
 
@@ -282,7 +282,7 @@ def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
         '-ext', 'KeyUsage:critical=digitalSignature,keyEncipherment',
         '-ext', 'EKU=serverAuth',
         '-ext', f'SAN={get_projector_san("0.0.0.0", run_config.custom_names)}',
-        '-rfc'
+        '-rfc', '-validity', '9999'
     ]
 
 
