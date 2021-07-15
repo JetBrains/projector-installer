@@ -98,5 +98,5 @@ to specify local file in this variable, for example:
 PROJECTOR_SERVER_URL: str = 'file:///path/to/local/server/build/projector-server-v1.2.1.zip'
 ```
 
-Server distribution can be build using [these](#https://github.com/JetBrains/projector-server/blob/master/README.md#building)
+Server distribution can be build using [these](https://github.com/JetBrains/projector-server/blob/master/README.md#building)
 instructions.
