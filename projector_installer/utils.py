@@ -20,6 +20,7 @@ from os import listdir, remove, makedirs, chmod
 
 from os.path import join, isfile, getsize, basename, isdir, realpath, expandvars, expanduser
 from shutil import copy
+from urllib.parse import ParseResult, urlparse
 from urllib.request import urlopen
 from typing import Optional, BinaryIO, cast, List, Any
 
@@ -76,14 +77,16 @@ def download_file(url: str, destination: str, timeout: Optional[int] = None,
     """
     file_name = get_file_name_from_url(url)
     file_path = join(destination, file_name)
+    parsed_url: ParseResult = urlparse(url)
 
     with urlopen(url, timeout=timeout) as resp:
         code: int = resp.getcode()
 
-        if code != 200:
+        if parsed_url.scheme != 'file' and code != 200:
             raise IOError(f'Bad HTTP response code: {code}')
 
-        total = int(resp.getheader('Content-Length'))
+        total = int(resp.getheader('Content-Length')) if parsed_url.scheme != 'file' \
+            else os.path.getsize(parsed_url.path)
 
         if not isfile(file_path) or getsize(file_path) != total:
 
