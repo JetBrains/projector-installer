@@ -4,7 +4,6 @@
 
 
 """Application management functions."""
-import platform
 import shutil
 import sys
 import os
@@ -16,7 +15,8 @@ from dataclasses import dataclass
 import json
 
 from .global_config import get_apps_dir, get_download_cache_dir
-from .utils import unpack_tar_file, expand_path, download_file, create_dir_if_not_exist
+from .utils import unpack_tar_file, expand_path, download_file, \
+    create_dir_if_not_exist, is_linux_x86_64
 
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
 
@@ -222,7 +222,7 @@ def is_mps(product_info: ProductInfo) -> bool:
 
 def get_java_path(app_path: str) -> str:
     """Returns full path to bundled or system java java."""
-    if platform.system() != 'Linux' or platform.machine() != 'x86_64':
+    if not is_linux_x86_64():
         java_path = shutil.which('java')
 
         if not java_path:

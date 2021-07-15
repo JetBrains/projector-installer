@@ -7,6 +7,7 @@
 Misc utility functions.
 """
 import os
+import platform
 import stat
 import sys
 import io
@@ -255,3 +256,8 @@ def is_in_venv() -> bool:
         return getattr(sys, "base_prefix", None) or getattr(sys, "real_prefix", None) or sys.prefix
 
     return get_base_prefix() != sys.prefix
+
+
+def is_linux_x86_64() -> bool:
+    """Returns true for Linux x86_64 machine"""
+    return platform.system() == 'Linux' and platform.machine() == 'x86_64'

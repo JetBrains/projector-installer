@@ -16,7 +16,7 @@ import subprocess
 from .global_config import get_ssl_dir, get_ssl_properties_file
 from .log_utils import init_log, shutdown_log
 from .utils import create_dir_if_not_exist, remove_file_if_exist, \
-    get_local_addresses, generate_token
+    get_local_addresses, generate_token, is_linux_x86_64
 from .apps import get_jre_dir
 from .run_config import RunConfig, get_path_to_config, get_run_configs
 
@@ -320,6 +320,10 @@ def generate_ssl_properties_file(config_name: str, token: str) -> None:
 
 def get_keytool(path_to_app: str) -> str:
     """Returns full path to keytool for given config"""
+
+    if is_linux_x86_64():
+        return join(get_jre_dir(path_to_app), 'bin', 'keytool')
+
     res = shutil.which('keytool')
 
     return res if res else join(get_jre_dir(path_to_app), 'bin', 'keytool')
