@@ -7,6 +7,9 @@ Notable changes to this project are documented in this file.
 ## Fixed
 - PRJ-572: Handle ConnectionError exception 
 
+## Changed 
+- Use new property names for projector host and port
+
 # 1.2.1
 
 ## Changed
