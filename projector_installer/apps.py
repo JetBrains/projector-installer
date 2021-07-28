@@ -64,6 +64,10 @@ class Version:
         self.last: int = last
 
 
+class VersionFormatError(Exception):
+    """VersionFormatError"""
+
+
 def parse_version(version: str) -> Version:
     """Parses version string to Version class."""
     parsed = version.split(".")
@@ -72,6 +76,8 @@ def parse_version(version: str) -> Version:
         return Version(int(parsed[0]), int(parsed[1]), int(parsed[2] if len(parsed) > 2 else -1))
     except ValueError:
         return Version(0, 0, -1)
+    except IndexError as index_error:
+        raise VersionFormatError from index_error
 
 
 def get_data_dir_from_script(run_script: str) -> str:
