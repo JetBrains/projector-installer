@@ -2,7 +2,8 @@
 from unittest import TestCase
 from unittest import mock
 
-import platform
+import sys
+import pytest
 
 from projector_installer.dialogs import get_user_input, is_boolean_input, ask, \
     prompt_with_default, get_all_listening_ports
@@ -27,16 +28,20 @@ class DialogsTests(TestCase):
         mock.builtins.input = original_input
 
     def test_is_boolean_input_true(self):
-        """The is_boolean_input method must return true
-        if the user's input is in ['Y', 'y', 'N', 'n']"""
+        """
+        The is_boolean_input method must return true
+        if the user's input is in ['Y', 'y', 'N', 'n']
+        """
         self.assertTrue(is_boolean_input('Y'))
         self.assertTrue(is_boolean_input('y'))
         self.assertTrue(is_boolean_input('N'))
         self.assertTrue(is_boolean_input('n'))
 
     def test_is_boolean_input_false(self):
-        """The is_boolean_input method must return false
-        if the user's input is not in ['Y', 'y', 'N', 'n']"""
+        """
+        The is_boolean_input method must return false
+        if the user's input is not in ['Y', 'y', 'N', 'n']
+        """
         self.assertFalse(is_boolean_input('123'))
         self.assertFalse(is_boolean_input('true'))
         self.assertFalse(is_boolean_input(''))
@@ -78,8 +83,10 @@ class DialogsTests(TestCase):
         self.assertEqual(prompt_with_default(prompt='prompt', default='default'), 'default')
         mock.builtins.input = original_input
 
+    @pytest.mark.skipif(sys.platform == "linux", reason="test for non-linux only")
     def test_get_all_listening_ports(self):
-        """The get_all_listening_ports method must return an empty array
-                    if the platform is not Linux"""
-        if platform.system() != 'Linux':
-            self.assertEqual(get_all_listening_ports(), [])
+        """
+        The get_all_listening_ports method must return an empty array
+        if the platform is not Linux
+        """
+        self.assertEqual(get_all_listening_ports(), [])
