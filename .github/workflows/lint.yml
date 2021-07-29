@@ -26,7 +26,7 @@ jobs:
         pip3 install .
     - name: Python Pylint
       run: |
-        pylint --rcfile=pylintrc projector_installer/ setup.py
+        pylint --rcfile=pylintrc projector_installer/ test/ setup.py
     - name: Python MyPy
       run: |
-        mypy projector_installer/ setup.py
+        mypy projector_installer/ test/ setup.py
