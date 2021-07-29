@@ -12,16 +12,16 @@ class AppsTest(TestCase):
 
     app_path = join(expanduser('~'), 'projector/apps/app_path')
 
-    def test_get_app_path(self):
+    def test_get_app_path(self) -> None:
         """The get_app_path method must return correct full path for the specified app path"""
         user = expanduser('~')
         self.assertEqual(get_app_path("app_path"), f'{user}/.projector/apps/app_path')
 
-    def test_is_path_to_app_false(self):
+    def test_is_path_to_app_false(self) -> None:
         """The is_path_to_app method must return false if the specified app doesn't exist"""
         self.assertFalse(is_path_to_app(self.app_path))
 
-    def test_parse_version_throws_error(self):
+    def test_parse_version_throws_error(self) -> None:
         """
         The parse_version method must throw an error
         if it gets digits only
@@ -31,7 +31,7 @@ class AppsTest(TestCase):
         with pytest.raises(VersionFormatError):
             _ = parse_version(digits_version)
 
-    def test_parse_version_right(self):
+    def test_parse_version_right(self) -> None:
         """
         The parse_version method must return Version(2020, 12, 4)
         if it gets 2020.12.4 as input
@@ -43,7 +43,7 @@ class AppsTest(TestCase):
         self.assertEqual(parsed.quart, 12)
         self.assertEqual(parsed.last, 4)
 
-    def test_parse_version_short(self):
+    def test_parse_version_short(self) -> None:
         """
         The parse_version method must return Version(2020, 12, -1)
         if it gets 2020.12 as input
@@ -55,7 +55,7 @@ class AppsTest(TestCase):
         self.assertEqual(parsed.quart, 12)
         self.assertEqual(parsed.last, -1)
 
-    def test_parse_version_incorrect(self):
+    def test_parse_version_incorrect(self) -> None:
         """
         The parse_version method must return Version(0, 0, -1)
         if it gets incorrect_version as input
@@ -67,7 +67,7 @@ class AppsTest(TestCase):
         self.assertEqual(parsed.quart, 0)
         self.assertEqual(parsed.last, -1)
 
-    def test_parse_version_empty(self):
+    def test_parse_version_empty(self) -> None:
         """
         The parse_version method must return Version(0, 0, -1)
         if it gets empty input
@@ -79,7 +79,7 @@ class AppsTest(TestCase):
         self.assertEqual(parsed.quart, 0)
         self.assertEqual(parsed.last, -1)
 
-    def test_get_data_dir_from_script_raises_exception(self):
+    def test_get_data_dir_from_script_raises_exception(self) -> None:
         """
         The get_data_dir_from_script method must raise an exception
         if it gets incorrect run script as input
@@ -87,7 +87,7 @@ class AppsTest(TestCase):
         with pytest.raises(FileNotFoundError):
             get_data_dir_from_script("incorrect_run_script")
 
-    def test_is_mps_dir_false(self):
+    def test_is_mps_dir_false(self) -> None:
         """
         The is_mps_dir method must return false
         if it gets incorrect mps dir as input
