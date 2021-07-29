@@ -4,7 +4,7 @@ from os.path import join, expanduser
 import pytest
 
 from projector_installer.apps import get_app_path, is_path_to_app, parse_version, \
-    get_data_dir_from_script, is_mps_dir
+    get_data_dir_from_script, is_mps_dir, VersionFormatError
 
 
 class AppsTest(TestCase):
@@ -21,7 +21,6 @@ class AppsTest(TestCase):
         """The is_path_to_app method must return false if the specified app doesn't exist"""
         self.assertFalse(is_path_to_app(self.app_path))
 
-    # Fix IndexError to VersionFormatError
     def test_parse_version_throws_error(self):
         """
         The parse_version method must throw an error
@@ -29,7 +28,7 @@ class AppsTest(TestCase):
         """
         digits_version = "2020124"
 
-        with pytest.raises(IndexError):
+        with pytest.raises(VersionFormatError):
             _ = parse_version(digits_version)
 
     def test_parse_version_right(self):
