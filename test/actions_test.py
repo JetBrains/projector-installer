@@ -9,7 +9,7 @@ from projector_installer.apps import UnknownIDEException
 class ActionsTest(TestCase):
     """Test actions.py module"""
 
-    def test_is_compatible_java_raises_exception(self):
+    def test_is_compatible_java_raises_exception(self) -> None:
         """
         The is_compatible_java method must raise an exception
         if the input app path is incorrect
