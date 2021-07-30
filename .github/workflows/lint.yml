@@ -23,6 +23,7 @@ jobs:
         pip install mypy==0.812
         sudo apt install gcc -y
         pip install -r requirements.txt
+        pip install pytest
         pip3 install .
     - name: Python Pylint
       run: |
