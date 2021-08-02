@@ -5,8 +5,6 @@ import pytest
 from projector_installer.actions import is_compatible_java
 from projector_installer.apps import UnknownIDEException
 
-from projector_installer.apps import UnknownIDEException
-
 
 class ActionsTest(TestCase):
     """Test actions.py module"""
