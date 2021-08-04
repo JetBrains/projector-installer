@@ -461,6 +461,7 @@ def do_install_cert(config_name: Optional[str], path_to_certificate: Optional[st
             print(f'Key file {path_to_key} does not exist. Exiting ...')
             sys.exit(1)
 
+        need_remove = False
         if not path_to_chain:
             path_to_chain = get_certificate_chain(path_to_certificate)
             need_remove = isfile(path_to_chain)
