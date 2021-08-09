@@ -161,7 +161,7 @@ def get_run_config_names(pattern: Optional[str] = None) -> List[str]:
 
 def delete_config(config_name: str) -> None:
     """Removes specified config."""
-    rmtree(get_path_to_config(config_name), ignore_errors=True)
+    rmtree(get_path_to_config(config_name), ignore_errors=False)
 
 
 def rename_config(from_name: str, to_name: str) -> None:
