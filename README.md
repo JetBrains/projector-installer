@@ -26,9 +26,10 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     6. [projector exits immediately](#projector-exits-immediately)
     7. [Using Projector as systemd service](#Using-Projector-as-systemd-service)
     8. [Change existing configuration](#Change-existing-configuration)
-    9. [FreeBSD support](#FreeBSD-support)
-   10. [OpenBSD support](#OpenBSD-support)
-   11. [projector config update does not work](#config-update-does-not-work)
+    9. [projector config update does not work](#config-update-does-not-work) 
+    10. [FreeBSD support](#FreeBSD-support)
+    11. [OpenBSD support](#OpenBSD-support)
+   
     
 ### <a id="Change-existing-configuration"></a>
 
