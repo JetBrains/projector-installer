@@ -72,7 +72,9 @@ runs the configuration with name 'goland'
 Use `projector install --expert` command to specify all significant projector parameters.  
  
 `projector ide autoinstall --config-name name-of-new-config --ide-name name-of-ide [--port port-number] [--hostname hostname]`  - 
-install IDE without interaction with user
+install IDE without interaction with user. Parameters --config-name and --ide-name are mandatory. You can find the list of known IDE names using 
+(interactive) ide find command. Make sure, that you provided full IDE name, for example: 
+`projector ide autoinstall --config-name Idea --ide-name "IntelliJ IDEA Ultimate 2020.3.4"` 
 
 `projector ide uninstall` - uninstall IDE interactively 
 
