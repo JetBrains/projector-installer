@@ -6,7 +6,8 @@ Notable changes to this project are documented in this file.
 
 ## Fixed
 - PRJ-572: Handle ConnectionError exception 
-- PRJ-590: Always use keytool from bundled JRE on Linux x86_64 
+- PRJ-590: Always use keytool from bundled JRE on Linux x86_64
+- PRJ-639: Fix listening address on autoinstall
 
 ## Changed 
 - Use new property names for projector host and port

@@ -538,6 +538,7 @@ def do_auto_install(config_name: str,
 
     if hostname:
         run_config.custom_names = hostname
+        run_config.projector_host = hostname
 
     install_app(run_config, app)
 
