@@ -29,6 +29,7 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     9. [projector config update does not work](#config-update-does-not-work) 
     10. [FreeBSD support](#FreeBSD-support)
     11. [OpenBSD support](#OpenBSD-support)
+    12. [I edited the config file manually but nothing changed](#Config-file-edit)
    
     
 ### <a id="Change-existing-configuration"></a>
@@ -347,3 +348,7 @@ pip install projector-installer
 - add ~/.local/bin directory to PATH variable.
 
 - run `projector` as usual 
+
+### I edited the config file manually but nothing changed<a id="Config-file-edit"></a>
+It's not recommended to manually modify config file. Please use the `projector config edit` command. 
+But, if you edited config.ini file, do not forget to run `projector config rebuild` command to apply manual changes to runconfig.
