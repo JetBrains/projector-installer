@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.3.0
 
 ## Fixed
 - PRJ-572: Handle ConnectionError exception 
