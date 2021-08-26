@@ -84,7 +84,8 @@ def make_run_script(run_config: RunConfig, run_script: str) -> None:
     """Creates run script from ide launch script."""
     idea_script = get_launch_script(run_config.path_to_app)
 
-    with open(idea_script, 'r') as src, open(run_script, 'w') as dst:
+    with open(idea_script, mode='r', encoding='utf-8') as src, \
+            open(run_script, mode='w', encoding='utf-8') as dst:
         write_run_script(run_config, src, dst)
 
     stats = stat(run_script)
@@ -94,7 +95,8 @@ def make_run_script(run_config: RunConfig, run_script: str) -> None:
 def check_run_script(run_config: RunConfig, run_script_name: str) -> bool:
     """Check if run script corresponds to given config"""
     idea_script = get_launch_script(run_config.path_to_app)
-    with open(idea_script, 'r') as src, open(run_script_name, 'r') as run_script:
+    with open(idea_script, mode='r', encoding='utf-8') as src, \
+            open(run_script_name, mode='r', encoding='utf-8') as run_script:
         dst = io.StringIO()
         write_run_script(run_config, src, dst)
         dst.seek(0)
@@ -149,7 +151,7 @@ def save_config(run_config: RunConfig) -> None:
 
     config_path = join(config_path, CONFIG_INI_NAME)
 
-    with open(config_path, 'w') as configfile:
+    with open(config_path, mode='w', encoding='utf-8') as configfile:
         config.write(configfile)
 
     generate_run_script(run_config)

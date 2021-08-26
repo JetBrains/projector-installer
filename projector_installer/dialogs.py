@@ -313,7 +313,7 @@ def get_all_listening_ports() -> List[int]:
     if platform.system() != 'Linux':
         return res
 
-    with open('/proc/net/tcp', 'r') as file:
+    with open('/proc/net/tcp', mode='r', encoding='utf-8') as file:
         try:
             next(file)
             for line in file:

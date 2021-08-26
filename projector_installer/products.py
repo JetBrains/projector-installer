@@ -89,7 +89,7 @@ def _parse_entry(entry: Any) -> Product:
 
 def load_installable_apps_from_file(file_name: str) -> List[Product]:
     """Loads installable app list from json file."""
-    with open(file_name, 'r') as file:
+    with open(file_name, mode='r', encoding='utf-8') as file:
         data = json.load(file)
 
     return [_parse_entry(entry) for entry in data]

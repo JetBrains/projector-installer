@@ -82,7 +82,7 @@ def parse_version(version: str) -> Version:
 
 def get_data_dir_from_script(run_script: str) -> str:
     """Returns idea data dir from run script."""
-    with open(run_script, 'r') as file:
+    with open(run_script, mode='r', encoding='utf-8') as file:
         for line in file:
             pos = line.find(IDEA_PATH_SELECTOR)
 
@@ -115,7 +115,8 @@ def is_mps_dir(app_path: str) -> bool:
 def get_mps_version(app_path: str) -> Tuple[str, str]:
     """Extract MPS version and build number from build.number file"""
     pairs = map(lambda x: x.split('='),
-                [line.strip() for line in open(join(app_path, 'build.number'), "r")])
+                [line.strip() for line in open(join(app_path, 'build.number'),
+                                               mode='r', encoding='utf-8')])
     data = {elem[0]: elem[1] for elem in pairs}
     return data['version'], data['build.number']
 
@@ -139,7 +140,7 @@ def get_product_info(app_path: str) -> ProductInfo:
     prod_info_path = join(app_path, PRODUCT_INFO)
 
     try:
-        with open(prod_info_path, "r") as file:
+        with open(prod_info_path, mode='r', encoding='utf-8') as file:
             data = json.load(file)
             java_exec_path = 'jre/bin/java'
 
@@ -364,7 +365,7 @@ def is_disabled(file_name: str, plugin_name: str) -> bool:
     if not isfile(file_name):
         return False
 
-    with open(file_name, 'r') as file:
+    with open(file_name, mode='r', encoding='utf-8') as file:
         lines = [line.strip() for line in file]
         return plugin_name in lines
 
@@ -374,7 +375,7 @@ def disable_plugin(file_name: str, plugin_name: str) -> None:
     directory = dirname(file_name)
     create_dir_if_not_exist(directory)
 
-    with open(file_name, 'a') as file:
+    with open(file_name, mode='a', encoding='utf-8') as file:
         file.write(f'{plugin_name}')
 
 
@@ -392,7 +393,7 @@ def get_ide_properties_file(app_path: str) -> str:
 def is_updates_forbidden(app_path: str) -> bool:
     """Returns True if updates for specified IDE is already forbidden"""
     prop_file = get_ide_properties_file(app_path)
-    with open(prop_file, 'r') as file:
+    with open(prop_file, mode='r', encoding='utf-8') as file:
         lines = file.read().splitlines()
         return FORBID_UPDATE_STRING in lines
 
@@ -403,7 +404,7 @@ def forbid_updates_for(app_path: str) -> None:
     if not is_updates_forbidden(app_path):
         prop_file = get_ide_properties_file(app_path)
 
-        with open(prop_file, 'a') as file:
+        with open(prop_file, mode='a', encoding='utf-8') as file:
             file.write(f'{FORBID_UPDATE_STRING}')
 
 

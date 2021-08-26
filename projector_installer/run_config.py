@@ -228,7 +228,7 @@ def get_lock_file_name(config_name: str) -> str:
 
 def lock_config(config_name: str) -> Optional[TextIO]:
     """Create lock file for run config"""
-    file = open(get_lock_file_name(config_name), 'w')
+    file = open(get_lock_file_name(config_name), mode='w', encoding='utf-8')
 
     try:
         lockf(file, LOCK_EX + LOCK_NB)

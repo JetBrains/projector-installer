@@ -229,7 +229,7 @@ def generate_token(length: int = DEF_TOKEN_LEN) -> str:
 def get_distributive_name() -> str:
     """Try to obtain distributive name from /etc/lsb-release"""
     try:
-        with open('/etc/lsb-release', 'r') as file:
+        with open('/etc/lsb-release', mode='r', encoding='utf-8') as file:
             for line in file:
                 if line.startswith('DISTRIB_ID'):
                     parts = line.split('=')

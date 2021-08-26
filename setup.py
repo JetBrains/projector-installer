@@ -25,7 +25,7 @@ def copy_license() -> None:
         copyfile('license/LICENSE.txt', 'projector_installer/LICENSE.txt')
 
 
-with open('requirements.txt') as f:
+with open('requirements.txt', mode='r', encoding='utf-8') as f:
     requirements = f.read().splitlines()
 
 if sys.version_info < (3, 7):

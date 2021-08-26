@@ -93,7 +93,7 @@ def create_ca_ini(token: str) -> None:
     config = configparser.ConfigParser(strict=False, interpolation=None)
     config['CA'] = {}
     config['CA']['SAVED'] = token
-    with open(get_ca_ini_file(), 'w') as configfile:
+    with open(get_ca_ini_file(), mode='w', encoding='utf-8') as configfile:
         config.write(configfile)
 
 
@@ -311,7 +311,7 @@ def get_projector_import_cert_args(run_config: RunConfig) -> List[str]:
 
 def generate_ssl_properties_file(config_name: str, token: str) -> None:
     """Generates ssl.properties file for given config"""
-    with open(get_ssl_properties_file(config_name), "w") as file:
+    with open(get_ssl_properties_file(config_name), mode='w', encoding='utf-8') as file:
         print('STORE_TYPE=JKS', file=file)
         print(f'FILE_PATH={get_projector_jks_file(config_name)}', file=file)
         print(f'STORE_PASSWORD={token}', file=file)

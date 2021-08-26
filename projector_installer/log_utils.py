@@ -34,7 +34,7 @@ def restrict_log_size(config_name: str) -> None:
     size = getsize(log_name)
 
     if size > MAX_LOG_FILE_SIZE:
-        with open(log_name, 'w+') as log:
+        with open(log_name, mode='w+', encoding='utf-8') as log:
             log.seek(size - MAX_LOG_FILE_SIZE)
             content = log.read()
             log.seek(0)
@@ -46,7 +46,7 @@ def restrict_log_size(config_name: str) -> None:
 def init_log(config_name: str) -> TextIO:
     """Performs initialization of log file"""
     restrict_log_size(config_name)
-    log = open(get_path_to_log(config_name), 'a+')
+    log = open(get_path_to_log(config_name), mode='a+', encoding='utf-8')
     print(f'{START_SESSION_MARK} Installer version: {__version__} Run config: {config_name} - '
           f'{datetime.now()}', file=log)
     log.flush()

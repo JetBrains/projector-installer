@@ -54,5 +54,5 @@ def save_defaults(defaults: Defaults) -> None:
     parser['PROJECTOR'] = {}
     parser['PROJECTOR']['HOST'] = defaults.host
 
-    with open(get_path_to_defaults(), 'w') as file:
+    with open(get_path_to_defaults(), mode='w', encoding='utf-8') as file:
         parser.write(file)
