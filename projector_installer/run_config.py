@@ -4,6 +4,7 @@
 
 
 """Run configurations related functions"""
+import os
 import shutil
 from os import listdir, rename
 from os.path import join, isdir, basename
@@ -161,7 +162,10 @@ def get_run_config_names(pattern: Optional[str] = None) -> List[str]:
 
 def delete_config(config_name: str) -> None:
     """Removes specified config."""
-    rmtree(get_path_to_config(config_name), ignore_errors=False)
+    try:
+        rmtree(get_path_to_config(config_name), ignore_errors=False)
+    except OSError:  # Workaround for NFS issue: https://youtrack.jetbrains.com/issue/PRJ-629
+        os.rmdir(get_path_to_config(config_name))
 
 
 def rename_config(from_name: str, to_name: str) -> None:

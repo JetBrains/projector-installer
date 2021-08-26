@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Fixed
+- PRJ-629: NFS workaround
+
 # 1.3.0
 
 ## Fixed
