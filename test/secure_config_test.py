@@ -24,11 +24,11 @@ class SecureConfigTest(TestCase):
         os.makedirs(ssl_dir_path)
 
         ca_ini_file = f'{self.user}/.projector/ssl/ca.ini'
-        open(ca_ini_file, 'a').close()
+        open(ca_ini_file, 'a', encoding="utf-8").close()
 
         create_ca_ini(token='token')
 
-        with open(ca_ini_file, 'r') as configfile:
+        with open(ca_ini_file, 'r', encoding="utf-8") as configfile:
             self.assertEqual(configfile.read(), '[CA]\nsaved = token\n\n')
 
         os.remove(ca_ini_file)
@@ -45,7 +45,7 @@ class SecureConfigTest(TestCase):
         os.makedirs(ssl_dir_path)
 
         ca_jks_file = f'{self.user}/.projector/ssl/ca.jks'
-        open(ca_jks_file, 'w').close()
+        open(ca_jks_file, 'w', encoding="utf-8").close()
 
         self.assertTrue(make_ca_backup())
 
@@ -71,7 +71,7 @@ class SecureConfigTest(TestCase):
         os.makedirs(ssl_dir_path)
 
         ca_jks_backup_file = f'{self.user}/.projector/ssl/ca.jks.backup'
-        open(ca_jks_backup_file, 'w').close()
+        open(ca_jks_backup_file, 'w', encoding="utf-8").close()
 
         self.assertTrue(restore_ca_backup())
 
@@ -99,7 +99,7 @@ class SecureConfigTest(TestCase):
         os.makedirs(ssl_dir_path)
 
         ca_jks_backup_file = f'{self.user}/.projector/ssl/ca.jks.backup'
-        open(ca_jks_backup_file, 'w').close()
+        open(ca_jks_backup_file, 'w', encoding="utf-8").close()
 
         self.assertTrue(remove_ca_backup())
         self.assertFalse(os.path.exists(ca_jks_backup_file))
@@ -125,7 +125,7 @@ class SecureConfigTest(TestCase):
         os.makedirs(ssl_dir_path)
 
         ca_ini_file = f'{self.user}/.projector/ssl/ca.ini'
-        open(ca_ini_file, 'a').close()
+        open(ca_ini_file, 'a', encoding="utf-8").close()
 
         create_ca_ini(token='token')
 
