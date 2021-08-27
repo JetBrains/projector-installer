@@ -85,7 +85,7 @@ class RunConfigTest(TestCase):
         output = lock_config(config_name)
 
         expected_output = f"<_io.TextIOWrapper name='{self.user}/.projector/configs/" \
-                          f"config_name/run.lock' mode='w' encoding='UTF-8'>"
+                          f"config_name/run.lock' mode='w' encoding='utf-8'>"
         self.assertEqual(str(output), expected_output)
 
         os.remove(lock_file_path)
