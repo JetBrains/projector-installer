@@ -82,7 +82,7 @@ class RunConfigTest(TestCase):
         os.makedirs(config_dir_path)
 
         lock_file_path = f'{config_dir_path}/run.lock'
-        open(lock_file_path, 'w').close()
+        open(lock_file_path, 'w', encoding="utf-8").close()
         output = lock_config(config_name)
 
         expected_output = f"<_io.TextIOWrapper name='{self.user}/.projector/configs/" \
