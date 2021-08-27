@@ -51,13 +51,14 @@ class RunConfigTest(TestCase):
     def test_validate_run_config_no_errors(self) -> None:
         """The validate_run_config method must not raise error when run config is valid"""
         app_dir_path = f'{self.user}/.projector/apps/app_dir'
-        os.mkdir(app_dir_path)
+        os.makedirs(app_dir_path)
+
         run_config = RunConfig(name='name', path_to_app=app_dir_path, projector_port=8887,
                                token='token', password='password', ro_password='ro_password',
                                toolbox=True, custom_names='custom_names')
 
         validate_run_config(run_config)
-        os.rmdir(app_dir_path)
+        os.removedirs(app_dir_path)
 
     def test_validate_run_config_raises_error(self) -> None:
         """The validate_run_config method must raise error when path to app is invalid"""
@@ -78,7 +79,7 @@ class RunConfigTest(TestCase):
         """The lock_config method must return the TextIO of file if lock was successful"""
         config_name = 'config_name'
         config_dir_path = f'{self.user}/.projector/configs/{config_name}'
-        os.mkdir(config_dir_path)
+        os.makedirs(config_dir_path)
 
         lock_file_path = f'{config_dir_path}/run.lock'
         open(lock_file_path, 'w').close()
@@ -89,4 +90,4 @@ class RunConfigTest(TestCase):
         self.assertEqual(str(output), expected_output)
 
         os.remove(lock_file_path)
-        os.rmdir(config_dir_path)
+        os.removedirs(config_dir_path)
