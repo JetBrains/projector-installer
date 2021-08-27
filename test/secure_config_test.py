@@ -21,7 +21,7 @@ class SecureConfigTest(TestCase):
     def test_create_ca_ini(self) -> None:
         """The create_ca_ini method must create ca.ini file with provided token"""
         ssl_dir_path = f'{self.user}/.projector/ssl'
-        os.mkdir(ssl_dir_path)
+        os.makedirs(ssl_dir_path)
 
         ca_ini_file = f'{self.user}/.projector/ssl/ca.ini'
         open(ca_ini_file, 'a').close()
@@ -32,7 +32,7 @@ class SecureConfigTest(TestCase):
             self.assertEqual(configfile.read(), '[CA]\nsaved = token\n\n')
 
         os.remove(ca_ini_file)
-        os.rmdir(ssl_dir_path)
+        os.removedirs(ssl_dir_path)
 
     def test_get_ca_jks_backup_file(self) -> None:
         """The get_ca_jks_backup_file method must return a path to ca.jks.backup file"""
@@ -42,7 +42,7 @@ class SecureConfigTest(TestCase):
     def test_make_ca_backup(self) -> None:
         """The make_ca_backup method must create a backup of ca.jks file"""
         ssl_dir_path = f'{self.user}/.projector/ssl'
-        os.mkdir(ssl_dir_path)
+        os.makedirs(ssl_dir_path)
 
         ca_jks_file = f'{self.user}/.projector/ssl/ca.jks'
         open(ca_jks_file, 'w').close()
@@ -54,21 +54,21 @@ class SecureConfigTest(TestCase):
 
         os.remove(ca_jks_file)
         os.remove(ca_jks_backup_file)
-        os.rmdir(ssl_dir_path)
+        os.removedirs(ssl_dir_path)
 
     def test_make_ca_backup_no_file_exists(self) -> None:
         """The make_ca_backup method must return false when source file doesn't exist"""
         ssl_dir_path = f'{self.user}/.projector/ssl'
-        os.mkdir(ssl_dir_path)
+        os.makedirs(ssl_dir_path)
 
         self.assertFalse(make_ca_backup())
 
-        os.rmdir(ssl_dir_path)
+        os.removedirs(ssl_dir_path)
 
     def test_restore_ca_backup(self) -> None:
         """The restore_ca_backup method must restore ca.jks file from backup"""
         ssl_dir_path = f'{self.user}/.projector/ssl'
-        os.mkdir(ssl_dir_path)
+        os.makedirs(ssl_dir_path)
 
         ca_jks_backup_file = f'{self.user}/.projector/ssl/ca.jks.backup'
         open(ca_jks_backup_file, 'w').close()
@@ -80,23 +80,23 @@ class SecureConfigTest(TestCase):
 
         os.remove(ca_jks_file)
         os.remove(ca_jks_backup_file)
-        os.rmdir(ssl_dir_path)
+        os.removedirs(ssl_dir_path)
 
     def test_restore_ca_backup_no_backup_file_exists(self) -> None:
         """The restore_ca_backup method must return false when backup file doesn't exist"""
         ssl_dir_path = f'{self.user}/.projector/ssl'
-        os.mkdir(ssl_dir_path)
+        os.makedirs(ssl_dir_path)
 
         self.assertFalse(restore_ca_backup())
 
-        os.rmdir(ssl_dir_path)
+        os.removedirs(ssl_dir_path)
 
     def test_remove_ca_backup(self) -> None:
         """
         The remove_ca_backup method must return true when deletion of backup file was successful
         """
         ssl_dir_path = f'{self.user}/.projector/ssl'
-        os.mkdir(ssl_dir_path)
+        os.makedirs(ssl_dir_path)
 
         ca_jks_backup_file = f'{self.user}/.projector/ssl/ca.jks.backup'
         open(ca_jks_backup_file, 'w').close()
@@ -104,16 +104,16 @@ class SecureConfigTest(TestCase):
         self.assertTrue(remove_ca_backup())
         self.assertFalse(os.path.exists(ca_jks_backup_file))
 
-        os.rmdir(ssl_dir_path)
+        os.removedirs(ssl_dir_path)
 
     def test_remove_ca_backup_no_backup_file_exists(self) -> None:
         """The remove_ca_backup method must return false when backup file doesn't exist"""
         ssl_dir_path = f'{self.user}/.projector/ssl'
-        os.mkdir(ssl_dir_path)
+        os.makedirs(ssl_dir_path)
 
         self.assertFalse(remove_ca_backup())
 
-        os.rmdir(ssl_dir_path)
+        os.removedirs(ssl_dir_path)
 
     def test_get_ca_password(self) -> None:
         """The get_ca_password method must return ca password"""
@@ -122,7 +122,7 @@ class SecureConfigTest(TestCase):
     def test_get_ca_password_no_ca_ini_file_exists(self) -> None:
         """The get_ca_password method must return token located in ca.ini file"""
         ssl_dir_path = f'{self.user}/.projector/ssl'
-        os.mkdir(ssl_dir_path)
+        os.makedirs(ssl_dir_path)
 
         ca_ini_file = f'{self.user}/.projector/ssl/ca.ini'
         open(ca_ini_file, 'a').close()
@@ -132,4 +132,4 @@ class SecureConfigTest(TestCase):
         self.assertEqual(get_ca_password(), 'token')
 
         os.remove(ca_ini_file)
-        os.rmdir(ssl_dir_path)
+        os.removedirs(ssl_dir_path)
