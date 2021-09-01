@@ -329,8 +329,8 @@ def do_remove_config(config_name: Optional[str] = None) -> None:
         sys.exit(1)
 
     print(f'Removing configuration {config_name}')
-    delete_config(config_name)
     release_config(lock)
+    delete_config(config_name)
     print('done.')
 
 

@@ -5,7 +5,7 @@ Notable changes to this project are documented in this file.
 # Unreleased
 
 ## Fixed
-- PRJ-629: NFS workaround
+- PRJ-629: Error with projector config remove on NFS-mounted directory fixed
 
 # 1.3.0
 
