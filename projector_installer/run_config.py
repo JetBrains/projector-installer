@@ -6,7 +6,7 @@
 """Run configurations related functions"""
 import shutil
 from os import listdir, rename
-from os.path import join, isdir, basename
+from os.path import join, isdir, basename, isfile
 from shutil import rmtree
 from typing import Optional, Dict, List, TextIO, ClassVar
 from fcntl import lockf, LOCK_EX, LOCK_NB
@@ -134,12 +134,21 @@ def get_run_script_path(config_name: str) -> str:
     return join(get_path_to_config(config_name), RUN_SCRIPT_NAME)
 
 
+def is_run_config_name(config_name: str) -> bool:
+    """Returns true if given config_name exist"""
+    path = get_path_to_config(config_name)
+    return isfile(join(path, CONFIG_INI_NAME))
+
+
 def get_run_configs(pattern: Optional[str] = None) -> Dict[str, RunConfig]:
     """Get run configs, matched given pattern."""
     res = {}
 
     for config_name in listdir(get_run_configs_dir()):
         if pattern and config_name.lower().find(pattern.lower()) == -1:
+            continue
+
+        if not is_run_config_name(config_name):
             continue
 
         config = load_config(config_name)
