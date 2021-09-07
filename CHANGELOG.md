@@ -4,6 +4,9 @@ Notable changes to this project are documented in this file.
 
 # Unreleased
 
+## Added
+- PRJ-681: New option `--uninstall-ide` for `projector config remove` command 
+
 ## Fixed
 - PRJ-629: Error with projector config remove on NFS-mounted directory fixed
 

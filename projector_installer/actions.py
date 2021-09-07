@@ -9,7 +9,7 @@ import signal
 import subprocess
 import sys
 from os import path, system, uname, remove
-from os.path import isfile, isdir, expanduser
+from os.path import isfile, isdir, expanduser, basename
 from typing import Optional, List
 from urllib.parse import quote
 from click import secho
@@ -34,7 +34,7 @@ from .dialogs import select_app, select_new_config_name, list_configs, \
 
 from .run_config import RunConfig, get_run_configs, get_run_script_path, validate_run_config, \
     delete_config, rename_config, make_config_name, get_configs_with_app, \
-    lock_config, release_config, make_config_name_from_path
+    lock_config, release_config, make_config_name_from_path, load_config
 
 from .config_generator import save_config, check_config
 from .version import __version__
@@ -318,7 +318,7 @@ def do_auto_add_config(config_name: str,
     print('done.')
 
 
-def do_remove_config(config_name: Optional[str] = None) -> None:
+def do_remove_config(config_name: Optional[str] = None, uninstall_ide: bool = False) -> None:
     """Selects (if necessary) and removes selected run config."""
     config_name = select_run_config(config_name).name
 
@@ -328,10 +328,16 @@ def do_remove_config(config_name: Optional[str] = None) -> None:
         print(f'Configuration {config_name} is already in use. Exiting...')
         sys.exit(1)
 
+    run_config = load_config(config_name)
+
     print(f'Removing configuration {config_name}')
     release_config(lock)
     delete_config(config_name)
     print('done.')
+
+    if uninstall_ide and not is_toolbox_path(run_config.path_to_app):
+        app = basename(run_config.path_to_app)
+        do_uninstall_app(app)
 
 
 def do_edit_config(config_name: Optional[str] = None) -> None:

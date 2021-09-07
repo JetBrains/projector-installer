@@ -98,7 +98,10 @@ without user input. To overwrite existing config use --force flag.
 
 `projector config remove` - select configuration and remove it 
 
-`projector config remove config_name` - remove a configuration
+`projector config remove config_name` - remove the configuration
+
+`projector config remove config_name --uninstall-ide` - remove the configuration and uninstall corresponded IDE if there are 
+no other configs, which use this IDE  
 
 `projector config rename from_config_name to_config_name` - rename an existing configuration
 

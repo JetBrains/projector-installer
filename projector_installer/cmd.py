@@ -176,12 +176,14 @@ def add(config_name: Optional[str],
 
 @click.command(short_help='Remove configuration')
 @click.argument('config_name', type=click.STRING, required=False)
-def remove(config_name: Optional[str]) -> None:
-    """projector config remove [config_name]
+@click.option('--uninstall-ide', default=False, is_flag=True,
+              help='Also uninstall the IDE if there are no other configs for it')
+def remove(config_name: Optional[str], uninstall_ide: bool) -> None:
+    """projector config remove [config_name] [--uninstall-ide]
 
     Remove an existing configuration.
     """
-    do_remove_config(config_name)
+    do_remove_config(config_name, uninstall_ide)
 
 
 @click.command(short_help='Change existing configuration')
