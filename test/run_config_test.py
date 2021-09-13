@@ -8,7 +8,6 @@ import pytest
 from projector_installer.run_config import get_path_to_config, get_path_to_certificate_dir, \
     get_run_script_path, make_config_name, RunConfig, validate_run_config, \
     get_lock_file_name, lock_config
-from projector_installer.version import __version__
 
 
 class RunConfigTest(TestCase):
