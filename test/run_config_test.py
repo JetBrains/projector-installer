@@ -1,5 +1,4 @@
 """Test run_config.py module"""
-from os.path import expanduser
 
 from unittest import TestCase
 import pytest
@@ -9,8 +8,6 @@ from projector_installer.run_config import make_config_name, RunConfig, validate
 
 class RunConfigTest(TestCase):
     """Test run_config.py module"""
-
-    user = expanduser('~')
 
     def test_make_config_name(self) -> None:
         """
