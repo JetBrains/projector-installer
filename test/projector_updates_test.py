@@ -4,6 +4,7 @@ from unittest import TestCase
 from projector_installer.projector_updates import is_newer_than_current
 from projector_installer.version import __version__
 
+
 class ProjectorUpdatesTest(TestCase):
     """Test projector_updates.py module"""
 
