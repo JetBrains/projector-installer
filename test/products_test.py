@@ -1,18 +1,19 @@
 """Test products.py module"""
+from os.path import dirname, join
 from unittest import TestCase
-import os
 
 from test.resources.installable_apps import INSTALLABLE_APPS
 from projector_installer.products import load_installable_apps_from_file, get_all_product_codes, \
     filter_app_by_name_pattern
 from projector_installer.products import Product, IDEKind
 
+
 class ProductsTest(TestCase):
     """Test products.py module"""
 
     def test_load_installable_apps_from_file(self) -> None:
         """The load_installable_apps_from_file method must load apps from json file"""
-        compatible_ide_json_path = os.path.abspath("test/resources/compatible_ide.json")
+        compatible_ide_json_path = join(dirname(__file__), 'resources/compatible_ide.json')
         self.assertEqual(load_installable_apps_from_file(compatible_ide_json_path),
                          INSTALLABLE_APPS)
 
