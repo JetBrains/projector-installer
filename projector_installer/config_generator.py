@@ -10,10 +10,10 @@ from os import mkdir, stat, chmod
 from os.path import join, isdir
 from shlex import quote
 from typing import TextIO
+from shutil import copy
 
-from .apps import get_launch_script
-from .global_config import get_run_configs_dir, get_projector_server_dir, \
-    get_ssl_properties_file
+from .apps import get_launch_script, get_idea_properties_path, IDEA_PROPERTIES_FILE
+from .global_config import get_projector_server_dir, get_ssl_properties_file
 from .run_config import RunConfig, get_run_script_path, CONFIG_INI_NAME
 from .secure_config import generate_server_secrets
 
@@ -72,6 +72,9 @@ def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
             line = f'IDE_BIN_HOME={quote(join(run_config.path_to_app, "bin"))}\n'
         elif line.find("classpath") != -1:
             line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
+        elif line.find('${IDE_PROPERTIES_PROPERTY}') != -1:
+            line = f' -Didea.properties.file=' \
+                   f'{join(run_config.get_path(), IDEA_PROPERTIES_FILE)} \\\n'
         elif line.find(IDEA_RUN_CLASS) != -1:
             line = launch_script_last_lines(run_config, IDEA_RUN_CLASS)
         elif line.find(MPS_MAIN_CLASS) != -1:
@@ -109,6 +112,26 @@ def generate_run_script(run_config: RunConfig) -> None:
     make_run_script(run_config, run_script)
 
 
+def copy_idea_properties_file(run_config: RunConfig) -> None:
+    """Copies idea.properties file from install dir to run config"""
+    copy(get_idea_properties_path(run_config.path_to_app), run_config.get_path())
+
+
+IDEA_CONFIG_PATH_PROPERTY = 'idea.config.path'
+IDEA_SYSTEM_PATH_PROPERTY = 'idea.system.path'
+
+
+def create_idea_properties_file(run_config: RunConfig) -> None:
+    """Copies idea.properties file from install dir to run config
+    and set idea.config.path and idea.system.path
+    """
+    copy_idea_properties_file(run_config)
+    prop_file_path = join(run_config.get_path(), IDEA_PROPERTIES_FILE)
+    with open(prop_file_path, mode='a', encoding='utf-8') as prop_file:
+        prop_file.write(f'\n{IDEA_CONFIG_PATH_PROPERTY}={run_config.get_path()}/config')
+        prop_file.write(f'\n{IDEA_SYSTEM_PATH_PROPERTY}={run_config.get_path()}/system')
+
+
 def save_config(run_config: RunConfig) -> None:
     """Saves given run config."""
     config = configparser.ConfigParser(strict=False, interpolation=None)
@@ -144,7 +167,7 @@ def save_config(run_config: RunConfig) -> None:
     config['UPDATE'] = {}
     config['UPDATE']['CHANNEL'] = run_config.update_channel
 
-    config_path = join(get_run_configs_dir(), run_config.name)
+    config_path = run_config.get_path()
 
     if not isdir(config_path):
         mkdir(config_path)
@@ -154,6 +177,7 @@ def save_config(run_config: RunConfig) -> None:
     with open(config_path, mode='w', encoding='utf-8') as configfile:
         config.write(configfile)
 
+    create_idea_properties_file(run_config)
     generate_run_script(run_config)
 
     if run_config.is_secure():

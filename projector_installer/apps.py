@@ -8,7 +8,7 @@ import shutil
 import sys
 import os
 from os import listdir
-from os.path import join, expanduser, dirname, isfile, isdir, basename
+from os.path import join, dirname, isfile, isdir, basename
 from distutils.version import LooseVersion
 from typing import Optional, List, Tuple
 from dataclasses import dataclass
@@ -19,6 +19,7 @@ from .utils import unpack_tar_file, expand_path, download_file, \
     create_dir_if_not_exist, is_linux_x86_64
 
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
+IDEA_PROPERTIES_FILE = 'idea.properties'
 
 
 def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
@@ -178,43 +179,6 @@ def get_bin_dir(app_path: str) -> str:
     """Get full path to ide bin dir."""
     run_script = get_launch_script(app_path)
     return dirname(run_script)
-
-
-CONFIG_PREFIX = expanduser('~/')
-VER_2020_CONFIG_PREFIX = expanduser('~/.config/JetBrains')
-ANDROID_STUDIO_CONFIG_PREFIX = expanduser('~/.config/Google')
-
-
-def get_config_dir(app_path: str) -> str:
-    """Returns ide config directory."""
-    product_info = get_product_info(app_path)
-    version = parse_version(product_info.version)
-
-    if is_android_studio(product_info):
-        return join(ANDROID_STUDIO_CONFIG_PREFIX, product_info.data_dir)
-
-    if version.year >= 2020:
-        return join(VER_2020_CONFIG_PREFIX, product_info.data_dir)
-
-    return join(join(CONFIG_PREFIX, '.' + product_info.data_dir), 'config')
-
-
-PLUGIN_2020_PREFIX: str = expanduser('~/.local/share/JetBrains')
-ANDROID_STUDIO_PLUGIN_PREFIX = expanduser('~/.local/share/Google')
-
-
-def get_plugin_dir(app_path: str) -> str:
-    """Returns full path to application plugin directory."""
-    product_info = get_product_info(app_path)
-    version = parse_version(product_info.version)
-
-    if is_android_studio(product_info):
-        return join(ANDROID_STUDIO_PLUGIN_PREFIX, product_info.data_dir)
-
-    if version.year >= 2020:
-        return join(PLUGIN_2020_PREFIX, product_info.data_dir)
-
-    return join(get_config_dir(app_path), "plugins")
 
 
 def is_android_studio(product_info: ProductInfo) -> bool:
@@ -426,3 +390,8 @@ def download_and_install(url: str) -> str:
     forbid_updates_for(res)
 
     return res
+
+
+def get_idea_properties_path(app_name: str) -> str:
+    """Returns path to idea.properties file"""
+    return join(get_bin_dir(app_name), IDEA_PROPERTIES_FILE)
