@@ -120,12 +120,13 @@ def copy_idea_properties_file(run_config: RunConfig) -> None:
 IDEA_CONFIG_PATH_PROPERTY = 'idea.config.path'
 IDEA_SYSTEM_PATH_PROPERTY = 'idea.system.path'
 IDEA_LOG_PATH_PROPERTY = 'idea.log.path'
+IDEA_PLUGINS_PATH_PROPERTY = 'idea.plugins.path'
 
 
 def create_idea_properties_file(run_config: RunConfig) -> None:
     """Copies idea.properties file from install dir to run config
-    and set idea.config.path, idea.system.path and idea.log.path
-    properties
+    and set idea.config.path, idea.system.path,
+    idea.log.path and idea.plugin.path properties
     """
     copy_idea_properties_file(run_config)
     prop_file_path = join(run_config.get_path(), IDEA_PROPERTIES_FILE)
@@ -133,6 +134,7 @@ def create_idea_properties_file(run_config: RunConfig) -> None:
         prop_file.write(f'\n{IDEA_CONFIG_PATH_PROPERTY}={run_config.get_path()}/config')
         prop_file.write(f'\n{IDEA_SYSTEM_PATH_PROPERTY}={run_config.get_path()}/system')
         prop_file.write(f'\n{IDEA_LOG_PATH_PROPERTY}={run_config.get_path()}/log')
+        prop_file.write(f'\n{IDEA_PLUGINS_PATH_PROPERTY}={run_config.get_path()}/plugins')
 
 
 def save_config(run_config: RunConfig) -> None:
