@@ -72,7 +72,7 @@ def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
             line = f'IDE_BIN_HOME={quote(join(run_config.path_to_app, "bin"))}\n'
         elif line.find("classpath") != -1:
             line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
-        elif line.find('${IDE_PROPERTIES_PROPERTY}') != -1:
+        elif run_config.use_separate_config and line.find('${IDE_PROPERTIES_PROPERTY}') != -1:
             line = f' -Didea.properties.file=' \
                    f'{join(run_config.get_path(), IDEA_PROPERTIES_FILE)} \\\n'
         elif line.find(IDEA_RUN_CLASS) != -1:
@@ -142,6 +142,8 @@ def save_config(run_config: RunConfig) -> None:
     config = configparser.ConfigParser(strict=False, interpolation=None)
     config['IDE'] = {}
     config['IDE']['PATH'] = run_config.path_to_app
+    config['IDE']['USE_SEPARATE_CONFIG'] = 'True' \
+        if run_config.use_separate_config else 'False'  # type: ignore
 
     config['PROJECTOR'] = {}
     config['PROJECTOR']['PORT'] = str(run_config.projector_port)
@@ -182,7 +184,9 @@ def save_config(run_config: RunConfig) -> None:
     with open(config_path, mode='w', encoding='utf-8') as configfile:
         config.write(configfile)
 
-    create_idea_properties_file(run_config)
+    if run_config.use_separate_config:
+        create_idea_properties_file(run_config)
+
     generate_run_script(run_config)
 
     if run_config.is_secure():

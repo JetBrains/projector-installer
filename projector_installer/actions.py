@@ -295,7 +295,8 @@ def do_auto_add_config(config_name: str,
                        hostname: str,
                        password: str,
                        ro_password: str,
-                       force: bool) -> None:
+                       force: bool,
+                       use_separate_config: bool) -> None:
     """Add new Run config non-interactively"""
 
     if config_name in get_run_configs() and not force:
@@ -307,6 +308,7 @@ def do_auto_add_config(config_name: str,
         ro_password = password
 
     run_config = RunConfig(name=config_name, path_to_app=expanduser(app_path),
+                           use_separate_config=use_separate_config,
                            projector_port=port, projector_host=hostname,
                            token='', password=password, ro_password=ro_password,
                            toolbox=is_toolbox_path(app_path), custom_names=hostname)
@@ -511,7 +513,8 @@ def install_app(run_config: RunConfig, app: Product) -> RunConfig:
 def do_auto_install(config_name: str,
                     app_name: str,
                     port: Optional[int],
-                    hostname: Optional[str] = '') -> None:
+                    hostname: Optional[str] = '',
+                    use_separate_config: bool = False) -> None:
     """Performs non-interactive IDE install"""
     configs = get_run_configs(config_name)
 
@@ -538,6 +541,7 @@ def do_auto_install(config_name: str,
     app = apps[0]
     run_config = get_quick_config(config_name)
     run_config.update_channel = RunConfig.NOT_TESTED
+    run_config.use_separate_config = use_separate_config
 
     if port:
         run_config.projector_port = port

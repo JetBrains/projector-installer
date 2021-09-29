@@ -23,7 +23,9 @@ class RunConfigTest(TestCase):
 
     def test_validate_run_config_raises_error(self) -> None:
         """The validate_run_config method must raise error when path to app is invalid"""
-        run_config = RunConfig(name='name', path_to_app='path_to_app', projector_port=8887,
+        run_config = RunConfig(name='name', path_to_app='path_to_app',
+                               use_separate_config=False,
+                               projector_port=8887,
                                token='token', password='password', ro_password='ro_password',
                                toolbox=True, custom_names='custom_names')
 

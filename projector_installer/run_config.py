@@ -45,6 +45,7 @@ class RunConfig:
 
     name: str
     path_to_app: str
+    use_separate_config: bool
     projector_port: int
     token: str
     password: str
@@ -116,6 +117,7 @@ def load_config(config_name: str) -> RunConfig:
 
     return RunConfig(config_name,
                      config.get('IDE', 'PATH'),
+                     config.getboolean('IDE', 'USE_SEPARATE_CONFIG', fallback=False),
                      config.getint('PROJECTOR', 'PORT'),
                      config.get('SSL', 'TOKEN', fallback=''),
                      config.get('PASSWORDS', 'PASSWORD', fallback=''),
