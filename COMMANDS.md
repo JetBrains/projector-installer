@@ -71,10 +71,13 @@ runs the configuration with name 'goland'
 `projector ide install` or `projector ide install ide_name` - select and install IDE interactively. 
 Use `projector install --expert` command to specify all significant projector parameters.  
  
-`projector ide autoinstall --config-name name-of-new-config --ide-name name-of-ide [--port port-number] [--hostname hostname]`  - 
+`projector ide autoinstall --config-name name-of-new-config --ide-name name-of-ide [--port port-number] [--hostname hostname] 
+[--use-separate-config]`  - 
 install IDE without interaction with user. Parameters --config-name and --ide-name are mandatory. You can find the list of known IDE names using 
-(interactive) ide find command. Make sure, that you provided full IDE name, for example: 
+(interactive) ide find command. Make sure, that you provided full IDE name, for example:
 `projector ide autoinstall --config-name Idea --ide-name "IntelliJ IDEA Ultimate 2020.3.4"` 
+The `--use-separate-config` option keeps Idea config, system, plugins and logs 
+directories in run config directory and allows running multiple IDE instances.
 
 `projector ide uninstall` - uninstall IDE interactively 
 
@@ -89,8 +92,10 @@ install IDE without interaction with user. Parameters --config-name and --ide-na
  
 `projector config add` - add a new configuration interactively.
 
-`projector config add _config_name_ /path/to/app --port  PORT --hostname=HOST_OR_ADDRESS` - add new config 
+`projector config add _config_name_ /path/to/app --port  PORT --hostname=HOST_OR_ADDRESS [--use-separate-config]` - add new config 
 without user input. To overwrite existing config use --force flag.
+The `--use-separate-config` option keeps Idea config, system, plugins and logs 
+directories in run config directory and allows running multiple IDE instances.
 
 `projector config edit` - change an existing configuration
 
