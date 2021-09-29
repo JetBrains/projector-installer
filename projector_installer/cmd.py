@@ -151,6 +151,9 @@ def show(config_name: Optional[str]) -> None:
               help='Expert mode - set all config parameters')
 @click.option('--force', default=False, is_flag=True,
               help='Force add config even if config with given name is already exist')
+@click.option('--use-separate-config', default=False, is_flag=True,
+              help='Use separate configuration directory for this config. '
+                   'This option allows running multiple IDE instances.')
 def add(config_name: Optional[str],
         ide_path: Optional[str],
         port: Optional[int],
@@ -158,7 +161,8 @@ def add(config_name: Optional[str],
         password: Optional[str],
         ro_password: Optional[str],
         expert: bool,
-        force: bool) -> None:
+        force: bool,
+        use_separate_config: bool) -> None:
     """projector config add [config_name]
 
     Add a new configuration.
@@ -169,7 +173,8 @@ def add(config_name: Optional[str],
         do_auto_add_config(config_name=config_name, app_path=app_path,
                            port=port, hostname=hostname, force=force,
                            password=password if password else '',
-                           ro_password=ro_password if ro_password else '')
+                           ro_password=ro_password if ro_password else '',
+                           use_separate_config=use_separate_config)
     else:
         do_add_config(hint=config_name, app_path=ide_path, quick=not expert)
 
@@ -266,16 +271,20 @@ def install_app(ide_name: Optional[str],
 @click.option('--ide-name', type=click.STRING, required=True, help='Name of IDE to install.')
 @click.option('--port', type=click.INT, required=False, help='Projector port')
 @click.option('--hostname', type=click.STRING, required=False, help='Projector hostname')
+@click.option('--use-separate-config', default=False, is_flag=True,
+              help='Use separate configuration directory for this installation. '
+                   'This option allows running multiple IDE instances.')
 def auto_install_app(config_name: str,
                      ide_name: str,
                      port: Optional[int],
-                     hostname: Optional[str]) -> None:
+                     hostname: Optional[str],
+                     use_separate_config: bool) -> None:
     """
     projector ide autoinstall --config-name name --ide-name name
     [--port listen_port] [--hostname hostname or address]
     """
 
-    do_auto_install(config_name, ide_name, port, hostname)
+    do_auto_install(config_name, ide_name, port, hostname, use_separate_config)
 
 
 @click.command(short_help='Install user certificate to given config')

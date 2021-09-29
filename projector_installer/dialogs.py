@@ -461,6 +461,8 @@ def select_update_channel(default: str) -> str:
 def edit_config(config: RunConfig) -> RunConfig:
     """Edits existing config."""
     config.path_to_app = select_manual_app_path(default=config.path_to_app)
+    config.use_separate_config = ask('Use separate configuration directory for this config?',
+                                     default=config.use_separate_config)
     config.toolbox = False
 
     if is_toolbox_path(config.path_to_app):
@@ -510,6 +512,9 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
         print('IDE was not selected, exiting...')
         sys.exit(1)
 
+    separate_config = ask('Use separate configuration directory for this config?',
+                          default=False)
+
     is_toolbox = False
 
     if is_toolbox_path(app_path):
@@ -525,6 +530,7 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
     password, ro_password = select_password_pair()
 
     return RunConfig(name=config_name, path_to_app=expanduser(app_path),
+                     use_separate_config=separate_config,
                      projector_port=projector_port, projector_host=projector_host,
                      token='', password=password, ro_password=ro_password,
                      toolbox=is_toolbox, custom_names=custom_names)
@@ -533,6 +539,7 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
 def get_quick_config(config_name: str) -> RunConfig:
     """Generates user input in quick mode """
     return RunConfig(name=select_unused_config_name(config_name), path_to_app='',
+                     use_separate_config=False,
                      projector_port=get_def_projector_port(),
                      projector_host=RunConfig.HOST_ALL,
                      token='', password='', ro_password='',
@@ -546,6 +553,9 @@ def get_user_install_input(config_name_hint: str) -> Optional[RunConfig]:
     if not config_name:
         return None
 
+    separate_config = ask('Use separate configuration directory for this config?',
+                          default=False)
+
     projector_port = get_def_projector_port()
     projector_host = select_projector_listening_address()
     custom_names = select_host_names()
@@ -553,6 +563,7 @@ def get_user_install_input(config_name_hint: str) -> Optional[RunConfig]:
     password, ro_password = select_password_pair()
 
     return RunConfig(name=config_name, path_to_app='',
+                     use_separate_config=separate_config,
                      projector_port=projector_port, projector_host=projector_host,
                      token='', password=password, ro_password=ro_password,
                      toolbox=False, custom_names=custom_names)
