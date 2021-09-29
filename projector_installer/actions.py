@@ -64,6 +64,8 @@ def do_show_config(pattern: Optional[str] = None) -> None:
           f'version={product_info.version}, '
           f'build={product_info.build_number}')
 
+    print(f'Use separate config: {"yes" if run_config.use_separate_config else "no"}')
+
     if run_config.toolbox:
         print('Toolbox config = yes')
     else:
