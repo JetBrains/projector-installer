@@ -16,7 +16,7 @@ from click import secho
 
 from .apps import get_app_path, get_installed_apps, get_product_info, \
     get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, \
-    download_and_install
+    download_and_install, remove_app_name_files
 from .certificate_chain import get_certificate_chain
 from .defaults import save_defaults, get_path_to_defaults
 from .global_config import get_projector_server_dir, LONG_NETWORK_TIMEOUT
@@ -618,6 +618,7 @@ def do_uninstall_app(app_name: Optional[str] = None) -> None:
 
     print(f'Uninstalling {app_name}')
     app_path = get_app_path(app_name)
+    remove_app_name_files(app_name)
     shutil.rmtree(app_path)
     print('done.')
 

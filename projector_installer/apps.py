@@ -206,8 +206,63 @@ def get_java_path(app_path: str) -> str:
     return join(app_path, product_info.java_exec_path)
 
 
+APP_NAME_FILE_EXTENSION = 'app_name'
+
+
+def get_app_name_cache_file(file_path: str) -> str:
+    """Returns path to app name cache file"""
+    return f'{file_path}.{APP_NAME_FILE_EXTENSION}'
+
+
+def is_installed(file_path: str) -> bool:
+    """Checks if file with app_name is already exist"""
+    cache_file_path = get_app_name_cache_file(file_path)
+    return isfile(cache_file_path)
+
+
+def get_app_name_for(file_path: str) -> str:
+    """Returns app_name from saved file"""
+    with open(get_app_name_cache_file(file_path), mode='r', encoding='utf-8') as file:
+        return file.read()
+
+
+def save_app_name_for(file_path: str, app_name: str) -> None:
+    """Saves app name in cache file"""
+    with open(get_app_name_cache_file(file_path), mode='w', encoding='utf-8') as file:
+        file.write(app_name)
+
+
+def is_matched_app_name_file(file_path: str, app_name: str) -> bool:
+    """Returns True if given file is app name file, corresponding to the given app_name"""
+    if file_path.endswith(APP_NAME_FILE_EXTENSION):
+        with open(file_path, mode='r', encoding='utf-8') as file:
+            return file.read() == app_name
+
+    return False
+
+
+def get_app_name_files_for_app(app_name: str) -> List[str]:
+    """Returns list of app name files with given app_name"""
+    cache_dir = get_download_cache_dir()
+    return [join(cache_dir, file) for file in listdir(cache_dir) if
+            is_matched_app_name_file(join(cache_dir, file), app_name)]
+
+
+def remove_app_name_files(app_name: str) -> None:
+    """Removes all app name files with given app_name"""
+    for file_path in get_app_name_files_for_app(app_name):
+        os.remove(file_path)
+
+
+# There are a number of complications with directory name in application archive file:
+# 1. We can't guess dir name from archive file name - different products uses different conventions
+# 2. Some applications (MPS, Android Studio etc.) have the same directory name for different
+# application versions. To deal with this we have to return app_name from unpack procedure.
 def unpack_app(file_path: str) -> str:
     """Unpacks specified file to app directory."""
+    if is_installed(file_path):  # Check if we already unpack the app
+        return get_app_name_for(file_path)
+
     app_name = unpack_tar_file(file_path, get_apps_dir())
 
     # For android studio - ensure that app directory has unique name
@@ -225,6 +280,8 @@ def unpack_app(file_path: str) -> str:
         shutil.rmtree(new_path, ignore_errors=True)
         os.rename(app_path, new_path)
         app_name = product_info.build_number
+
+    save_app_name_for(file_path, app_name)
 
     return app_name
 
