@@ -12,7 +12,7 @@ from shlex import quote
 from typing import TextIO
 from shutil import copy
 
-from .apps import get_launch_script, get_idea_properties_path, IDEA_PROPERTIES_FILE, \
+from .apps import get_launch_script, get_ide_properties_file, IDEA_PROPERTIES_FILE, \
     forbid_updates_for
 from .global_config import get_projector_server_dir, get_ssl_properties_file
 from .run_config import RunConfig, get_run_script_path, CONFIG_INI_NAME
@@ -115,7 +115,7 @@ def generate_run_script(run_config: RunConfig) -> None:
 
 def copy_idea_properties_file(run_config: RunConfig) -> None:
     """Copies idea.properties file from install dir to run config"""
-    copy(get_idea_properties_path(run_config.path_to_app), run_config.get_path())
+    copy(get_ide_properties_file(run_config.path_to_app), run_config.get_path())
 
 
 IDEA_CONFIG_PATH_PROPERTY = 'idea.config.path'

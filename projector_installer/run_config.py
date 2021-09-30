@@ -15,7 +15,8 @@ from dataclasses import dataclass
 import configparser
 
 from .apps import get_app_path, get_path_to_toolbox_channel, \
-    get_app_name_from_toolbox_path, get_channel_from_toolbox_path, get_product_name
+    get_app_name_from_toolbox_path, get_channel_from_toolbox_path, \
+    get_product_name, IDEA_PROPERTIES_FILE, get_ide_properties_file, get_config_dir, get_plugins_dir
 from .global_config import get_run_configs_dir
 from .utils import create_dir_if_not_exist, generate_token
 
@@ -85,6 +86,28 @@ class RunConfig:
     def get_path_to_chain_file(self) -> str:
         """Returns full path to certificate chain file"""
         return join(get_path_to_certificate_dir(self.name), self.certificate_chain)
+
+    def get_path_to_idea_properties_file(self) -> str:
+        """Returns path to idea.properties"""
+
+        if self.use_separate_config:
+            return join(self.get_path(), IDEA_PROPERTIES_FILE)
+
+        return get_ide_properties_file(self.path_to_app)
+
+    def get_path_to_idea_config_dir(self) -> str:
+        """Returns path nto idea config directory"""
+        if self.use_separate_config:
+            return f'{self.get_path()}/config'
+
+        return get_config_dir(self.path_to_app)
+
+    def get_path_to_idea_plugins_dir(self) -> str:
+        """Returns path to idea plugins directory"""
+        if self.use_separate_config:
+            return f'{self.get_path()}/plugins'
+
+        return get_plugins_dir(self.path_to_app)
 
     def _copy_cert_file(self, path_to_file: str) -> str:
         """Copy file to cert directory"""
