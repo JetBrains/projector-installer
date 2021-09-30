@@ -13,7 +13,6 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.x509 import oid, load_der_x509_certificate, load_pem_x509_certificate
 from cryptography.x509.extensions import ExtensionNotFound  # type: ignore
-from cryptography.x509.extensions import AuthorityInformationAccess  # type: ignore
 from cryptography.x509.oid import ExtensionOID  # type: ignore
 
 
@@ -35,7 +34,7 @@ def get_aia_location_from_cert(cert_data: bytes) -> str:
     except ExtensionNotFound:
         return ''
 
-    asa: AuthorityInformationAccess = ext.value
+    asa = ext.value
 
     for loc in asa:
         if loc.access_method == oid.AuthorityInformationAccessOID.CA_ISSUERS:
