@@ -192,7 +192,7 @@ def is_mps(product_info: ProductInfo) -> bool:
 
 
 def get_java_path(app_path: str) -> str:
-    """Returns full path to bundled or system java java."""
+    """Returns full path to bundled or system java."""
     if not is_linux_x86_64():
         java_path = shutil.which('java')
 
