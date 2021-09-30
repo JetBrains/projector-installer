@@ -8,7 +8,7 @@ Notable changes to this project are documented in this file.
 - PRJ-681: New option `--uninstall-ide` for `projector config remove` command
 - PRJ-669: Allow run multiple IDE instances
 - New `--use-separate-config` option for `ide autoinstall` and `config add` commands
-- Forbid plugin update notifications
+- Notifications on plugins updates forbidden
 
 ## Fixed
 - PRJ-629: Error with projector config remove on NFS-mounted directory fixed

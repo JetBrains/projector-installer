@@ -13,6 +13,7 @@ from distutils.version import LooseVersion
 from typing import Optional, List, Tuple
 from dataclasses import dataclass
 import json
+from xml.etree.ElementTree import Element, parse, SubElement
 
 from .global_config import get_apps_dir, get_download_cache_dir
 from .utils import unpack_tar_file, expand_path, download_file, \
@@ -496,12 +497,48 @@ NO_PLUGIN_NOTIFICATION = """
 </application>
 """
 
+UPDATES_ATTRIBUTES = {'groupId': 'Plugins updates', 'displayType': 'NONE', 'shouldLog': 'false'}
 
-def forbid_plugin_updates(options_dir: str) -> None:
+
+def forbid_plugin_update_notifications_in_file(notifications_config: str) -> None:
+    """Forbids plugin update notifications in given file"""
+    parsed = parse(notifications_config)
+    tree: Element = parsed.getroot()
+
+    try:
+        nodes = tree.findall('./component/notification[@groupId="Plugins updates"]')
+
+        if len(nodes) < 1:
+            raise KeyError
+
+        node = nodes[0]
+
+        if node.attrib is None:
+            node.attrib = UPDATES_ATTRIBUTES
+        else:
+            node.attrib = {**node.attrib, **UPDATES_ATTRIBUTES}
+
+    except KeyError:
+        try:
+            nodes = tree.findall('./component')
+
+            if len(nodes) > 0:
+                node = nodes[0]
+                SubElement(node, 'notification', UPDATES_ATTRIBUTES)
+
+        except KeyError:
+            pass
+
+    parsed.write(notifications_config, encoding='utf-8')
+
+
+def forbid_plugin_update_notifications(options_dir: str) -> None:
     """Forbids notification on plugin updates"""
     notifications_config = join(options_dir, NOTIFICATIONS_CONFIG)
     if not isfile(notifications_config):
         os.makedirs(options_dir, exist_ok=True)
 
-        with (open(notifications_config, mode='w', encoding='utf8')) as file:
+        with (open(notifications_config, mode='w', encoding='utf-8')) as file:
             file.write(NO_PLUGIN_NOTIFICATION)
+    else:
+        forbid_plugin_update_notifications_in_file(notifications_config)
