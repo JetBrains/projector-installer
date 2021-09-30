@@ -484,3 +484,24 @@ def get_plugins_dir(app_path: str) -> str:
         return join(PLUGIN_2020_PREFIX, product_info.data_dir)
 
     return join(get_config_dir(app_path), "plugins")
+
+
+NOTIFICATIONS_CONFIG = 'notifications.xml'
+
+NO_PLUGIN_NOTIFICATION = """
+<application>
+  <component name="NotificationConfiguration">
+    <notification groupId="Plugins updates" displayType="NONE" shouldLog="false" />
+  </component>
+</application>
+"""
+
+
+def forbid_plugin_updates(options_dir: str) -> None:
+    """Forbids notification on plugin updates"""
+    notifications_config = join(options_dir, NOTIFICATIONS_CONFIG)
+    if not isfile(notifications_config):
+        os.makedirs(options_dir, exist_ok=True)
+
+        with (open(notifications_config, mode='w', encoding='utf8')) as file:
+            file.write(NO_PLUGIN_NOTIFICATION)
