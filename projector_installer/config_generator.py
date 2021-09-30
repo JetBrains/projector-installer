@@ -12,7 +12,8 @@ from shlex import quote
 from typing import TextIO
 from shutil import copy
 
-from .apps import get_launch_script, get_idea_properties_path, IDEA_PROPERTIES_FILE
+from .apps import get_launch_script, get_idea_properties_path, IDEA_PROPERTIES_FILE, \
+    forbid_updates_for
 from .global_config import get_projector_server_dir, get_ssl_properties_file
 from .run_config import RunConfig, get_run_script_path, CONFIG_INI_NAME
 from .secure_config import generate_server_secrets
@@ -183,6 +184,8 @@ def save_config(run_config: RunConfig) -> None:
 
     with open(config_path, mode='w', encoding='utf-8') as configfile:
         config.write(configfile)
+
+    forbid_updates_for(run_config.path_to_app)
 
     if run_config.use_separate_config:
         create_idea_properties_file(run_config)

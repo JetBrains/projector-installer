@@ -16,7 +16,7 @@ from click import secho
 
 from .apps import get_app_path, get_installed_apps, get_product_info, \
     get_java_path, get_path_to_latest_app, is_valid_app_path, is_toolbox_path, \
-    download_and_install, forbid_updates_for
+    download_and_install
 from .certificate_chain import get_certificate_chain
 from .defaults import save_defaults, get_path_to_defaults
 from .global_config import get_projector_server_dir, LONG_NETWORK_TIMEOUT
@@ -407,7 +407,6 @@ def do_rebuild_config(config_name: Optional[str] = None) -> None:
 
     print(f'Rebuild run config {run_config.name}')
     save_config(run_config)
-    forbid_updates_for(run_config.path_to_app)
     release_config(lock)
 
 

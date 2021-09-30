@@ -369,7 +369,7 @@ def forbid_updates_for(app_path: str) -> None:
         prop_file = get_ide_properties_file(app_path)
 
         with open(prop_file, mode='a', encoding='utf-8') as file:
-            file.write(f'{FORBID_UPDATE_STRING}')
+            file.write(FORBID_UPDATE_STRING)
 
 
 def download_and_install(url: str) -> str:
