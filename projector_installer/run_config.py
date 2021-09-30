@@ -109,6 +109,10 @@ class RunConfig:
 
         return get_plugins_dir(self.path_to_app)
 
+    def get_path_to_idea_options_dir(self) -> str:
+        """Returns path to idea options directory"""
+        return join(self.get_path_to_idea_config_dir(), 'options')
+
     def _copy_cert_file(self, path_to_file: str) -> str:
         """Copy file to cert directory"""
         cert_directory = get_path_to_certificate_dir(self.name)
