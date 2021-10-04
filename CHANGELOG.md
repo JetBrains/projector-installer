@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.4.0
 
 ## Added
 - PRJ-681: New option `--uninstall-ide` for `projector config remove` command
