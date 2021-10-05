@@ -69,6 +69,9 @@ def get_update(run_config: RunConfig) -> Optional[Product]:
 
     current = LooseVersion(prod_info.version)
 
+    if prod_info.version_suffix:
+        current = LooseVersion(f'{prod_info.version}.{prod_info.build_number}')
+
     prod_list = get_product_list_from_file(kind) \
         if is_tested_ide(run_config) else get_product_releases(kind, timeout=LONG_NETWORK_TIMEOUT)
 

@@ -43,6 +43,7 @@ class ProductInfo:
     # pylint: disable=too-many-instance-attributes
     name: str
     version: str
+    version_suffix: str
     build_number: str
     product_code: str
     data_dir: str
@@ -131,7 +132,7 @@ def get_mps_product_info(app_path: str) -> ProductInfo:
 
     version, build_number = get_mps_version(app_path)
 
-    return ProductInfo(name='MPS', version=version, build_number=build_number,
+    return ProductInfo(name='MPS', version=version, version_suffix='', build_number=build_number,
                        product_code='MPS', data_dir='', svg_icon_path=MPS_SVG_ICON_PATH,
                        os='linux', launcher_path=MPS_LAUNCHER_PATH, java_exec_path='jbr/bin/java',
                        vm_options_path=MPS_VM_OPTIONS_PATH, startup_wm_class=MPS_STARTUP_WM_CLASS)
@@ -145,17 +146,26 @@ def get_product_info(app_path: str) -> ProductInfo:
         with open(prod_info_path, mode='r', encoding='utf-8') as file:
             data = json.load(file)
             java_exec_path = 'jre/bin/java'
+            version_suffix = ''
+
+            if 'versionSuffix' in data:
+                version_suffix = data['versionSuffix']
 
             if 'javaExecutablePath' in data['launch'][0]:
                 java_exec_path = data['launch'][0]['javaExecutablePath']
 
-            product_info = ProductInfo(data['name'], data['version'], data['buildNumber'],
-                                       data['productCode'], '', data['svgIconPath'],
-                                       data['launch'][0]['os'],
-                                       data['launch'][0]['launcherPath'],
-                                       java_exec_path,
-                                       data['launch'][0]['vmOptionsFilePath'],
-                                       data['launch'][0]['startupWmClass'])
+            product_info = ProductInfo(name=data['name'],
+                                       version=data['version'],
+                                       version_suffix=version_suffix,
+                                       build_number=data['buildNumber'],
+                                       product_code=data['productCode'],
+                                       data_dir='',
+                                       svg_icon_path=data['svgIconPath'],
+                                       os=data['launch'][0]['os'],
+                                       launcher_path=data['launch'][0]['launcherPath'],
+                                       java_exec_path=java_exec_path,
+                                       vm_options_path=data['launch'][0]['vmOptionsFilePath'],
+                                       startup_wm_class=data['launch'][0]['startupWmClass'])
 
             version = parse_version(product_info.version)
 
