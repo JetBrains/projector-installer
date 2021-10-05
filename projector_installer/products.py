@@ -142,7 +142,7 @@ KIND2CODE = {
     IDEKind.WebStorm: 'WS',
     IDEKind.RubyMine: 'RM',
     IDEKind.Rider: 'RD',
-    IDEKind.DataSpell: 'PD',
+    IDEKind.DataSpell: 'PCD',
     IDEKind.MPS: 'MPS'
 }
 
@@ -164,7 +164,10 @@ def get_product_releases(kind: Optional[IDEKind], timeout: float) -> List[Produc
     """Retrieves list of product releases from JB products service"""
 
     if kind:
-        url = f'{PRODUCTS_URL}?code={KIND2CODE[kind]}&release.type=release'
+        if kind == IDEKind.DataSpell:  # we don't limit DataSpell URL by releases yet
+            url = f'{PRODUCTS_URL}?code={KIND2CODE[kind]}'
+        else:
+            url = f'{PRODUCTS_URL}?code={KIND2CODE[kind]}&release.type=release'
     else:
         url = f'{PRODUCTS_URL}?release.type=release&{get_all_product_codes()}'
 
@@ -182,6 +185,11 @@ def get_product_releases(kind: Optional[IDEKind], timeout: float) -> List[Produc
 
         for release in releases:
             ver = release['version']
+            release_type = release['type']
+
+            if release_type == 'eap':
+                build = release['build']
+                ver = f'{ver}.{build}'
 
             if LooseVersion(ver) < EARLIEST_COMPATIBLE_VERSION:
                 continue
@@ -192,7 +200,9 @@ def get_product_releases(kind: Optional[IDEKind], timeout: float) -> List[Produc
                 continue
 
             link = downloads['linux']['link']
-            res.append(Product(f'{name} {ver}', link, CODE2KIND[code], ver))
+
+            if link:
+                res.append(Product(f'{name} {ver}', link, CODE2KIND[code], ver))
 
     return res
 
