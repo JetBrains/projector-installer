@@ -10,8 +10,8 @@ import click
 from .config_generator import save_config
 from .global_config import SHORT_NETWORK_TIMEOUT, LONG_NETWORK_TIMEOUT
 from .products import Product, get_product_releases, IDEKind, load_compatible_apps, \
-    COMPATIBLE_IDE_FILE
-from .apps import is_projector_installed_ide, get_product_info, download_and_install
+    COMPATIBLE_IDE_FILE, EAP_PRODUCTS
+from .apps import is_projector_installed_ide, get_product_info, download_and_install, ProductInfo
 from .run_config import RunConfig
 from .timeout import TimeoutException, timeout
 
@@ -59,6 +59,16 @@ def is_tested_ide(run_config: RunConfig) -> bool:
     return run_config.update_channel == RunConfig.TESTED
 
 
+def get_product_version(prod_info: ProductInfo) -> LooseVersion:
+    """"Return version for given product"""
+    kind: IDEKind = IDE_UPDATE_CODE2KIND.get(prod_info.product_code, IDEKind.Unknown)
+
+    if kind in EAP_PRODUCTS:
+        return LooseVersion(f'{prod_info.version}.{prod_info.build_number}')
+
+    return LooseVersion(prod_info.version)
+
+
 def get_update(run_config: RunConfig) -> Optional[Product]:
     """Returns update for given app if available"""
     prod_info = get_product_info(run_config.path_to_app)
@@ -67,10 +77,7 @@ def get_update(run_config: RunConfig) -> Optional[Product]:
     if kind == IDEKind.Unknown:
         return None
 
-    current = LooseVersion(prod_info.version)
-
-    if prod_info.version_suffix:
-        current = LooseVersion(f'{prod_info.version}.{prod_info.build_number}')
+    current = get_product_version(prod_info)
 
     prod_list = get_product_list_from_file(kind) \
         if is_tested_ide(run_config) else get_product_releases(kind, timeout=LONG_NETWORK_TIMEOUT)

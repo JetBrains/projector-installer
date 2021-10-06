@@ -160,16 +160,23 @@ def get_all_product_codes() -> str:
     return '&'.join(params)
 
 
+EAP_PRODUCTS = set([IDEKind.DataSpell])
+
+
+def get_releases_url(kind: Optional[IDEKind]) -> str:
+    """Create URL for query product releases"""
+    if kind:
+        if kind in EAP_PRODUCTS:
+            return f'{PRODUCTS_URL}?code={KIND2CODE[kind]}'
+
+        return f'{PRODUCTS_URL}?code={KIND2CODE[kind]}&release.type=release'
+
+    return f'{PRODUCTS_URL}?release.type=release&{get_all_product_codes()}'
+
+
 def get_product_releases(kind: Optional[IDEKind], timeout: float) -> List[Product]:
     """Retrieves list of product releases from JB products service"""
-
-    if kind:
-        if kind == IDEKind.DataSpell:  # we don't limit DataSpell URL by releases yet
-            url = f'{PRODUCTS_URL}?code={KIND2CODE[kind]}'
-        else:
-            url = f'{PRODUCTS_URL}?code={KIND2CODE[kind]}&release.type=release'
-    else:
-        url = f'{PRODUCTS_URL}?release.type=release&{get_all_product_codes()}'
+    url = get_releases_url(kind)
 
     try:
         data = get_json(url, timeout=timeout)
