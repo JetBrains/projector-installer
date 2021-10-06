@@ -6,7 +6,7 @@
 ![PyLint/MyPy Runner](https://github.com/JetBrains/projector-installer/workflows/PyLint/MyPy%20Runner/badge.svg)
 
 Install, configure and run JetBrains IDEs
-with [Projector Server](https://github.com/JetBrains/projector-server/blob/master/docs/Projector.md) on Linux or
+with [Projector Server](https://jetbrains.github.io/projector-client/mkdocs/latest/) on Linux or
 in [WSL](https://docs.microsoft.com/windows/wsl/).
 
 [Latest release](https://pypi.org/project/projector-installer/) |
