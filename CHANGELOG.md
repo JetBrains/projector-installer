@@ -2,6 +2,14 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Added 
+- EAP products support
+
+## Fixed 
+- DataSpell URL in compatible products file
+
 # 1.4.0
 
 ## Added
