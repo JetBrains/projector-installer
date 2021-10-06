@@ -13,7 +13,7 @@ class ProductsTest(TestCase):
     def test_get_all_product_codes(self) -> None:
         """The get_all_product_codes method must return product codes"""
         all_product_codes = 'code=IIC&code=IIU&code=PCC&code=PCP&code=CL&code=GO&code=DG&code=PS&' \
-                            'code=WS&code=RM&code=RD&code=PD&code=MPS'
+                            'code=WS&code=RM&code=RD&code=PCD&code=MPS'
         self.assertEqual(get_all_product_codes(), all_product_codes)
 
     def test_filter_app_by_name_pattern_exact_match(self) -> None:
