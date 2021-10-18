@@ -104,6 +104,8 @@ def get_access_urls(run_config: RunConfig) -> List[str]:
 
     if run_config.custom_names:
         addresses = parse_custom_names(run_config.custom_names)
+    elif run_config.projector_host != RunConfig.HOST_ALL:
+        addresses = [run_config.projector_host]
     else:
         addresses = get_local_addresses()
 
