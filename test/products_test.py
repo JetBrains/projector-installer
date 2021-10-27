@@ -18,11 +18,11 @@ class ProductsTest(TestCase):
 
     def test_filter_app_by_name_pattern_exact_match(self) -> None:
         """The filter_app_by_name_pattern method must filter apps by given name"""
-        matched_product = [Product('IntelliJ IDEA Community Edition 2020.1.1',
-                                   'https://download.jetbrains.com/idea/ideaIC-2020.1.1.tar.gz',
+        matched_product = [Product('IntelliJ IDEA Community Edition 2020.1',
+                                   'https://download.jetbrains.com/idea/ideaIC-2020.1.4.tar.gz',
                                    IDEKind.Idea_Community)]
         self.assertEqual(filter_app_by_name_pattern(self.COMPATIBLE_APPS,
-                                                    'IntelliJ IDEA Community Edition 2020.1.1'
+                                                    'IntelliJ IDEA Community Edition 2020.1'
                                                     ), matched_product)
 
     def test_filter_app_by_name_pattern_no_pattern(self) -> None:
