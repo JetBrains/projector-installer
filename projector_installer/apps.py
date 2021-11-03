@@ -440,6 +440,15 @@ def forbid_updates_for(app_path: str) -> None:
             file.write(FORBID_UPDATE_STRING)
 
 
+def forbid_restarts(app_path: str) -> None:
+    """Forbids restarts for IDE, make run script not executable.
+    Temporary workaround for the issue:
+    https://youtrack.jetbrains.com/issue/PRJ-332
+    """
+    run_script = get_launch_script(app_path)
+    os.chmod(run_script, 0o0644)
+
+
 def download_and_install(url: str) -> str:
     """Downloads and installs app"""
     try:
@@ -456,6 +465,7 @@ def download_and_install(url: str) -> str:
 
     res = get_app_path(app_name)
     forbid_updates_for(res)
+    forbid_restarts(res)
 
     return res
 
