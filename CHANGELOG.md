@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.5.0
 
 ## Added 
 - EAP products support
@@ -10,7 +10,6 @@ Notable changes to this project are documented in this file.
 ## Fixed 
 - DataSpell URL in compatible products file
 - PRJ-721: Restrict access URL to listening address
-
 
 # 1.4.0
 
