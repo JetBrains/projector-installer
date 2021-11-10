@@ -2,6 +2,10 @@
 
 Notable changes to this project are documented in this file.
 
+# 1.5.2
+
+## Fixed
+- updated projector-client version
 
 # 1.5.1
 
