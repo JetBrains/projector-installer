@@ -36,7 +36,7 @@ bundled_dir = join(PACKAGE_DIR, BUNDLED_DIR)
 server_dir = join(bundled_dir, SERVER_DIR)
 
 PROJECTOR_SERVER_URL: str = 'https://github.com/JetBrains/projector-server/releases/' \
-                            'download/v1.4.1/projector-server-v1.4.1.zip'
+                            'download/v1.5.0/projector-server-v1.5.0.zip'
 
 
 def download_server(to_dir: str) -> None:
