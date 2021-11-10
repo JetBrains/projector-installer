@@ -47,7 +47,9 @@ def token_quote(token: str) -> str:
 
 def launch_script_last_lines(run_config: RunConfig, main_class: str) -> str:
     """Launch script last lines"""
-    line = f' -D{PORT_PROPERTY_NAME}={run_config.projector_port} \\\n'
+    line = ' -Djdk.attach.allowAttachSelf=true \\\n'
+    line += ' -Dswing.bufferPerWindowswing.bufferPerWindow=false \\\n'
+    line += f' -D{PORT_PROPERTY_NAME}={run_config.projector_port} \\\n'
     line += f' -D{CLASS_TO_LAUNCH_PROPERTY_NAME}={main_class} \\\n'
 
     if run_config.projector_host != RunConfig.HOST_ALL:

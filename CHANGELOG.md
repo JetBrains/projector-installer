@@ -2,6 +2,14 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Removed
+- workaround for PRJ-332 due to server update
+
+## Fixed
+- added parameters to generated script for IJ agent compatibility 
+
 # 1.5.2
 
 ## Fixed
