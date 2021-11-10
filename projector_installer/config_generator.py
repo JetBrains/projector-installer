@@ -13,7 +13,7 @@ from typing import TextIO
 from shutil import copy
 
 from .apps import get_launch_script, get_ide_properties_file, IDEA_PROPERTIES_FILE, \
-    forbid_updates_for, forbid_plugin_update_notifications, forbid_restarts
+    forbid_updates_for, forbid_plugin_update_notifications
 from .global_config import get_projector_server_dir, get_ssl_properties_file
 from .run_config import RunConfig, get_run_script_path, CONFIG_INI_NAME
 from .secure_config import generate_server_secrets
@@ -196,7 +196,6 @@ def save_config(run_config: RunConfig) -> None:
         generate_server_secrets(run_config)
 
     forbid_plugin_update_notifications(run_config.get_path_to_idea_options_dir())
-    forbid_restarts(run_config.path_to_app)
 
 
 def check_config(run_config: RunConfig) -> bool:

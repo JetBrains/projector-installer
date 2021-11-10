@@ -19,8 +19,29 @@ from .global_config import get_apps_dir, get_download_cache_dir
 from .utils import unpack_tar_file, expand_path, download_file, \
     create_dir_if_not_exist, is_linux_x86_64
 
+CONFIG_PREFIX = expanduser('~/')
+VER_2020_CONFIG_PREFIX = expanduser('~/.config/JetBrains')
+ANDROID_STUDIO_CONFIG_PREFIX = expanduser('~/.config/Google')
+
 IDEA_PATH_SELECTOR = 'idea.paths.selector'
 IDEA_PROPERTIES_FILE = 'idea.properties'
+DISABLED_PLUGINS_FILE = 'disabled_plugins.txt'
+FORBID_UPDATE_STRING = 'ide.no.platform.update=Projector'
+
+PLUGIN_2020_PREFIX: str = expanduser('~/.local/share/JetBrains')
+ANDROID_STUDIO_PLUGIN_PREFIX = expanduser('~/.local/share/Google')
+
+MPS_LAUNCHER_PATH = 'bin/mps.sh'
+MPS_SVG_ICON_PATH = 'bin/mps.svg'
+MPS_VM_OPTIONS_PATH = 'bin/mps64.vmoptions'
+MPS_STARTUP_WM_CLASS = 'jetbrains-mps'
+
+NOTIFICATIONS_CONFIG = 'notifications.xml'
+UPDATES_ATTRIBUTES = {'groupId': 'Plugins updates', 'displayType': 'NONE', 'shouldLog': 'false'}
+
+APP_NAME_FILE_EXTENSION = 'app_name'
+
+TOOLBOX_DEFAULT_DIR = '~/.local/share/JetBrains/Toolbox/'
 
 
 def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
@@ -102,12 +123,6 @@ def get_data_dir_from_script(run_script: str) -> str:
 
 class UnknownIDEException(Exception):
     """Unknown IDE exception"""
-
-
-MPS_LAUNCHER_PATH = 'bin/mps.sh'
-MPS_SVG_ICON_PATH = 'bin/mps.svg'
-MPS_VM_OPTIONS_PATH = 'bin/mps64.vmoptions'
-MPS_STARTUP_WM_CLASS = 'jetbrains-mps'
 
 
 def is_mps_dir(app_path: str) -> bool:
@@ -215,9 +230,6 @@ def get_java_path(app_path: str) -> str:
 
     product_info = get_product_info(app_path)
     return join(app_path, product_info.java_exec_path)
-
-
-APP_NAME_FILE_EXTENSION = 'app_name'
 
 
 def get_app_name_cache_file(file_path: str) -> str:
@@ -337,6 +349,11 @@ def is_toolbox_path(app_path: str) -> bool:
     return get_path_to_toolbox_channel(app_path) is not None
 
 
+def is_toolbox_installed() -> bool:
+    """Checks if toolbox is installed for current user"""
+    return isdir(expand_path(TOOLBOX_DEFAULT_DIR))
+
+
 def is_valid_app_path(app_path: str) -> bool:
     """Checks if entered app path is valid"""
     return is_path_to_app(app_path) or is_toolbox_path(app_path)
@@ -411,11 +428,6 @@ def disable_plugin(file_name: str, plugin_name: str) -> None:
         file.write(f'{plugin_name}')
 
 
-DISABLED_PLUGINS_FILE = 'disabled_plugins.txt'
-IDEA_PROPERTIES_FILE = 'idea.properties'
-FORBID_UPDATE_STRING = 'ide.no.platform.update=Projector'
-
-
 def get_ide_properties_file(app_path: str) -> str:
     """Returns path to ide properties file"""
     bin_dir = get_bin_dir(app_path)
@@ -440,15 +452,6 @@ def forbid_updates_for(app_path: str) -> None:
             file.write(FORBID_UPDATE_STRING)
 
 
-def forbid_restarts(app_path: str) -> None:
-    """Forbids restarts for IDE, make run script not executable.
-    Temporary workaround for the issue:
-    https://youtrack.jetbrains.com/issue/PRJ-332
-    """
-    run_script = get_launch_script(app_path)
-    os.chmod(run_script, 0o0644)
-
-
 def download_and_install(url: str) -> str:
     """Downloads and installs app"""
     try:
@@ -465,14 +468,8 @@ def download_and_install(url: str) -> str:
 
     res = get_app_path(app_name)
     forbid_updates_for(res)
-    forbid_restarts(res)
 
     return res
-
-
-CONFIG_PREFIX = expanduser('~/')
-VER_2020_CONFIG_PREFIX = expanduser('~/.config/JetBrains')
-ANDROID_STUDIO_CONFIG_PREFIX = expanduser('~/.config/Google')
 
 
 def get_config_dir(app_path: str) -> str:
@@ -489,10 +486,6 @@ def get_config_dir(app_path: str) -> str:
     return join(join(CONFIG_PREFIX, '.' + product_info.data_dir), 'config')
 
 
-PLUGIN_2020_PREFIX: str = expanduser('~/.local/share/JetBrains')
-ANDROID_STUDIO_PLUGIN_PREFIX = expanduser('~/.local/share/Google')
-
-
 def get_plugins_dir(app_path: str) -> str:
     """Returns full path to application plugin directory."""
     product_info = get_product_info(app_path)
@@ -507,8 +500,6 @@ def get_plugins_dir(app_path: str) -> str:
     return join(get_config_dir(app_path), "plugins")
 
 
-NOTIFICATIONS_CONFIG = 'notifications.xml'
-
 NO_PLUGIN_NOTIFICATION = """
 <application>
   <component name="NotificationConfiguration">
@@ -516,8 +507,6 @@ NO_PLUGIN_NOTIFICATION = """
   </component>
 </application>
 """
-
-UPDATES_ATTRIBUTES = {'groupId': 'Plugins updates', 'displayType': 'NONE', 'shouldLog': 'false'}
 
 
 def forbid_plugin_update_notifications_in_file(notifications_config: str) -> None:

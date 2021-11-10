@@ -147,7 +147,7 @@ def regenerate_config_if_toolbox(run_config: RunConfig) -> RunConfig:
 
 
 def check_bundled_server() -> None:
-    """Checks bundled server availabiluty. If server not found fires warning and exits."""
+    """Checks bundled server availability. If server not found fires warning and exits."""
     if not isdir(get_projector_server_dir()):
         message = 'No bundled server found! Exiting... \n' \
                   'Most probably you installed or upgraded projector-installer from sources.\n' \
