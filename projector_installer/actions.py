@@ -226,7 +226,8 @@ def do_run_config(config_name: Optional[str] = None, run_browser: bool = True) -
         print('Bundled JVM is incompatible with Projector.')
         print('Current config may be nonfunctional.')
 
-    print('Exit IDE or press Ctrl+C to stop Projector.')
+    print('To exit the IDE, select File | Exit inside the connected client. '
+          'For force quit, press Ctrl+C (some changes and settings can be lost).')
 
     if run_browser:
         if is_wsl():
