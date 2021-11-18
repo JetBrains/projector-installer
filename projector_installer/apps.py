@@ -42,6 +42,7 @@ UPDATES_ATTRIBUTES = {'groupId': 'Plugins updates', 'displayType': 'NONE', 'shou
 APP_NAME_FILE_EXTENSION = 'app_name'
 
 TOOLBOX_DEFAULT_DIR = '~/.local/share/JetBrains/Toolbox/'
+TOOLBOX_SETTINGS = '.settings.json'
 
 
 def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
@@ -325,9 +326,60 @@ def is_path_to_app(app_path: str) -> bool:
     return isfile(prod_info_path) or is_mps_dir(app_path)
 
 
+def get_toolbox_dir() -> str:
+    """Returns full path to toolbox dir"""
+    return expand_path(TOOLBOX_DEFAULT_DIR)
+
+
+def get_toolbox_settings_file() -> str:
+    """Returns path to toolbox config"""
+    return join(get_toolbox_dir(), TOOLBOX_SETTINGS)
+
+
+def is_toolbox_installed() -> bool:
+    """Checks if toolbox is installed for current user"""
+    ret: bool = isdir(get_toolbox_dir())
+    ret = ret and isfile(get_toolbox_settings_file())
+    return ret
+
+
+def get_toolbox_install_location() -> str:
+    """
+    Returns path to toolbox install location or empty string if toolbox is not installed
+    """
+
+    if not is_toolbox_installed():
+        return ''
+
+    with open(get_toolbox_settings_file(), mode='r', encoding='utf-8') as settings_file:
+        data = json.load(settings_file)
+
+        if 'install_location' in data:
+            return str(data['install_location'])
+
+        return get_toolbox_dir()
+
+
+def is_toolbox_path(app_path: str) -> bool:
+    """Checks if given path is toolbox channel path"""
+    return get_path_to_toolbox_channel(app_path) is not None
+
+
+def get_toolbox_apps_location() -> str:
+    """Returns path to toolbox directory with installed apps"""
+    location = get_toolbox_install_location()
+
+    if location:
+        return join(location, 'apps')
+
+    return ''
+
+
 def get_path_to_toolbox_channel(path: str) -> Optional[str]:
     """"Returns path to toolbox channel"""
-    pos = path.find('JetBrains/Toolbox/apps')
+    apps_path = get_toolbox_apps_location()
+    path = expand_path(path)
+    pos = path.find(apps_path)
 
     if pos >= 0:
         ch_path = path.rstrip('/')
@@ -344,14 +396,38 @@ def get_path_to_toolbox_channel(path: str) -> Optional[str]:
     return None
 
 
-def is_toolbox_path(app_path: str) -> bool:
-    """Checks if given path is toolbox channel path"""
-    return get_path_to_toolbox_channel(app_path) is not None
+FORBIDDEN_TOOLBOX_APP_LIST = ['JetBrainsGateway', 'Projector', 'Toolbox']
 
 
-def is_toolbox_installed() -> bool:
-    """Checks if toolbox is installed for current user"""
-    return isdir(expand_path(TOOLBOX_DEFAULT_DIR))
+def get_toolbox_managed_app_path_list() -> List[str]:
+    """Returns list of toolbox-managed apps paths"""
+    apps_dir = get_toolbox_apps_location()
+    pre = [appname for appname in os.listdir(apps_dir) if isdir(join(apps_dir, appname))
+           and appname not in FORBIDDEN_TOOLBOX_APP_LIST]
+
+    pre.sort()
+    res = []
+
+    for app_name in pre:
+        app_dir = join(apps_dir, app_name)
+
+        for channel in os.listdir(app_dir):
+            full_path = join(app_dir, channel)
+            if channel.startswith('ch-') and isdir(full_path):
+                res.append(full_path)
+
+    return res
+
+
+def get_toolbox_managed_apps() -> List[str]:
+    """Returns list of toolbox managed app in form AppName/channel"""
+    prefix_len = len(get_toolbox_apps_location())
+    return list(map(lambda s: s[prefix_len + 1:], get_toolbox_managed_app_path_list()))
+
+
+def get_path_to_toolbox_app(toolbox_app_name: str) -> Optional[str]:
+    """Returns path to toolbox app/channel by toolbox paa name """
+    return next(filter(lambda s: s.endswith(toolbox_app_name), get_toolbox_managed_app_path_list()))
 
 
 def is_valid_app_path(app_path: str) -> bool:

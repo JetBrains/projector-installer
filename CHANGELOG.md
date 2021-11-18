@@ -4,6 +4,9 @@ Notable changes to this project are documented in this file.
 
 # Unreleased
 
+## Added
+- better Toolbox-managed applications support in config add command 
+
 ## Removed
 - workaround for PRJ-332 due to server update
 

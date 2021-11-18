@@ -250,7 +250,10 @@ def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> 
               'with "--expert" argument or edit this config later '
               'via "projector config edit" command.')
 
-    app = app_path if app_path and is_valid_app_path(app_path) else select_app_path()
+    if app_path and is_valid_app_path(app_path):
+        is_toolbox, app = is_toolbox_path(app_path), app_path
+    else:
+        is_toolbox, app = select_app_path()  # type: ignore
 
     if app is None:
         print('IDE was not selected, exiting...')
@@ -261,7 +264,7 @@ def do_add_config(hint: Optional[str], app_path: Optional[str], quick: bool) -> 
     if quick:
         run_config = get_quick_config(config_name_hint)
         run_config.path_to_app = app
-        run_config.toolbox = is_toolbox_path(app)
+        run_config.toolbox = is_toolbox
     else:
         config_name = select_new_config_name(config_name_hint)
 

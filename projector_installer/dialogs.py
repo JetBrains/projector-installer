@@ -7,6 +7,7 @@
 import platform
 import sys
 import readline
+from enum import Enum, auto
 from getpass import getpass
 
 from os.path import expanduser
@@ -17,7 +18,8 @@ from click import INT
 
 from .defaults import get_defaults, Defaults
 from .run_config import get_run_configs, RunConfig, get_run_config_names, get_used_projector_ports
-from .apps import get_installed_apps, get_app_path, is_toolbox_path, is_valid_app_path
+from .apps import get_installed_apps, get_app_path, is_toolbox_path, is_valid_app_path, \
+    is_toolbox_installed, get_toolbox_managed_apps, get_path_to_toolbox_app
 from .secure_config import generate_token
 from .utils import get_local_addresses
 from .products import get_compatible_apps, IDEKind, Product, get_all_apps
@@ -164,24 +166,6 @@ def find_apps(pattern: Optional[str] = None) -> None:
     print_selection_list(list(map(lambda x: x.name, apps)))
 
 
-def select_app(pattern: Optional[str] = None) -> Tuple[str, Optional[Product]]:
-    """Selects app name from list of projector-compatible applications."""
-    kind = select_ide_kind(pattern)
-
-    if kind is None:
-        return RunConfig.UNKNOWN, None
-
-    if pattern:
-        matched_apps = get_all_apps(kind, pattern)
-        if len(matched_apps) == 1:
-            return RunConfig.NOT_TESTED, matched_apps[0]
-
-    channel, apps = get_app_list(kind)
-
-    return channel, select_from_list(apps, lambda it: it.name,
-                                     'Choose IDE number to install or 0 to exit')
-
-
 def select_unused_config_name(hint: str) -> str:
     """Generate unused config name."""
     run_configs = get_run_configs()
@@ -281,26 +265,98 @@ def select_manual_app_path(default: str = '') -> str:
         click.echo(f'Path {path} does not look like a valid path.')
 
 
-def select_app_path() -> Optional[str]:
-    """Select path to ide."""
+def select_app(pattern: Optional[str] = None) -> Tuple[str, Optional[Product]]:
+    """Selects app name from list of projector-compatible applications."""
+    kind = select_ide_kind(pattern)
+
+    if kind is None:
+        return RunConfig.UNKNOWN, None
+
+    if pattern:
+        matched_apps = get_all_apps(kind, pattern)
+        if len(matched_apps) == 1:
+            return RunConfig.NOT_TESTED, matched_apps[0]
+
+    channel, apps = get_app_list(kind)
+
+    return channel, select_from_list(apps, lambda it: it.name,
+                                     'Choose IDE number to install or 0 to exit')
+
+
+# pylint: disable=C0103
+class AppSource(Enum):
+    """Application source"""
+    Unknown = auto()
+    ProjectorInstalled = auto()
+    UserInstalled = auto()
+    ToolboxManaged = auto()
+
+
+def select_app_source() -> AppSource:
+    """Select application source"""
+    names: List[str] = ["User installed"]
+    sources: List[AppSource] = [AppSource.UserInstalled]
+
     apps = get_installed_apps()
 
     if apps:
-        inst = ask('Do you want to choose an IDE installed by Projector?'
-                   ' If NO, at the next step you will have to enter a path '
-                   'to a locally installed IDE.', default=True)
+        names.append("Projector installed")
+        sources.append(AppSource.ProjectorInstalled)
 
-        if inst:
-            return select_installed_app_path()
+    if is_toolbox_installed():
+        names.append("Toolbox managed")
+        sources.append(AppSource.ToolboxManaged)
 
-        return select_manual_app_path()
+    if len(sources) == 1:
+        return sources[0]
 
-    enter = ask('There are no installed Projector IDEs.\nWould you like to specify '
-                'a path to IDE manually?', default=True)
-    if enter:
-        return select_manual_app_path()
+    prompt = f'Select application source or 0 to exit [0-{len(names)}]'
 
-    return None
+    while True:
+        print_selection_list(names)
+        pos: int = click.prompt(prompt, type=INT)
+
+        if pos < 0 or pos > len(names):
+            print('Invalid number.')
+            continue
+
+        if pos == 0:
+            return AppSource.Unknown
+
+        return sources[pos - 1]
+
+
+def select_toolbox_managed_app() -> Optional[str]:
+    """Return path to toolbox-managed app"""
+    apps = get_toolbox_managed_apps()
+    res = select_from_list(apps, lambda it: it, 'Choose IDE number to install or 0 to exit')
+    return res if res is None else get_path_to_toolbox_app(res)
+
+
+def select_app_path() -> Tuple[bool, Optional[str]]:
+    """Select path to ide."""
+    app_source = select_app_source()
+
+    if app_source == AppSource.ProjectorInstalled:
+        app_path = select_installed_app_path()
+        is_toolbox = False
+    elif app_source == AppSource.UserInstalled:
+        app_path = select_manual_app_path()
+        is_toolbox = False
+
+        if is_toolbox_path(app_path):
+            is_toolbox = ask(
+                'The path looks like a path to JetBrains Toolbox-managed app. '
+                'Would you like Projector to update the path automatically '
+                'when the app updates?', default=True)
+    elif app_source == AppSource.ToolboxManaged:
+        app_path = select_toolbox_managed_app()
+        is_toolbox = True
+    else:  # to make lint happy
+        is_toolbox = False
+        app_path = None
+
+    return is_toolbox, app_path
 
 
 def get_all_listening_ports() -> List[int]:
@@ -505,8 +561,11 @@ def edit_config(config: RunConfig) -> RunConfig:
 
 def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConfig:
     """Creates run config with specified app_path."""
+
     if app_path is None:
-        app_path = select_app_path()
+        is_toolbox, app_path = select_app_path()
+    else:
+        is_toolbox = is_toolbox_path(app_path)
 
     if not app_path:
         print('IDE was not selected, exiting...')
@@ -514,14 +573,6 @@ def make_run_config(config_name: str, app_path: Optional[str] = None) -> RunConf
 
     separate_config = ask('Use separate configuration directory for this config?',
                           default=False)
-
-    is_toolbox = False
-
-    if is_toolbox_path(app_path):
-        is_toolbox = ask(
-            'The path looks like a path to JetBrains Toolbox-managed app. '
-            'Would you like Projector to update the path automatically '
-            'when the app updates?', default=True)
 
     projector_port = get_def_projector_port()
     projector_host = select_projector_listening_address()
