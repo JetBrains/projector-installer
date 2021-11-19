@@ -19,7 +19,7 @@ from click import INT
 from .defaults import get_defaults, Defaults
 from .run_config import get_run_configs, RunConfig, get_run_config_names, get_used_projector_ports
 from .apps import get_installed_apps, get_app_path, is_toolbox_path, is_valid_app_path, \
-    is_toolbox_installed, get_toolbox_managed_apps, get_path_to_toolbox_app
+    get_toolbox_managed_apps, get_path_to_toolbox_app, is_toolbox_installed
 from .secure_config import generate_token
 from .utils import get_local_addresses
 from .products import get_compatible_apps, IDEKind, Product, get_all_apps
@@ -303,9 +303,9 @@ def select_app_source() -> AppSource:
         names.append("Projector installed")
         sources.append(AppSource.ProjectorInstalled)
 
-    if is_toolbox_installed():
-        names.append("Toolbox managed")
-        sources.append(AppSource.ToolboxManaged)
+    # if is_toolbox_installed():
+    names.append("Toolbox managed")
+    sources.append(AppSource.ToolboxManaged)
 
     if len(sources) == 1:
         return sources[0]
@@ -329,6 +329,14 @@ def select_app_source() -> AppSource:
 def select_toolbox_managed_app() -> Optional[str]:
     """Return path to toolbox-managed app"""
     apps = get_toolbox_managed_apps()
+
+    if not is_toolbox_installed():
+        click.secho("Looks like you didn't installed the Toolbox app yet.",
+                    bold=True, fg='yellow')
+        click.secho("Give it a try: https://www.jetbrains.com/toolbox-app/",
+                    bold=True, fg='yellow')
+        return None
+
     res = select_from_list(apps, lambda it: it, 'Choose IDE number to install or 0 to exit')
     return res if res is None else get_path_to_toolbox_app(res)
 
