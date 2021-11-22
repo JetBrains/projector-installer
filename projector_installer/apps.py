@@ -43,6 +43,7 @@ APP_NAME_FILE_EXTENSION = 'app_name'
 
 TOOLBOX_DEFAULT_DIR = '~/.local/share/JetBrains/Toolbox/'
 TOOLBOX_SETTINGS = '.settings.json'
+CHANNEL_SETTINGS_FILE = '.channel.settings.json'
 
 
 def get_installed_apps(pattern: Optional[str] = None) -> List[str]:
@@ -414,20 +415,78 @@ def get_toolbox_managed_app_path_list() -> List[str]:
         for channel in os.listdir(app_dir):
             full_path = join(app_dir, channel)
             if channel.startswith('ch-') and isdir(full_path):
-                res.append(full_path)
+                if get_path_to_latest_app(full_path) is not None:
+                    res.append(full_path)
 
     return res
 
 
+def get_toolbox_custom_name(app_path: str) -> str:
+    """Returns the custom name for toolbox-managed app"""
+    file_path = join(app_path, CHANNEL_SETTINGS_FILE)
+
+    if isfile(file_path):
+        with open(file_path, mode='r', encoding='utf-8') as file:
+            data = json.load(file)
+
+            if 'custom_name' in data:
+                return str(data['custom_name'])
+
+    return ''
+
+
+def get_toolbox_app_channel(app_path: str) -> str:
+    """Get toolbox app channel by path"""
+    pos = app_path.find('ch-')
+
+    if pos > 0:
+        return app_path[pos:]
+
+    return ''
+
+
+def get_toolbox_app_name(app_path: str) -> str:
+    """Returns toolbox app name"""
+    name = get_toolbox_custom_name(app_path)
+
+    if not name:
+        prefix_len = len(get_toolbox_apps_location())
+        name = app_path[prefix_len + 1:]
+        pos = name.find('ch-')
+        name = name[:pos-1]
+
+    return name
+
+
+def toolbox_path_to_display_name(app_path: str) -> str:
+    """Maps toolbox path to display name """
+    name = get_toolbox_app_name(app_path)
+    version = ''
+    latest = get_path_to_latest_app(app_path)
+
+    if latest is not None:
+        prod_info = get_product_info(latest)
+        version = prod_info.version
+
+    channel = get_toolbox_app_channel(app_path)
+
+    return f'{name}-{version}/{channel}' if version else f'{name}/{channel}'
+
+
 def get_toolbox_managed_apps() -> List[str]:
-    """Returns list of toolbox managed app in form AppName/channel"""
-    prefix_len = len(get_toolbox_apps_location())
-    return list(map(lambda s: s[prefix_len + 1:], get_toolbox_managed_app_path_list()))
+    """Returns list of toolbox managed apps"""
+    path_list = get_toolbox_managed_app_path_list()
+    res = list(map(toolbox_path_to_display_name, path_list))
+    res.sort()
+
+    return res
 
 
 def get_path_to_toolbox_app(toolbox_app_name: str) -> Optional[str]:
     """Returns path to toolbox app/channel by toolbox paa name """
-    return next(filter(lambda s: s.endswith(toolbox_app_name), get_toolbox_managed_app_path_list()))
+    return next(
+        filter(lambda s: toolbox_path_to_display_name(s) == toolbox_app_name,
+               get_toolbox_managed_app_path_list()))
 
 
 def is_valid_app_path(app_path: str) -> bool:

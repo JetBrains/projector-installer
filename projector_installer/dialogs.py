@@ -294,7 +294,7 @@ class AppSource(Enum):
 
 def select_app_source() -> AppSource:
     """Select application source"""
-    names: List[str] = ["User installed"]
+    names: List[str] = ["User installed (local path)"]
     sources: List[AppSource] = [AppSource.UserInstalled]
 
     apps = get_installed_apps()
@@ -304,7 +304,7 @@ def select_app_source() -> AppSource:
         sources.append(AppSource.ProjectorInstalled)
 
     # if is_toolbox_installed():
-    names.append("Toolbox managed")
+    names.append("Toolbox managed (with updates integration)")
     sources.append(AppSource.ToolboxManaged)
 
     if len(sources) == 1:
