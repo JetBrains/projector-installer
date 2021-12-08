@@ -453,24 +453,26 @@ def get_toolbox_app_name(app_path: str) -> str:
         prefix_len = len(get_toolbox_apps_location())
         name = app_path[prefix_len + 1:]
         pos = name.find('ch-')
-        name = name[:pos-1]
+        name = name[:pos - 1]
 
     return name
 
 
 def toolbox_path_to_display_name(app_path: str) -> str:
     """Maps toolbox path to display name """
-    name = get_toolbox_app_name(app_path)
-    version = ''
+    toolbox_name = get_toolbox_app_name(app_path)
     latest = get_path_to_latest_app(app_path)
+    prod_info = None
 
     if latest is not None:
         prod_info = get_product_info(latest)
-        version = prod_info.version
 
     channel = get_toolbox_app_channel(app_path)
 
-    return f'{name}-{version}/{channel}' if version else f'{name}/{channel}'
+    if prod_info:
+        return f'{prod_info.name}/{channel} ({toolbox_name}, {prod_info.version})'
+
+    return f'{toolbox_name}/{channel}'
 
 
 def get_toolbox_managed_apps() -> List[str]:
