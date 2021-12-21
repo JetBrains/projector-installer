@@ -282,7 +282,7 @@ def get_projector_cert_sign_args(run_config: RunConfig) -> List[str]:
         '-ext', 'KeyUsage:critical=digitalSignature,keyEncipherment',
         '-ext', 'EKU=serverAuth',
         '-ext', f'SAN={get_projector_san("0.0.0.0", run_config.custom_names)}',
-        '-rfc', '-validity', '9999'
+        '-rfc', '-validity', '365'
     ]
 
 
