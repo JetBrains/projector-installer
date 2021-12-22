@@ -30,7 +30,7 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     10. [FreeBSD support](#FreeBSD-support)
     11. [OpenBSD support](#OpenBSD-support)
     12. [I edited the config file manually but nothing changed](#Config-file-edit)
-    13. [Self-generated certificate is expired] (#Certificate-expired)
+    13. [Self-generated certificate is expired](#Certificate-expired)
    
     
 ### <a id="Change-existing-configuration"></a>
