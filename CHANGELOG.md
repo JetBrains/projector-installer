@@ -11,7 +11,10 @@ Notable changes to this project are documented in this file.
 - workaround for PRJ-332 due to server update
 
 ## Fixed
-- added parameters to generated script for IJ agent compatibility 
+- added parameters to generated script for IJ agent compatibility
+
+## Changed
+- Self-signed certificate validity period restricted to 365 days to avoid NET::ERR_CERT_VALIDITY_TOO_LONG in Chrome 
 
 # 1.5.2
 

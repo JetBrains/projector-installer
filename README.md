@@ -30,6 +30,7 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
     10. [FreeBSD support](#FreeBSD-support)
     11. [OpenBSD support](#OpenBSD-support)
     12. [I edited the config file manually but nothing changed](#Config-file-edit)
+    13. [Self-generated certificate is expired] (#Certificate-expired)
    
     
 ### <a id="Change-existing-configuration"></a>
@@ -352,3 +353,6 @@ pip install projector-installer
 ### I edited the config file manually but nothing changed<a id="Config-file-edit"></a>
 It's not recommended to manually modify config file. Please use the `projector config edit` command. 
 But, if you edited config.ini file, do not forget to run `projector config rebuild` command to apply manual changes to runconfig.
+
+### Self-generated certificate is expired<a id="Certificate-expired"></a>
+To generate new certificate run `projector config rebuild` command for desired config.
