@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.6.0
 
 ## Added
 - better Toolbox-managed applications support in config add command 
@@ -15,6 +15,7 @@ Notable changes to this project are documented in this file.
 
 ## Changed
 - Self-signed certificate validity period restricted to 365 days to avoid NET::ERR_CERT_VALIDITY_TOO_LONG in Chrome 
+- updated projector-server version
 
 # 1.5.2
 
