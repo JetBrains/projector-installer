@@ -42,11 +42,10 @@ in [WSL](https://docs.microsoft.com/windows/wsl/).
 To use projector-installer you need machine with Linux (or WSL) and with Python 3.6 or higher. Before install
 projector-installer make sure that: 
 
-1. python3, pip3 and python3-crypto are installed in your system. 
+1. python3, pip3 and necessary packages are installed in your system. 
    In Debian-based distributions you can install them using the command:
     ```bash
-    sudo apt install python3 python3-pip -y
-    sudo apt install python3-cryptography -y
+    sudo apt install python3 python3-pip python3-cryptography python3-netifaces -y
     ```
     
     In CentOS use commands:
