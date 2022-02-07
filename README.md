@@ -52,7 +52,7 @@ projector-installer make sure that:
     In CentOS use commands:
     ```bash
     # CentOS 8+
-    sudo dnf install python3 python3-pip python3-pyOpenSSL python3-cryptography -y
+    sudo dnf install python3 python3-pip python3-pyOpenSSL python3-cryptography python3-netifaces -y
     # CentOS 7 / Amazon Linux 2
     sudo yum install python3 python3-pip pyOpenSSL python-cryptography -y
     ```
