@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Fixed
+- do not use update channel for Toolbox managed apps
+
 # 1.6.0
 
 ## Added

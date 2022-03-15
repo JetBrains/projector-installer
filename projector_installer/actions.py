@@ -321,7 +321,10 @@ def do_auto_add_config(config_name: str,
                            token='', password=password, ro_password=ro_password,
                            toolbox=is_toolbox_path(app_path), custom_names=hostname)
 
-    run_config.update_channel = RunConfig.NOT_TESTED
+    if run_config.toolbox:
+        run_config.update_channel = RunConfig.UNKNOWN
+    else:
+        run_config.update_channel = RunConfig.NOT_TESTED
 
     print(f'Adding new config with name {run_config.name}')
     save_config(run_config)

@@ -562,7 +562,8 @@ def edit_config(config: RunConfig) -> RunConfig:
 
     config.password, config.ro_password = select_password_pair(config.password, config.ro_password)
 
-    config.update_channel = select_update_channel(config.update_channel)
+    if not config.toolbox:
+        config.update_channel = select_update_channel(config.update_channel)
 
     return config
 
