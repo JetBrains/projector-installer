@@ -6,8 +6,9 @@
 
 import configparser
 import io
-from os import mkdir, stat, chmod
-from os.path import join, isdir
+from os import stat, chmod
+from os.path import join
+from pathlib import Path
 from shlex import quote
 from typing import TextIO
 from shutil import copy
@@ -178,8 +179,7 @@ def save_config(run_config: RunConfig) -> None:
 
     config_path = run_config.get_path()
 
-    if not isdir(config_path):
-        mkdir(config_path)
+    Path(config_path).mkdir(parents=True, exist_ok=True)
 
     config_path = join(config_path, CONFIG_INI_NAME)
 

@@ -171,9 +171,14 @@ def is_run_config_name(config_name: str) -> bool:
 
 def get_run_configs(pattern: Optional[str] = None) -> Dict[str, RunConfig]:
     """Get run configs, matched given pattern."""
+    run_configs_dir = get_run_configs_dir()
+
+    if not isdir(run_configs_dir):
+        return {}
+
     res = {}
 
-    for config_name in listdir(get_run_configs_dir()):
+    for config_name in listdir(run_configs_dir):
         if pattern and config_name.lower().find(pattern.lower()) == -1:
             continue
 

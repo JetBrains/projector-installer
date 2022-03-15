@@ -6,6 +6,7 @@ Notable changes to this project are documented in this file.
 
 ## Fixed
 - do not use update channel for Toolbox managed apps
+- handle non-existing projector config directories
 
 # 1.6.0
 
