@@ -6,6 +6,7 @@ Notable changes to this project are documented in this file.
 
 ## Changed
 - PRJ-865: Generate random passwords in quick config
+- PRJ-865: Use host=localhost in quick config 
 
 
 # 1.7.0

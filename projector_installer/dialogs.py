@@ -601,7 +601,7 @@ def get_quick_config(config_name: str) -> RunConfig:
     return RunConfig(name=select_unused_config_name(config_name), path_to_app='',
                      use_separate_config=False,
                      projector_port=get_def_projector_port(),
-                     projector_host=RunConfig.HOST_ALL,
+                     projector_host=RunConfig.HOST_LOCALHOST,
                      token='',
                      password=generate_random_password(),
                      ro_password=generate_random_password(),

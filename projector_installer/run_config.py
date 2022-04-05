@@ -43,6 +43,7 @@ class RunConfig:
     NOT_TESTED: ClassVar[str] = 'not_tested'  # pylint: disable=invalid-name
     UNKNOWN: ClassVar[str] = 'unknown'  # pylint: disable=invalid-name
     HOST_ALL: ClassVar[str] = '*'  # pylint: disable=invalid-name
+    HOST_LOCALHOST: ClassVar[str] = 'localhost'  # pylint: disable=invalid-name
 
     name: str
     path_to_app: str
