@@ -222,8 +222,16 @@ def get_json(url: str, timeout: float) -> Any:
 
 def generate_token(length: int = DEF_TOKEN_LEN) -> str:
     """Generates token to access server's secrets"""
+    return generate_random_password(length=length)
+
+
+DEF_PASSWORD_LEN = 20
+
+
+def generate_random_password(length: int = DEF_PASSWORD_LEN) -> str:
+    """Generate random alphanumeric password with given length"""
     alphabet = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(alphabet) for i in range(length))
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
 
 
 def get_distributive_name() -> str:

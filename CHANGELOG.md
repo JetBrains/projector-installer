@@ -2,6 +2,12 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Changed
+- PRJ-865: Generate random passwords in quick config
+
+
 # 1.7.0
 
 ## Fixed

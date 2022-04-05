@@ -21,7 +21,7 @@ from .run_config import get_run_configs, RunConfig, get_run_config_names, get_us
 from .apps import get_installed_apps, get_app_path, is_toolbox_path, is_valid_app_path, \
     get_toolbox_managed_apps, get_path_to_toolbox_app, is_toolbox_installed
 from .secure_config import generate_token
-from .utils import get_local_addresses
+from .utils import get_local_addresses, generate_random_password
 from .products import get_compatible_apps, IDEKind, Product, get_all_apps
 
 DEF_PROJECTOR_PORT: int = 9999
@@ -472,7 +472,7 @@ def select_password(prompt: str, default: str = '') -> str:
 
 
 def select_password_pair(def_password: str = '', def_ro_password: str = '') -> Tuple[str, str]:
-    """Prompts for pair of access passwords if needed"""
+    """Prompts for the pair of access passwords if needed"""
     password = ''
     ro_password = ''
     need_password = ask('Would you like to set password for connection?', default=False)
@@ -602,7 +602,9 @@ def get_quick_config(config_name: str) -> RunConfig:
                      use_separate_config=False,
                      projector_port=get_def_projector_port(),
                      projector_host=RunConfig.HOST_ALL,
-                     token='', password='', ro_password='',
+                     token='',
+                     password=generate_random_password(),
+                     ro_password=generate_random_password(),
                      toolbox=False, custom_names=get_defaults().host)
 
 
