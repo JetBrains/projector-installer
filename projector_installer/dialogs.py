@@ -503,13 +503,13 @@ def select_host_names(default: str = '') -> str:
     return host_names
 
 
-def select_projector_listening_address(default: str = RunConfig.HOST_ALL) -> str:
+def select_projector_listening_address(default: str = RunConfig.HOST_LOCALHOST) -> str:
     """Asks for Projector's listening address(host)"""
     use_host = ask('Would you like to specify listening address (or host) for Projector?',
                    default=False)
 
     res = prompt_with_default('Enter a Projector listening address (press ENTER for default)',
-                              default=default) if use_host else RunConfig.HOST_ALL
+                              default=default) if use_host else RunConfig.HOST_LOCALHOST
 
     return res
 
