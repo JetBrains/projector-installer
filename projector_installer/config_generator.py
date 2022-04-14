@@ -74,7 +74,7 @@ def write_run_script(run_config: RunConfig, src: TextIO, dst: TextIO) -> None:
         if line.startswith("IDE_BIN_HOME"):
             line = f'IDE_BIN_HOME={quote(join(run_config.path_to_app, "bin"))}\n'
         elif line.find("classpath") != -1:
-            line = f' -classpath "$CLASSPATH:{get_projector_server_dir()}/*" \\\n'
+            line = f' -classpath "$CLASSPATH:$CLASS_PATH:{get_projector_server_dir()}/*" \\\n'
         elif run_config.use_separate_config and line.find('${IDE_PROPERTIES_PROPERTY}') != -1:
             line = f' -Didea.properties.file=' \
                    f'{join(run_config.get_path(), IDEA_PROPERTIES_FILE)} \\\n'

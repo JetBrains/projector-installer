@@ -9,6 +9,9 @@ Notable changes to this project are documented in this file.
 - PRJ-865: Use host=localhost in quick config 
 - Use localhost as default for listening address  
 
+## Fixed
+- PRJ-877, PRJ-879: Fix classpath in run script for IDE >= 2022.1
+
 
 # 1.7.0
 
