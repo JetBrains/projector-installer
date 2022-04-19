@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Fixed
+- PRJ-880: Fix incorrect classpath setup for IDE >= 2022.1
+
 # 1.7.1
 
 ## Changed
