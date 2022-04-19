@@ -149,7 +149,7 @@ KIND2CODE = {
 CODE2KIND = {code: kind for kind, code in KIND2CODE.items()}
 
 # All releases before this version considered as unsupported
-EARLIEST_COMPATIBLE_VERSION = LooseVersion('2019.3')
+EARLIEST_COMPATIBLE_VERSION = LooseVersion('2020.1')
 
 
 def get_all_product_codes() -> str:

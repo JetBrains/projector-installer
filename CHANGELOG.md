@@ -7,6 +7,9 @@ Notable changes to this project are documented in this file.
 ## Fixed
 - PRJ-880: Fix incorrect classpath setup for IDE >= 2022.1
 
+## Changed
+- Earliest supported version changed to 2020.1. Older IDE are not be offered for installation.
+
 # 1.7.1
 
 ## Changed
