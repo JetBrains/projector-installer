@@ -524,7 +524,9 @@ def do_auto_install(config_name: str,
                     app_name: str,
                     port: Optional[int],
                     hostname: Optional[str] = '',
-                    use_separate_config: bool = False) -> None:
+                    use_separate_config: bool = False,
+                    password: Optional[str] = '',
+                    ro_password: Optional[str] = '') -> None:
     """Performs non-interactive IDE install"""
     configs = get_run_configs(config_name)
 
@@ -559,6 +561,14 @@ def do_auto_install(config_name: str,
     if hostname:
         run_config.custom_names = hostname
         run_config.projector_host = hostname
+
+    if password:
+        run_config.password = password
+
+        if ro_password:
+            run_config.ro_password = ro_password
+        else:
+            run_config.ro_password = password
 
     install_app(run_config, app)
 

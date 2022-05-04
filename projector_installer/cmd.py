@@ -274,17 +274,22 @@ def install_app(ide_name: Optional[str],
 @click.option('--use-separate-config', default=False, is_flag=True,
               help='Use separate configuration directory for this installation. '
                    'This option allows running multiple IDE instances.')
+@click.option('--password', type=click.STRING, required=False, help='RW access password')
+@click.option('--ro-password', type=click.STRING, required=False, help='RO access password')
 def auto_install_app(config_name: str,
                      ide_name: str,
                      port: Optional[int],
                      hostname: Optional[str],
-                     use_separate_config: bool) -> None:
+                     use_separate_config: bool,
+                     password: Optional[str],
+                     ro_password: Optional[str]) -> None:
     """
     projector ide autoinstall --config-name name --ide-name name
     [--port listen_port] [--hostname hostname or address]
     """
 
-    do_auto_install(config_name, ide_name, port, hostname, use_separate_config)
+    do_auto_install(config_name, ide_name, port, hostname,
+                    use_separate_config, password, ro_password)
 
 
 @click.command(short_help='Install user certificate to given config')

@@ -2,6 +2,11 @@
 
 Notable changes to this project are documented in this file.
 
+# Unreleased
+
+## Added
+- PRJ-887: --password and --ro-password options added to autoinstall command
+
 # 1.7.2
 
 ## Fixed
