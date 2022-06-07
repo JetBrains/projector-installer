@@ -2,10 +2,13 @@
 
 Notable changes to this project are documented in this file.
 
-# Unreleased
+# 1.8.0
 
 ## Added
 - PRJ-887: --password and --ro-password options added to autoinstall command
+
+## Updated
+- updated projector-server version
 
 # 1.7.2
 
