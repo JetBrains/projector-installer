@@ -1,6 +1,6 @@
 # projector-installer
 
-[![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+[![obsolete JetBrains project](https://jb.gg/badges/obsolete.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 ![Python 3.6+](https://img.shields.io/badge/Python-3.6+-blue.svg)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![PyLint/MyPy Runner](https://github.com/JetBrains/projector-installer/workflows/PyLint/MyPy%20Runner/badge.svg)
@@ -8,6 +8,16 @@
 Install, configure and run JetBrains IDEs
 with [Projector Server](https://jetbrains.github.io/projector-client/mkdocs/latest/) on Linux or
 in [WSL](https://docs.microsoft.com/windows/wsl/).
+
+## The state of the Projector
+
+The development of JetBrains Projector as its own standalone product has been suspended. That said, Projector remains an important part of [JetBrains Gateway](https://www.jetbrains.com/remote-development/gateway/), which is the primary remote development tool for JetBrains IDEs. We will focus our efforts on improving and developing Projector in this limited scenario.
+
+Our goal is to provide a rich, full-featured remote development experience with a look and feel that is equal to or better than what you get when working with IDEs locally. The only way to get everything you’re used to having when working locally (low latency, low network traffic, user-defined and OS-specific shortcuts, themes, settings migrations, ssh-agent/port forwarding, and other things) is by installing a dedicated client-side application. The standalone version of Projector is not capable of meeting these goals.
+
+As a result, we no longer recommend using the standalone version of JetBrains Projector or merely making tweaks to incorporate it into your existing IDE servers. We won’t provide user support or quick-fixes for issues that arise when these setups are used. If you have the option to switch from Projector to Gateway, we strongly recommend you do so.
+
+[Learn more about JetBrains Gateway](https://www.jetbrains.com/remote-development/gateway/)
 
 [Latest release](https://pypi.org/project/projector-installer/) |
 [Sources](https://github.com/JetBrains/projector-installer) |
